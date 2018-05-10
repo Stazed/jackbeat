@@ -13,26 +13,24 @@ G_BEGIN_DECLS
 #define PHAT_IS_VFAN_SLIDER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PHAT_TYPE_VFAN_SLIDER))
 
 typedef struct _PhatVFanSliderClass PhatVFanSliderClass;
-typedef struct _PhatVFanSlider      PhatVFanSlider;
+typedef struct _PhatVFanSlider PhatVFanSlider;
 
-struct _PhatVFanSlider
-{
+struct _PhatVFanSlider {
     PhatFanSlider parent;
 };
 
-struct _PhatVFanSliderClass
-{
+struct _PhatVFanSliderClass {
     PhatFanSliderClass parent_class;
 };
 
-GType phat_vfan_slider_get_type ( );
+GType phat_vfan_slider_get_type();
 
-GtkWidget* phat_vfan_slider_new (GtkAdjustment* adjustment);
+GtkWidget* phat_vfan_slider_new(GtkAdjustment* adjustment);
 
-GtkWidget* phat_vfan_slider_new_with_range (double value,
-                                            double lower,
-                                            double upper,
-                                            double step);
+GtkWidget* phat_vfan_slider_new_with_range(double value,
+        double lower,
+        double upper,
+        double step);
 G_END_DECLS
 
 #endif /* __PHAT_VFAN_SLIDER_H__ */

@@ -9,24 +9,24 @@ static void phat_hfan_slider_class_init (PhatHFanSliderClass* klass);
 static void phat_hfan_slider_init (PhatHFanSlider* slider);
 static void phat_hfan_slider_destroy (GtkObject* object);
 
-GType phat_hfan_slider_get_type ( )
+GType
+phat_hfan_slider_get_type ( )
 {
     static GType type = 0;
 
     if (!type)
     {
-        static const GTypeInfo info =
-            {
-                sizeof (PhatHFanSliderClass),
-                NULL,
-                NULL,
-                (GClassInitFunc) phat_hfan_slider_class_init,
-                NULL,
-                NULL,
-                sizeof (PhatHFanSlider),
-                0,
-                (GInstanceInitFunc) phat_hfan_slider_init,
-            };
+        static const GTypeInfo info ={
+            sizeof (PhatHFanSliderClass),
+            NULL,
+            NULL,
+            (GClassInitFunc) phat_hfan_slider_class_init,
+            NULL,
+            NULL,
+            sizeof (PhatHFanSlider),
+            0,
+            (GInstanceInitFunc) phat_hfan_slider_init,
+        };
 
         type = g_type_register_static (PHAT_TYPE_FAN_SLIDER,
                                        "PhatHFanSlider",
@@ -46,7 +46,8 @@ GType phat_hfan_slider_get_type ( )
  * Returns: a newly created #PhatHFanSlider
  * 
  */
-GtkWidget* phat_hfan_slider_new (GtkAdjustment* adjustment)
+GtkWidget*
+phat_hfan_slider_new (GtkAdjustment* adjustment)
 {
     PhatHFanSlider* slider;
 
@@ -62,7 +63,7 @@ GtkWidget* phat_hfan_slider_new (GtkAdjustment* adjustment)
 
     return (GtkWidget*) slider;
 }
-     
+
 /**
  * phat_hfan_slider_new_with_range:
  * @value: the initial value the new slider should have
@@ -77,17 +78,19 @@ GtkWidget* phat_hfan_slider_new (GtkAdjustment* adjustment)
  * Returns: a newly created #PhatHFanSlider
  *
  */
-GtkWidget* phat_hfan_slider_new_with_range (double value, double lower,
-                                            double upper, double step)
+GtkWidget*
+phat_hfan_slider_new_with_range (double value, double lower,
+                                 double upper, double step)
 {
     GtkAdjustment* adj;
 
     adj = (GtkAdjustment*) gtk_adjustment_new (value, lower, upper, step, step, 0);
-     
+
     return phat_hfan_slider_new (adj);
 }
 
-static void phat_hfan_slider_class_init (PhatHFanSliderClass* klass)
+static void
+phat_hfan_slider_class_init (PhatHFanSliderClass* klass)
 {
     GtkObjectClass* object_class = (GtkObjectClass*) klass;
 
@@ -96,15 +99,17 @@ static void phat_hfan_slider_class_init (PhatHFanSliderClass* klass)
     object_class->destroy = phat_hfan_slider_destroy;
 }
 
-static void phat_hfan_slider_init (PhatHFanSlider* slider)
+static void
+phat_hfan_slider_init (PhatHFanSlider* slider)
 {
     return;
 }
 
-static void phat_hfan_slider_destroy (GtkObject* object)
+static void
+phat_hfan_slider_destroy (GtkObject* object)
 {
     GtkObjectClass* klass;
-     
+
     g_return_if_fail (object != NULL);
     g_return_if_fail (PHAT_IS_HFAN_SLIDER (object));
 

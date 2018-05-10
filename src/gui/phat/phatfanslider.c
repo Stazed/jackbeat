@@ -14,7 +14,7 @@ enum
     SLIDER_WIDTH = 16,
     SLIDER_LENGTH = 64,
     THRESHOLD = 4,
-};
+} ;
 
 /* states */
 enum
@@ -22,7 +22,7 @@ enum
     STATE_NORMAL,
     STATE_CLICKED,
     STATE_SCROLL,
-};
+} ;
 
 /* signals */
 enum
@@ -30,7 +30,7 @@ enum
     VALUE_CHANGED_SIGNAL,
     CHANGED_SIGNAL,
     LAST_SIGNAL,
-};
+} ;
 
 static int phat_fan_slider_signals [LAST_SIGNAL] = { 0, 0 };
 
@@ -47,9 +47,9 @@ static void phat_fan_slider_map             (GtkWidget *widget);
 static void phat_fan_slider_unmap           (GtkWidget *widget);
 static void phat_fan_slider_draw_fan        (PhatFanSlider* slider);
 static int  phat_fan_slider_get_fan_length  (PhatFanSlider* slider);
-static void phat_screen_changed(GtkWidget *widget, GdkScreen *old_screen, gpointer userdata);
-static void phat_fan_slider_rounded_rectangle (cairo_t *cr, double x0, double y0, 
-	double rect_width, double  rect_height, double radius, gboolean selected);
+static void phat_screen_changed (GtkWidget *widget, GdkScreen *old_screen, gpointer userdata);
+static void phat_fan_slider_rounded_rectangle (cairo_t *cr, double x0, double y0,
+                                               double rect_width, double  rect_height, double radius, gboolean selected);
 static void phat_fan_slider_update_hints    (PhatFanSlider* slider);
 
 static void phat_fan_slider_size_request (GtkWidget*widget,
@@ -108,24 +108,24 @@ static void phat_fan_slider_adjustment_changed (GtkAdjustment* adjustment,
 static void phat_fan_slider_adjustment_value_changed (GtkAdjustment* adjustment,
                                                       PhatFanSlider* slider);
 
-GType phat_fan_slider_get_type ( )
+GType
+phat_fan_slider_get_type ( )
 {
     static GType type = 0;
 
     if (!type)
     {
-        static const GTypeInfo info =
-            {
-                sizeof (PhatFanSliderClass),
-                NULL,
-                NULL,
-                (GClassInitFunc) phat_fan_slider_class_init,
-                NULL,
-                NULL,
-                sizeof (PhatFanSlider),
-                0,
-                (GInstanceInitFunc) phat_fan_slider_init,
-            };
+        static const GTypeInfo info ={
+            sizeof (PhatFanSliderClass),
+            NULL,
+            NULL,
+            (GClassInitFunc) phat_fan_slider_class_init,
+            NULL,
+            NULL,
+            sizeof (PhatFanSlider),
+            0,
+            (GInstanceInitFunc) phat_fan_slider_init,
+        };
 
         type = g_type_register_static (GTK_TYPE_WIDGET,
                                        "PhatFanSlider",
@@ -147,7 +147,8 @@ GType phat_fan_slider_get_type ( )
  * value changes.
  *
  */
-void phat_fan_slider_set_value (PhatFanSlider* slider, double value)
+void
+phat_fan_slider_set_value (PhatFanSlider* slider, double value)
 {
     g_return_if_fail (PHAT_IS_FAN_SLIDER (slider));
 
@@ -157,31 +158,31 @@ void phat_fan_slider_set_value (PhatFanSlider* slider, double value)
 
     gtk_adjustment_set_value (slider->adjustment, value);
 
-    if(slider->is_log)
-    {           
-        gtk_adjustment_set_value((GtkAdjustment *)slider->adjustment_prv, log(value - slider->adjustment->lower) / log(slider->adjustment->upper - slider->adjustment->lower));         
+    if (slider->is_log)
+    {
+        gtk_adjustment_set_value ((GtkAdjustment *) slider->adjustment_prv, log (value - slider->adjustment->lower) / log (slider->adjustment->upper - slider->adjustment->lower));
     }
     else
     {
-        gtk_adjustment_set_value((GtkAdjustment *)slider->adjustment_prv, (value - slider->adjustment->lower) / (slider->adjustment->upper - slider->adjustment->lower));
+        gtk_adjustment_set_value ((GtkAdjustment *) slider->adjustment_prv, (value - slider->adjustment->lower) / (slider->adjustment->upper - slider->adjustment->lower));
     }
 }
 
-void phat_fan_slider_set_log (PhatFanSlider* slider, gboolean is_log)
+void
+phat_fan_slider_set_log (PhatFanSlider* slider, gboolean is_log)
 {
     g_return_if_fail (PHAT_IS_FAN_SLIDER (slider));
 
     slider->is_log = is_log;
 }
 
-gboolean phat_fan_slider_is_log (PhatFanSlider* slider)
+gboolean
+phat_fan_slider_is_log (PhatFanSlider* slider)
 {
     g_return_val_if_fail (PHAT_IS_FAN_SLIDER (slider), 0);
 
     return slider->is_log;
 }
-
-    
 
 /**
  * phat_fan_slider_get_value:
@@ -192,19 +193,20 @@ gboolean phat_fan_slider_is_log (PhatFanSlider* slider)
  * Returns: current value of the slider.
  *
  */
-double phat_fan_slider_get_value (PhatFanSlider* slider)
+double
+phat_fan_slider_get_value (PhatFanSlider* slider)
 {
     g_return_val_if_fail (PHAT_IS_FAN_SLIDER (slider), 0);
 
-    if(slider->is_log)
+    if (slider->is_log)
     {
-        gtk_adjustment_set_value((GtkAdjustment *)slider->adjustment, exp((slider->adjustment_prv->value) * 
-                                                                          (log(slider->adjustment->upper - slider->adjustment->lower))) + slider->adjustment->lower);
+        gtk_adjustment_set_value ((GtkAdjustment *) slider->adjustment, exp ((slider->adjustment_prv->value) *
+                                                                             (log (slider->adjustment->upper - slider->adjustment->lower))) + slider->adjustment->lower);
         //printf("setting val %f lower %f upper %f \n", slider->adjustment_prv->value, slider->adjustment->lower, slider->adjustment->upper);
     }
     else
     {
-        gtk_adjustment_set_value((GtkAdjustment *)slider->adjustment, (slider->adjustment_prv->value * (slider->adjustment->upper - slider->adjustment->lower) + slider->adjustment->lower));
+        gtk_adjustment_set_value ((GtkAdjustment *) slider->adjustment, (slider->adjustment_prv->value * (slider->adjustment->upper - slider->adjustment->lower) + slider->adjustment->lower));
     }
     return slider->adjustment->value;
 }
@@ -219,11 +221,12 @@ double phat_fan_slider_get_value (PhatFanSlider* slider)
  * current value to be between @lower and @upper.
  *
  */
-void phat_fan_slider_set_range (PhatFanSlider* slider,
-                                double lower, double upper)
+void
+phat_fan_slider_set_range (PhatFanSlider* slider,
+                           double lower, double upper)
 {
     double value;
-     
+
     g_return_if_fail (PHAT_IS_FAN_SLIDER (slider));
     g_return_if_fail (lower <= upper);
 
@@ -249,8 +252,9 @@ void phat_fan_slider_set_range (PhatFanSlider* slider,
  * interested in its value.
  *
  */
-void phat_fan_slider_get_range (PhatFanSlider* slider,
-                                double* lower, double* upper)
+void
+phat_fan_slider_get_range (PhatFanSlider* slider,
+                           double* lower, double* upper)
 {
     g_return_if_fail (PHAT_IS_FAN_SLIDER (slider));
 
@@ -271,8 +275,9 @@ void phat_fan_slider_get_range (PhatFanSlider* slider,
  * zero and a range of [-1.0, 1.0] will be created.
  *
  */
-void phat_fan_slider_set_adjustment (PhatFanSlider* slider,
-                                     GtkAdjustment* adjustment)
+void
+phat_fan_slider_set_adjustment (PhatFanSlider* slider,
+                                GtkAdjustment* adjustment)
 {
     g_return_if_fail (PHAT_IS_FAN_SLIDER (slider));
     g_return_if_fail (slider->adjustment != adjustment);
@@ -297,9 +302,9 @@ void phat_fan_slider_set_adjustment (PhatFanSlider* slider,
     g_object_ref (adjustment);
     gtk_object_sink (GTK_OBJECT (adjustment));
 
-    phat_fan_slider_adjustment_changed(slider->adjustment, slider);
+    phat_fan_slider_adjustment_changed (slider->adjustment, slider);
 
-    phat_fan_slider_set_value(PHAT_FAN_SLIDER (slider), adjustment->value);
+    phat_fan_slider_set_value (PHAT_FAN_SLIDER (slider), adjustment->value);
 }
 
 /**
@@ -311,7 +316,8 @@ void phat_fan_slider_set_adjustment (PhatFanSlider* slider,
  * Returns: @slider's current #GtkAdjustment
  *
  */
-GtkAdjustment* phat_fan_slider_get_adjustment (PhatFanSlider* slider)
+GtkAdjustment*
+phat_fan_slider_get_adjustment (PhatFanSlider* slider)
 {
     g_return_val_if_fail (PHAT_IS_FAN_SLIDER (slider), NULL);
 
@@ -334,7 +340,8 @@ GtkAdjustment* phat_fan_slider_get_adjustment (PhatFanSlider* slider)
  * You can reverse this behavior by setting @inverted to %TRUE.
  * 
  */
-void phat_fan_slider_set_inverted (PhatFanSlider* slider, gboolean inverted)
+void
+phat_fan_slider_set_inverted (PhatFanSlider* slider, gboolean inverted)
 {
     g_return_if_fail (PHAT_IS_FAN_SLIDER (slider));
 
@@ -351,7 +358,8 @@ void phat_fan_slider_set_inverted (PhatFanSlider* slider, gboolean inverted)
  * Returns: %TRUE if @slider is inverted
  *
  */
-gboolean phat_fan_slider_get_inverted (PhatFanSlider* slider)
+gboolean
+phat_fan_slider_get_inverted (PhatFanSlider* slider)
 {
     g_return_val_if_fail (PHAT_IS_FAN_SLIDER (slider), FALSE);
 
@@ -366,22 +374,24 @@ gboolean phat_fan_slider_get_inverted (PhatFanSlider* slider)
  * Set default value of the slider. Slider is reset to this value
  * when middle mouse button is pressed.
  */
-void phat_fan_slider_set_default_value(PhatFanSlider* slider, gdouble value)
+void
+phat_fan_slider_set_default_value (PhatFanSlider* slider, gdouble value)
 {
-    g_return_if_fail(PHAT_IS_FAN_SLIDER(slider));
+    g_return_if_fail (PHAT_IS_FAN_SLIDER (slider));
 
     slider->use_default_value = TRUE;
     slider->default_value = value;
 }
 
-static void phat_fan_slider_class_init (PhatFanSliderClass* klass)
+static void
+phat_fan_slider_class_init (PhatFanSliderClass* klass)
 {
     GtkObjectClass* object_class = (GtkObjectClass*) klass;
     GtkWidgetClass* widget_class = (GtkWidgetClass*) klass;
     GdkScreen*      screen       = gdk_screen_get_default ( );
 
     debug ("class init\n");
-     
+
     parent_class = gtk_type_class (gtk_widget_get_type ());
 
     object_class->destroy = phat_fan_slider_destroy;
@@ -400,7 +410,7 @@ static void phat_fan_slider_class_init (PhatFanSliderClass* klass)
     widget_class->motion_notify_event = phat_fan_slider_motion_notify;
     widget_class->enter_notify_event = phat_fan_slider_enter_notify;
     widget_class->leave_notify_event = phat_fan_slider_leave_notify;
-     
+
     /**
      * PhatFanSlider::value-changed:
      * @slider: the object on which the signal was emitted
@@ -410,12 +420,12 @@ static void phat_fan_slider_class_init (PhatFanSliderClass* klass)
      *
      */
     phat_fan_slider_signals[VALUE_CHANGED_SIGNAL] =
-        g_signal_new ("value-changed",
-                      G_TYPE_FROM_CLASS (klass),
-                      G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
-                      G_STRUCT_OFFSET (PhatFanSliderClass, value_changed),
-                      NULL, NULL,
-                      g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
+            g_signal_new ("value-changed",
+                          G_TYPE_FROM_CLASS (klass),
+                          G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
+                          G_STRUCT_OFFSET (PhatFanSliderClass, value_changed),
+                          NULL, NULL,
+                          g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 
     /**
      * PhatFanSlider::changed:
@@ -426,12 +436,12 @@ static void phat_fan_slider_class_init (PhatFanSliderClass* klass)
      *
      */
     phat_fan_slider_signals[CHANGED_SIGNAL] =
-        g_signal_new ("changed",
-                      G_TYPE_FROM_CLASS (klass),
-                      G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
-                      G_STRUCT_OFFSET (PhatFanSliderClass, changed),
-                      NULL, NULL,
-                      g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
+            g_signal_new ("changed",
+                          G_TYPE_FROM_CLASS (klass),
+                          G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
+                          G_STRUCT_OFFSET (PhatFanSliderClass, changed),
+                          NULL, NULL,
+                          g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 
     klass->value_changed = NULL;
     klass->changed = NULL;
@@ -447,7 +457,8 @@ static void phat_fan_slider_class_init (PhatFanSliderClass* klass)
         fan_max_height = 1024;
 }
 
-static void phat_fan_slider_init (PhatFanSlider* slider)
+static void
+phat_fan_slider_init (PhatFanSlider* slider)
 {
     GTK_WIDGET_SET_FLAGS (slider, GTK_NO_WINDOW | GTK_CAN_FOCUS);
 
@@ -491,14 +502,15 @@ static void phat_fan_slider_init (PhatFanSlider* slider)
 
 }
 
-static void phat_fan_slider_destroy (GtkObject* object)
+static void
+phat_fan_slider_destroy (GtkObject* object)
 {
     GtkObjectClass* klass;
     PhatFanSlider* slider;
     GtkWidget* widget;
-     
+
     debug ("destroy %p\n", object);
-     
+
     g_return_if_fail (object != NULL);
     g_return_if_fail (PHAT_IS_FAN_SLIDER (object));
 
@@ -576,16 +588,17 @@ static void phat_fan_slider_destroy (GtkObject* object)
                                               phat_fan_slider_adjustment_value_changed,
                                               (gpointer) slider);
         //didn't call ref on this one so just destroy
-        gtk_object_destroy ((GtkObject*)slider->adjustment_prv);
+        gtk_object_destroy ((GtkObject*) slider->adjustment_prv);
         slider->adjustment_prv = NULL;
     }
 
-     
+
     if (klass->destroy)
         klass->destroy (object);
 }
 
-static void phat_fan_slider_realize (GtkWidget* widget)
+static void
+phat_fan_slider_realize (GtkWidget* widget)
 {
     PhatFanSlider* slider;
     GdkWindowAttr attributes;
@@ -595,14 +608,14 @@ static void phat_fan_slider_realize (GtkWidget* widget)
     gint attributes_mask;
 
     debug ("realize\n");
-     
+
     g_return_if_fail (widget != NULL);
     g_return_if_fail (PHAT_IS_FAN_SLIDER (widget));
 
     GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
 
     slider = (PhatFanSlider*) widget;
-     
+
     if (slider->orientation == GTK_ORIENTATION_VERTICAL)
     {
         slider->arrow_cursor = gdk_cursor_new (GDK_SB_V_DOUBLE_ARROW);
@@ -647,7 +660,7 @@ static void phat_fan_slider_realize (GtkWidget* widget)
     slider->fan_window = gtk_window_new (GTK_WINDOW_POPUP);
     //gtk_widget_set_double_buffered (slider->fan_window, FALSE);
     gtk_window_resize (GTK_WINDOW (slider->fan_window), fan_max_width, fan_max_height);
-    gtk_widget_set_app_paintable (slider->fan_window, TRUE); 
+    gtk_widget_set_app_paintable (slider->fan_window, TRUE);
     g_signal_connect (G_OBJECT (slider->fan_window),
                       "expose-event",
                       G_CALLBACK (phat_fan_slider_fan_expose),
@@ -656,10 +669,10 @@ static void phat_fan_slider_realize (GtkWidget* widget)
                       "show",
                       G_CALLBACK (phat_fan_slider_fan_show),
                       (gpointer) slider);
-    g_signal_connect(G_OBJECT(slider->fan_window), "screen-changed", G_CALLBACK(phat_screen_changed), NULL);
+    g_signal_connect (G_OBJECT (slider->fan_window), "screen-changed", G_CALLBACK (phat_screen_changed), NULL);
 
 
-    phat_screen_changed(slider->fan_window, NULL, NULL);
+    phat_screen_changed (slider->fan_window, NULL, NULL);
 
     slider->hint_window0 = gtk_window_new (GTK_WINDOW_POPUP);
     gtk_widget_realize (slider->hint_window0);
@@ -679,13 +692,14 @@ static void phat_fan_slider_realize (GtkWidget* widget)
     phat_fan_slider_update_hints (slider);
 }
 
-static void phat_fan_slider_unrealize (GtkWidget *widget)
+static void
+phat_fan_slider_unrealize (GtkWidget *widget)
 {
     PhatFanSlider* slider = PHAT_FAN_SLIDER (widget);
     GtkWidgetClass* klass = GTK_WIDGET_CLASS (parent_class);
 
     debug ("unrealize\n");
-     
+
     gdk_cursor_unref (slider->arrow_cursor);
     slider->arrow_cursor = NULL;
 
@@ -706,21 +720,20 @@ static void phat_fan_slider_unrealize (GtkWidget *widget)
     slider->hint_window1 = NULL;
 
     slider->hint_clip0 = NULL;
-     
+
     slider->hint_clip1 = NULL;
-     
+
     if (klass->unrealize)
         klass->unrealize (widget);
 }
 
-  
-
-static void phat_fan_slider_map (GtkWidget *widget)
+static void
+phat_fan_slider_map (GtkWidget *widget)
 {
     PhatFanSlider* slider;
 
     debug ("map\n");
-     
+
     g_return_if_fail (PHAT_IS_FAN_SLIDER (widget));
     slider = (PhatFanSlider*) widget;
 
@@ -729,12 +742,13 @@ static void phat_fan_slider_map (GtkWidget *widget)
     GTK_WIDGET_CLASS (parent_class)->map (widget);
 }
 
-static void phat_fan_slider_unmap (GtkWidget *widget)
+static void
+phat_fan_slider_unmap (GtkWidget *widget)
 {
     PhatFanSlider* slider;
 
     debug ("unmap\n");
-     
+
     g_return_if_fail (PHAT_IS_FAN_SLIDER (widget));
     slider = (PhatFanSlider*) widget;
 
@@ -743,15 +757,16 @@ static void phat_fan_slider_unmap (GtkWidget *widget)
     GTK_WIDGET_CLASS (parent_class)->unmap (widget);
 }
 
-static void phat_fan_slider_size_request (GtkWidget*      widget,
-                                          GtkRequisition* requisition)
+static void
+phat_fan_slider_size_request (GtkWidget*      widget,
+                              GtkRequisition* requisition)
 {
     PhatFanSlider* slider;
     int focus_width, focus_pad;
     int pad;
-     
+
     debug ("size request\n");
-     
+
     g_return_if_fail (PHAT_IS_FAN_SLIDER (widget));
     slider = (PhatFanSlider*) widget;
 
@@ -774,15 +789,16 @@ static void phat_fan_slider_size_request (GtkWidget*      widget,
     }
 }
 
-static void phat_fan_slider_size_allocate (GtkWidget*     widget,
-                                           GtkAllocation* allocation)
+static void
+phat_fan_slider_size_allocate (GtkWidget*     widget,
+                               GtkAllocation* allocation)
 {
     PhatFanSlider* slider;
     int x, y;
     int w, h;
 
     debug ("size allocate\n");
-     
+
     g_return_if_fail (widget != NULL);
     g_return_if_fail (PHAT_IS_FAN_SLIDER (widget));
     g_return_if_fail (allocation != NULL);
@@ -796,14 +812,14 @@ static void phat_fan_slider_size_allocate (GtkWidget*     widget,
     if (slider->orientation == GTK_ORIENTATION_VERTICAL)
     {
         slider->fan_max_thickness = ((fan_max_height - h)
-                                     / (2*FAN_RISE/FAN_RUN));
+                                     / (2 * FAN_RISE / FAN_RUN));
     }
     else
     {
         slider->fan_max_thickness = ((fan_max_width - w)
-                                     / (2*FAN_RISE/FAN_RUN));
+                                     / (2 * FAN_RISE / FAN_RUN));
     }
-     
+
     if (GTK_WIDGET_REALIZED (widget))
     {
         gdk_window_move_resize (slider->event_window,
@@ -815,83 +831,93 @@ static void phat_fan_slider_size_allocate (GtkWidget*     widget,
 /* Only some X servers support alpha channels. Always have a fallback */
 gboolean supports_alpha = FALSE;
 
-static void phat_screen_changed(GtkWidget *widget, GdkScreen *old_screen, gpointer userdata)
+static void
+phat_screen_changed (GtkWidget *widget, GdkScreen *old_screen, gpointer userdata)
 {
     /* To check if the display supports alpha channels, get the colormap */
-    GdkScreen *screen = gtk_widget_get_screen(widget);
-    GdkColormap *colormap = gdk_screen_get_rgba_colormap(screen);
+    GdkScreen *screen = gtk_widget_get_screen (widget);
+    GdkColormap *colormap = gdk_screen_get_rgba_colormap (screen);
 
     if (!colormap)
     {
-        debug("Your screen does not support alpha channels!\n");
-        colormap = gdk_screen_get_rgb_colormap(screen);
+        debug ("Your screen does not support alpha channels!\n");
+        colormap = gdk_screen_get_rgb_colormap (screen);
         supports_alpha = FALSE;
     }
     else
     {
-        debug("Your screen supports alpha channels!\n");
+        debug ("Your screen supports alpha channels!\n");
         supports_alpha = TRUE;
     }
 
     /* Now we have a colormap appropriate for the screen, use it */
-    gtk_widget_set_colormap(widget, colormap);
+    gtk_widget_set_colormap (widget, colormap);
 }
 
-
-static void phat_fan_slider_rounded_rectangle (cairo_t *cr, double x0, double  y0, 
-	double rect_width, double  rect_height, 
-	double radius, gboolean selected)
+static void
+phat_fan_slider_rounded_rectangle (cairo_t *cr, double x0, double  y0,
+                                   double rect_width, double  rect_height,
+                                   double radius, gboolean selected)
 {
     /*< parameters like cairo_rectangle */
     /*radius = 0.4;   < and an approximate curvature radius */
 
-    double x1,y1;
+    double x1, y1;
 
-    x1=x0+rect_width;
-    y1=y0+rect_height;
+    x1 = x0 + rect_width;
+    y1 = y0 + rect_height;
     if (!rect_width || !rect_height)
-	return;
-    if (rect_width/2<radius) {
-	if (rect_height/2<radius) {
-	    cairo_move_to  (cr, x0, (y0 + y1)/2);
-	    cairo_curve_to (cr, x0 ,y0, x0, y0, (x0 + x1)/2, y0);
-	    cairo_curve_to (cr, x1, y0, x1, y0, x1, (y0 + y1)/2);
-	    cairo_curve_to (cr, x1, y1, x1, y1, (x1 + x0)/2, y1);
-	    cairo_curve_to (cr, x0, y1, x0, y1, x0, (y0 + y1)/2);
-	} else {
-	    cairo_move_to  (cr, x0, y0 + radius);
-	    cairo_curve_to (cr, x0 ,y0, x0, y0, (x0 + x1)/2, y0);
-	    cairo_curve_to (cr, x1, y0, x1, y0, x1, y0 + radius);
-	    cairo_line_to (cr, x1 , y1 - radius);
-	    cairo_curve_to (cr, x1, y1, x1, y1, (x1 + x0)/2, y1);
-	    cairo_curve_to (cr, x0, y1, x0, y1, x0, y1- radius);
-	}
-    } else {
-	if (rect_height/2<radius) {
-	    cairo_move_to  (cr, x0, (y0 + y1)/2);
-	    cairo_curve_to (cr, x0 , y0, x0 , y0, x0 + radius, y0);
-	    cairo_line_to (cr, x1 - radius, y0);
-	    cairo_curve_to (cr, x1, y0, x1, y0, x1, (y0 + y1)/2);
-	    cairo_curve_to (cr, x1, y1, x1, y1, x1 - radius, y1);
-	    cairo_line_to (cr, x0 + radius, y1);
-	    cairo_curve_to (cr, x0, y1, x0, y1, x0, (y0 + y1)/2);
-	} else {
-	    cairo_move_to  (cr, x0, y0 + radius);
-	    cairo_curve_to (cr, x0 , y0, x0 , y0, x0 + radius, y0);
-	    cairo_line_to (cr, x1 - radius, y0);
-	    cairo_curve_to (cr, x1, y0, x1, y0, x1, y0 + radius);
-	    cairo_line_to (cr, x1 , y1 - radius);
-	    cairo_curve_to (cr, x1, y1, x1, y1, x1 - radius, y1);
-	    cairo_line_to (cr, x0 + radius, y1);
-	    cairo_curve_to (cr, x0, y1, x0, y1, x0, y1- radius);
-	}
+        return;
+    if (rect_width / 2 < radius)
+    {
+        if (rect_height / 2 < radius)
+        {
+            cairo_move_to  (cr, x0, (y0 + y1) / 2);
+            cairo_curve_to (cr, x0 , y0, x0, y0, (x0 + x1) / 2, y0);
+            cairo_curve_to (cr, x1, y0, x1, y0, x1, (y0 + y1) / 2);
+            cairo_curve_to (cr, x1, y1, x1, y1, (x1 + x0) / 2, y1);
+            cairo_curve_to (cr, x0, y1, x0, y1, x0, (y0 + y1) / 2);
+        }
+        else
+        {
+            cairo_move_to  (cr, x0, y0 + radius);
+            cairo_curve_to (cr, x0 , y0, x0, y0, (x0 + x1) / 2, y0);
+            cairo_curve_to (cr, x1, y0, x1, y0, x1, y0 + radius);
+            cairo_line_to (cr, x1 , y1 - radius);
+            cairo_curve_to (cr, x1, y1, x1, y1, (x1 + x0) / 2, y1);
+            cairo_curve_to (cr, x0, y1, x0, y1, x0, y1 - radius);
+        }
+    }
+    else
+    {
+        if (rect_height / 2 < radius)
+        {
+            cairo_move_to  (cr, x0, (y0 + y1) / 2);
+            cairo_curve_to (cr, x0 , y0, x0 , y0, x0 + radius, y0);
+            cairo_line_to (cr, x1 - radius, y0);
+            cairo_curve_to (cr, x1, y0, x1, y0, x1, (y0 + y1) / 2);
+            cairo_curve_to (cr, x1, y1, x1, y1, x1 - radius, y1);
+            cairo_line_to (cr, x0 + radius, y1);
+            cairo_curve_to (cr, x0, y1, x0, y1, x0, (y0 + y1) / 2);
+        }
+        else
+        {
+            cairo_move_to  (cr, x0, y0 + radius);
+            cairo_curve_to (cr, x0 , y0, x0 , y0, x0 + radius, y0);
+            cairo_line_to (cr, x1 - radius, y0);
+            cairo_curve_to (cr, x1, y0, x1, y0, x1, y0 + radius);
+            cairo_line_to (cr, x1 , y1 - radius);
+            cairo_curve_to (cr, x1, y1, x1, y1, x1 - radius, y1);
+            cairo_line_to (cr, x0 + radius, y1);
+            cairo_curve_to (cr, x0, y1, x0, y1, x0, y1 - radius);
+        }
     }
     cairo_close_path (cr);
 }
 
-
-static gboolean phat_fan_slider_expose (GtkWidget*      widget,
-                                        GdkEventExpose* event)
+static gboolean
+phat_fan_slider_expose (GtkWidget*      widget,
+                        GdkEventExpose* event)
 {
     PhatFanSlider* slider;
     int x, y;
@@ -911,12 +937,12 @@ static gboolean phat_fan_slider_expose (GtkWidget*      widget,
 
     slider = (PhatFanSlider*) widget;
 
-    cairo_t *cr = gdk_cairo_create(widget->window);
+    cairo_t *cr = gdk_cairo_create (widget->window);
 
     phat_fan_slider_calc_layout (slider, &x, &y, &w, &h);
 
     //debug("expose x %d, y %d \n", x, y);
-     
+
     if (slider->orientation == GTK_ORIENTATION_VERTICAL)
     {
         if (slider->center_val >= 0)
@@ -938,7 +964,7 @@ static gboolean phat_fan_slider_expose (GtkWidget*      widget,
             fw = w;
             fh = slider->val * h;
             fx = x;
-            fy = (slider->inverted)? y: y + h - fh;
+            fy = (slider->inverted) ? y : y + h - fh;
         }
     }
     else
@@ -960,91 +986,91 @@ static gboolean phat_fan_slider_expose (GtkWidget*      widget,
         {
             fw = slider->val * w;
             fh = h;
-            fx = (slider->inverted)? x + w - fw: x;
+            fx = (slider->inverted) ? x + w - fw : x;
             fy = y;
         }
     }
-     
+
     if (!GTK_WIDGET_SENSITIVE (widget))
     {
-	phat_fan_slider_rounded_rectangle (cr, x, y, w, h, 20.0, FALSE);
-	
-	pat = cairo_pattern_create_linear (x, y,  x+w, y+h);
-	cairo_pattern_add_color_stop_rgb (pat, 1, 0.68,0.68,0.64);
-	cairo_pattern_add_color_stop_rgb (pat, 0, 0.9, 0.9, 0.9);
+        phat_fan_slider_rounded_rectangle (cr, x, y, w, h, 20.0, FALSE);
 
-	cairo_set_source (cr, pat);
-	cairo_fill_preserve (cr);
-	cairo_pattern_destroy (pat);
+        pat = cairo_pattern_create_linear (x, y,  x + w, y + h);
+        cairo_pattern_add_color_stop_rgb (pat, 1, 0.68, 0.68, 0.64);
+        cairo_pattern_add_color_stop_rgb (pat, 0, 0.9, 0.9, 0.9);
 
-	pat = cairo_pattern_create_linear (x, y, x+w, y+h);
-	cairo_pattern_add_color_stop_rgb (pat, 1, 0.505,0.458,0.415);
-	cairo_pattern_add_color_stop_rgb (pat, 0, 0.741, 0.713, 0.686);
+        cairo_set_source (cr, pat);
+        cairo_fill_preserve (cr);
+        cairo_pattern_destroy (pat);
 
-	cairo_set_source (cr, pat);
-	cairo_stroke (cr);
-	cairo_pattern_destroy (pat);
+        pat = cairo_pattern_create_linear (x, y, x + w, y + h);
+        cairo_pattern_add_color_stop_rgb (pat, 1, 0.505, 0.458, 0.415);
+        cairo_pattern_add_color_stop_rgb (pat, 0, 0.741, 0.713, 0.686);
 
-	phat_fan_slider_rounded_rectangle (cr, fx, fy, fw, fh, 20.0, TRUE);
+        cairo_set_source (cr, pat);
+        cairo_stroke (cr);
+        cairo_pattern_destroy (pat);
 
-	pat = cairo_pattern_create_linear (fx, fy,  fx+fw, fy+fh);
-	cairo_pattern_add_color_stop_rgb (pat, 1, 0.68,0.68,0.64);
-	cairo_pattern_add_color_stop_rgb (pat, 0, 0.9, 0.9, 0.9);
+        phat_fan_slider_rounded_rectangle (cr, fx, fy, fw, fh, 20.0, TRUE);
 
-	cairo_set_source (cr, pat);
-	cairo_fill_preserve (cr);
-	cairo_pattern_destroy (pat);
+        pat = cairo_pattern_create_linear (fx, fy,  fx + fw, fy + fh);
+        cairo_pattern_add_color_stop_rgb (pat, 1, 0.68, 0.68, 0.64);
+        cairo_pattern_add_color_stop_rgb (pat, 0, 0.9, 0.9, 0.9);
 
-	pat = cairo_pattern_create_linear (fx, fy, fx+fw, fy+fh);
-	cairo_pattern_add_color_stop_rgb (pat, 1, 0.505,0.458,0.415);
-	cairo_pattern_add_color_stop_rgb (pat, 0, 0.741, 0.713, 0.686);
+        cairo_set_source (cr, pat);
+        cairo_fill_preserve (cr);
+        cairo_pattern_destroy (pat);
 
-	cairo_set_source (cr, pat);
-	cairo_stroke (cr);
-	cairo_pattern_destroy (pat);
+        pat = cairo_pattern_create_linear (fx, fy, fx + fw, fy + fh);
+        cairo_pattern_add_color_stop_rgb (pat, 1, 0.505, 0.458, 0.415);
+        cairo_pattern_add_color_stop_rgb (pat, 0, 0.741, 0.713, 0.686);
+
+        cairo_set_source (cr, pat);
+        cairo_stroke (cr);
+        cairo_pattern_destroy (pat);
 
     }
     else
     {
 
-	phat_fan_slider_rounded_rectangle (cr, x, y, w, h, 20.0, FALSE);
-	
-	cairo_set_source_rgb (cr, 0.78,0.78,0.74);
-	cairo_fill_preserve (cr);
+        phat_fan_slider_rounded_rectangle (cr, x, y, w, h, 20.0, FALSE);
 
-	cairo_set_source_rgb (cr, 0.505,0.458,0.415);
-	cairo_stroke (cr);
+        cairo_set_source_rgb (cr, 0.78, 0.78, 0.74);
+        cairo_fill_preserve (cr);
 
-	phat_fan_slider_rounded_rectangle (cr, fx, fy, fw, fh, 20.0, TRUE);
+        cairo_set_source_rgb (cr, 0.505, 0.458, 0.415);
+        cairo_stroke (cr);
 
-	cairo_set_source_rgb (cr, 0.490, 0.647, 0.764);
-	cairo_fill_preserve (cr);
+        phat_fan_slider_rounded_rectangle (cr, fx, fy, fw, fh, 20.0, TRUE);
 
-	cairo_set_source_rgb (cr, 0.505,0.458,0.415);
-	cairo_stroke (cr);
-	
-	/* draw 3d effect by applying a light from top left */
-	
-	phat_fan_slider_rounded_rectangle (cr, x, y, w, h, 20.0, TRUE);
+        cairo_set_source_rgb (cr, 0.490, 0.647, 0.764);
+        cairo_fill_preserve (cr);
 
-	pat = cairo_pattern_create_radial (x, y, (w+h)/6,
-                                   x,  y, (w+h)/2);
-	cairo_pattern_add_color_stop_rgba (pat, 0, 1, 1, 1, 0.4);
-	cairo_pattern_add_color_stop_rgba (pat, 1, 0, 0, 0, 0.1);
-	cairo_set_source (cr, pat);
-	cairo_fill_preserve (cr);
-	cairo_stroke (cr);
-	cairo_pattern_destroy (pat);
+        cairo_set_source_rgb (cr, 0.505, 0.458, 0.415);
+        cairo_stroke (cr);
+
+        /* draw 3d effect by applying a light from top left */
+
+        phat_fan_slider_rounded_rectangle (cr, x, y, w, h, 20.0, TRUE);
+
+        pat = cairo_pattern_create_radial (x, y, (w + h) / 6,
+                                           x,  y, (w + h) / 2);
+        cairo_pattern_add_color_stop_rgba (pat, 0, 1, 1, 1, 0.4);
+        cairo_pattern_add_color_stop_rgba (pat, 1, 0, 0, 0, 0.1);
+        cairo_set_source (cr, pat);
+        cairo_fill_preserve (cr);
+        cairo_stroke (cr);
+        cairo_pattern_destroy (pat);
 
         //widget->style->dark_gc[GTK_STATE_NORMAL],
-	        //widget->style->base_gc[GTK_STATE_SELECTED],
+        //widget->style->base_gc[GTK_STATE_SELECTED],
     }
 
     if (GTK_WIDGET_HAS_FOCUS (widget))
     {
         int focus_width, focus_pad;
         int pad;
-          
+
         gtk_widget_style_get (widget,
                               "focus-line-width", &focus_width,
                               "focus-padding", &focus_pad,
@@ -1054,8 +1080,8 @@ static gboolean phat_fan_slider_expose (GtkWidget*      widget,
 
         x -= pad;
         y -= pad;
-        w += 2*pad;
-        h += 2*pad;
+        w += 2 * pad;
+        h += 2 * pad;
 
         gtk_paint_focus (widget->style, widget->window, GTK_WIDGET_STATE (widget),
                          NULL, widget, NULL,
@@ -1064,12 +1090,13 @@ static gboolean phat_fan_slider_expose (GtkWidget*      widget,
 
     if (GTK_WIDGET_VISIBLE (slider->fan_window))
         gtk_widget_queue_draw (slider->fan_window);
-     
+
     return FALSE;
 }
 
-static gboolean phat_fan_slider_button_press (GtkWidget*      widget,
-                                              GdkEventButton* event)
+static gboolean
+phat_fan_slider_button_press (GtkWidget*      widget,
+                              GdkEventButton* event)
 {
     PhatFanSlider* slider;
     g_return_val_if_fail (widget != NULL, FALSE);
@@ -1078,10 +1105,10 @@ static gboolean phat_fan_slider_button_press (GtkWidget*      widget,
 
     slider = (PhatFanSlider*) widget;
 
-    if(event->button == 1)
+    if (event->button == 1)
     {
         gtk_widget_grab_focus (widget);
-         
+
         if (slider->state == STATE_SCROLL)
         {
             slider->state = STATE_NORMAL;
@@ -1097,24 +1124,25 @@ static gboolean phat_fan_slider_button_press (GtkWidget*      widget,
         slider->yclick = event->y;
         slider->state = STATE_CLICKED;
 
-	//debug("click root is x %d y %d \n", slider->xclick_root, slider->yclick_root);
+        //debug("click root is x %d y %d \n", slider->xclick_root, slider->yclick_root);
 
     }
     else if (event->button == 2 && slider->use_default_value)
     {
         /* reset to default value */
-        phat_fan_slider_set_value(slider, slider->default_value);
+        phat_fan_slider_set_value (slider, slider->default_value);
         return TRUE;
     }
 
     return FALSE;
 }
-    
-static gboolean phat_fan_slider_button_release (GtkWidget*      widget,
-                                                GdkEventButton* event)
+
+static gboolean
+phat_fan_slider_button_release (GtkWidget*      widget,
+                                GdkEventButton* event)
 {
     PhatFanSlider* slider;
-     
+
     g_return_val_if_fail (widget != NULL, FALSE);
     g_return_val_if_fail (PHAT_IS_FAN_SLIDER (widget), FALSE);
     g_return_val_if_fail (event != NULL, FALSE);
@@ -1140,12 +1168,13 @@ static gboolean phat_fan_slider_button_release (GtkWidget*      widget,
         if (GTK_WIDGET_VISIBLE (slider->hint_window1))
             gtk_widget_hide (slider->hint_window1);
     }
-     
+
     return FALSE;
 }
 
-static gboolean phat_fan_slider_key_press (GtkWidget* widget,
-                                           GdkEventKey* event)
+static gboolean
+phat_fan_slider_key_press (GtkWidget* widget,
+                           GdkEventKey* event)
 {
     PhatFanSlider* slider = PHAT_FAN_SLIDER (widget);
     GtkAdjustment* adj = slider->adjustment_prv;
@@ -1157,59 +1186,60 @@ static gboolean phat_fan_slider_key_press (GtkWidget* widget,
     {
         switch (event->keyval)
         {
-        case GDK_Up:
-            inc = adj->step_increment;
-            break;
-        case GDK_Down:
-            inc = -adj->step_increment;
-            break;
-        case GDK_Page_Up:
-            inc = adj->page_increment;
-            break;
-        case GDK_Page_Down:
-            inc = -adj->page_increment;
-            break;
-        default:
-            return FALSE;
+            case GDK_Up:
+                inc = adj->step_increment;
+                break;
+            case GDK_Down:
+                inc = -adj->step_increment;
+                break;
+            case GDK_Page_Up:
+                inc = adj->page_increment;
+                break;
+            case GDK_Page_Down:
+                inc = -adj->page_increment;
+                break;
+            default:
+                return FALSE;
         }
     }
     else
     {
         switch (event->keyval)
         {
-        case GDK_Right:
-            inc = adj->step_increment;
-            break;
-        case GDK_Left:
-            inc = -adj->step_increment;
-            break;
-        case GDK_Page_Up:
-            inc = adj->page_increment;
-            break;
-        case GDK_Page_Down:
-            inc = -adj->page_increment;
-            break;
-        default:
-            return FALSE;
+            case GDK_Right:
+                inc = adj->step_increment;
+                break;
+            case GDK_Left:
+                inc = -adj->step_increment;
+                break;
+            case GDK_Page_Up:
+                inc = adj->page_increment;
+                break;
+            case GDK_Page_Down:
+                inc = -adj->page_increment;
+                break;
+            default:
+                return FALSE;
         }
     }
 
     if (slider->inverted)
         inc = -inc;
-     
+
     gtk_adjustment_set_value (adj, adj->value + inc);
 
     return TRUE;
 }
 
-static gboolean phat_fan_slider_scroll (GtkWidget* widget,
-                                        GdkEventScroll* event)
+static gboolean
+phat_fan_slider_scroll (GtkWidget* widget,
+                        GdkEventScroll* event)
 {
     PhatFanSlider* slider = PHAT_FAN_SLIDER (widget);
 
 
     gtk_widget_grab_focus (widget);
-     
+
     slider->state = STATE_SCROLL;
 
     slider->xclick_root = event->x_root;
@@ -1218,7 +1248,7 @@ static gboolean phat_fan_slider_scroll (GtkWidget* widget,
     slider->yclick = event->y;
 
     gdk_window_set_cursor (slider->event_window, slider->empty_cursor);
-     
+
     if (((event->direction == GDK_SCROLL_UP
           || event->direction == GDK_SCROLL_RIGHT) && !slider->inverted)
 
@@ -1240,11 +1270,12 @@ static gboolean phat_fan_slider_scroll (GtkWidget* widget,
 }
 
 /* ctrl locks precision, shift locks value */
-static gboolean phat_fan_slider_motion_notify (GtkWidget*      widget,
-                                               GdkEventMotion* event)
+static gboolean
+phat_fan_slider_motion_notify (GtkWidget*      widget,
+                               GdkEventMotion* event)
 {
     PhatFanSlider* slider;
- 
+
     g_return_val_if_fail (widget != NULL, FALSE);
     g_return_val_if_fail (PHAT_IS_FAN_SLIDER (widget), FALSE);
     g_return_val_if_fail (event != NULL, FALSE);
@@ -1253,28 +1284,28 @@ static gboolean phat_fan_slider_motion_notify (GtkWidget*      widget,
 
     switch (slider->state)
     {
-    case STATE_SCROLL:
-        if (ABS (event->x - slider->xclick) >= THRESHOLD
-            || ABS (event->y - slider->yclick) >= THRESHOLD)
-        {
-            gdk_window_set_cursor (slider->event_window, slider->arrow_cursor);
-            slider->state = STATE_NORMAL;
-        }
-    case STATE_NORMAL:
-        goto skip;
-        break;
+        case STATE_SCROLL:
+            if (ABS (event->x - slider->xclick) >= THRESHOLD
+                || ABS (event->y - slider->yclick) >= THRESHOLD)
+            {
+                gdk_window_set_cursor (slider->event_window, slider->arrow_cursor);
+                slider->state = STATE_NORMAL;
+            }
+        case STATE_NORMAL:
+            goto skip;
+            break;
     }
-        
+
     if (!(event->state & GDK_CONTROL_MASK))
     {
         phat_fan_slider_update_fan (slider, event->x, event->y);
     }
 
-    
+
     if (!(event->state & GDK_SHIFT_MASK))
         phat_fan_slider_update_value (slider, event->x_root, event->y_root);
 
-    
+
     if (slider->orientation == GTK_ORIENTATION_VERTICAL)
     {
         int destx = event->x_root;
@@ -1337,7 +1368,7 @@ static gboolean phat_fan_slider_motion_notify (GtkWidget*      widget,
 
         gdk_window_get_geometry (slider->event_window,
                                  NULL, NULL, NULL, &height, NULL);
-               
+
         if (GTK_WIDGET_VISIBLE (slider->fan_window))
         {
             if (event->y_root > slider->yclick_root)
@@ -1379,13 +1410,13 @@ static gboolean phat_fan_slider_motion_notify (GtkWidget*      widget,
         {
             desty = slider->yclick_root;
         }
-               
+
         phat_warp_pointer (event->x_root,
                            event->y_root,
                            slider->xclick_root,
                            desty);
     }
-          
+
     gtk_widget_queue_draw (widget);
 
     /* necessary in case update_fan() doesn't get called */
@@ -1395,13 +1426,13 @@ static gboolean phat_fan_slider_motion_notify (GtkWidget*      widget,
 skip:
     /* signal that we want more motion events */
     gdk_window_get_pointer (NULL, NULL, NULL, NULL);
-     
+
     return FALSE;
 }
 
-
-static gboolean phat_fan_slider_enter_notify (GtkWidget* widget,
-                                              GdkEventCrossing* event)
+static gboolean
+phat_fan_slider_enter_notify (GtkWidget* widget,
+                              GdkEventCrossing* event)
 {
     GtkAllocation* a;
     GtkAllocation* b;
@@ -1409,54 +1440,55 @@ static gboolean phat_fan_slider_enter_notify (GtkWidget* widget,
     int height;
 
     PhatFanSlider* slider = PHAT_FAN_SLIDER (widget);
-     
+
     if (slider->state == STATE_NORMAL)
         gdk_window_set_cursor (slider->event_window, slider->arrow_cursor);
-    
+
     //gtk_window_present (GTK_WINDOW (slider->hint_window0));
     //gtk_window_present (GTK_WINDOW (slider->hint_window1));
 
     phat_fan_slider_update_hints (slider);
 
     gdk_window_get_geometry (slider->event_window,
-			     NULL, NULL, &width, &height, NULL);
-	  
+                             NULL, NULL, &width, &height, NULL);
+
     a = &slider->hint_window0->allocation;
     b = &slider->hint_window1->allocation;
 
     if (slider->orientation == GTK_ORIENTATION_VERTICAL)
     {
-	gtk_window_move (GTK_WINDOW (slider->hint_window0),
-			 event->x_root - event->x - a->width,
-			 (event->y_root - event->y)
-			 + (height - a->height) / 2);
+        gtk_window_move (GTK_WINDOW (slider->hint_window0),
+                         event->x_root - event->x - a->width,
+                         (event->y_root - event->y)
+                         + (height - a->height) / 2);
 
-	gtk_window_move (GTK_WINDOW (slider->hint_window1),
-			 event->x_root - event->x + width,
-			 (event->y_root - event->y)
-			 + (height - b->height) / 2);
+        gtk_window_move (GTK_WINDOW (slider->hint_window1),
+                         event->x_root - event->x + width,
+                         (event->y_root - event->y)
+                         + (height - b->height) / 2);
     }
     else
     {
-	gtk_window_move (GTK_WINDOW (slider->hint_window0),
-			 (event->x_root - event->x)
-			 + (width - a->width) / 2,
-			 event->y_root - event->y - a->height);
+        gtk_window_move (GTK_WINDOW (slider->hint_window0),
+                         (event->x_root - event->x)
+                         + (width - a->width) / 2,
+                         event->y_root - event->y - a->height);
 
-	gtk_window_move (GTK_WINDOW (slider->hint_window1),
-			 (event->x_root - event->x)
-			 + (width - b->width) / 2,
-			 event->y_root - event->y + height);
+        gtk_window_move (GTK_WINDOW (slider->hint_window1),
+                         (event->x_root - event->x)
+                         + (width - b->width) / 2,
+                         event->y_root - event->y + height);
     }
 
     return FALSE;
 }
 
-static gboolean phat_fan_slider_leave_notify (GtkWidget* widget,
-                                              GdkEventCrossing* event)
+static gboolean
+phat_fan_slider_leave_notify (GtkWidget* widget,
+                              GdkEventCrossing* event)
 {
     PhatFanSlider* slider = PHAT_FAN_SLIDER (widget);
-     
+
     if (slider->state == STATE_SCROLL)
     {
         gdk_window_set_cursor (slider->event_window, NULL);
@@ -1464,23 +1496,24 @@ static gboolean phat_fan_slider_leave_notify (GtkWidget* widget,
     }
 
     if (GTK_WIDGET_VISIBLE (slider->hint_window0))
-	gtk_widget_hide (slider->hint_window0);
+        gtk_widget_hide (slider->hint_window0);
 
     if (GTK_WIDGET_VISIBLE (slider->hint_window1))
-	gtk_widget_hide (slider->hint_window1);
+        gtk_widget_hide (slider->hint_window1);
 
 
     return FALSE;
 }
 
-static void phat_fan_slider_draw_fan (PhatFanSlider* slider)
+static void
+phat_fan_slider_draw_fan (PhatFanSlider* slider)
 {
     int x, y, w, h, root_x, root_y;
     int length;
     float value;
     int offset;
     int sign;
-     
+
     if (!GTK_WIDGET_DRAWABLE (slider->fan_window))
         return;
 
@@ -1492,7 +1525,7 @@ static void phat_fan_slider_draw_fan (PhatFanSlider* slider)
     y += root_y;
     //gtk_window_get_position (GTK_WINDOW (slider->fan_window),&x, &y);
 
-    cairo_t *cr = gdk_cairo_create(slider->fan_window->window);
+    cairo_t *cr = gdk_cairo_create (slider->fan_window->window);
 
     if (supports_alpha)
         cairo_set_source_rgba (cr, 1.0, 1.0, 1.0, 0.0); /* transparent */
@@ -1513,99 +1546,100 @@ static void phat_fan_slider_draw_fan (PhatFanSlider* slider)
             value = 1.0 - slider->adjustment_prv->value;
         else
             value = slider->adjustment_prv->value;
-            
+
         if (slider->direction)
-	{
+        {
             sign = 1;
-	    offset = w;
-	}
-	else
-	{ 
-	    sign = -1;
-	    offset = 0;
-	}
+            offset = w;
+        }
+        else
+        {
+            sign = -1;
+            offset = 0;
+        }
 
-	//debug("length is %d \n", length);
-	cairo_move_to (cr, x+offset, y);
-	cairo_rel_line_to (cr, sign * slider->cur_fan.width, -((length/2)-(h/2)));
-	cairo_rel_line_to (cr, 0, length);
-	cairo_line_to(cr, x+offset, y+h);
-	cairo_close_path (cr);  
-       
-	cairo_set_source_rgba(cr, 0.2, 0.2, 0.2, 0.3);
+        //debug("length is %d \n", length);
+        cairo_move_to (cr, x + offset, y);
+        cairo_rel_line_to (cr, sign * slider->cur_fan.width, -((length / 2)-(h / 2)));
+        cairo_rel_line_to (cr, 0, length);
+        cairo_line_to (cr, x + offset, y + h);
+        cairo_close_path (cr);
 
-	cairo_fill(cr);
+        cairo_set_source_rgba (cr, 0.2, 0.2, 0.2, 0.3);
 
-	cairo_move_to (cr, x+offset, y+h);
+        cairo_fill (cr);
 
-	cairo_line_to (cr, x + offset + (sign * (slider->cur_fan.width)), y+(length/2)+(h/2));
-	cairo_rel_line_to (cr, 0, -length*value);
-	cairo_line_to (cr, x+offset, y+(h*(1-value)));
-	cairo_close_path (cr);
-	
-	cairo_set_source_rgba(cr, 0.380, 0.556, 0.717, 0.6);
-	cairo_set_line_width (cr, 2.0);
-	cairo_fill(cr);
+        cairo_move_to (cr, x + offset, y + h);
 
-	cairo_destroy(cr);
+        cairo_line_to (cr, x + offset + (sign * (slider->cur_fan.width)), y + (length / 2)+(h / 2));
+        cairo_rel_line_to (cr, 0, -length * value);
+        cairo_line_to (cr, x + offset, y + (h * (1 - value)));
+        cairo_close_path (cr);
+
+        cairo_set_source_rgba (cr, 0.380, 0.556, 0.717, 0.6);
+        cairo_set_line_width (cr, 2.0);
+        cairo_fill (cr);
+
+        cairo_destroy (cr);
 
     }
     else
     {
-	if (slider->inverted)
+        if (slider->inverted)
             value = 1.0 - slider->adjustment_prv->value;
         else
             value = slider->adjustment_prv->value;
-            
+
         if (slider->direction)
-	{
+        {
             sign = 1;
-	    offset = h;
-	}
-	else
-	{ 
-	    sign = -1;
-	    offset = 0;
-	}
+            offset = h;
+        }
+        else
+        {
+            sign = -1;
+            offset = 0;
+        }
 
-	cairo_move_to (cr, x, y+offset);
-	cairo_rel_line_to (cr, -(length/2)+(w/2), sign * slider->cur_fan.height);
-	cairo_rel_line_to (cr, length, 0);
-	cairo_line_to(cr, x+w, y+offset);
-	cairo_close_path (cr);  
-       
-	cairo_set_source_rgba(cr, 0.2, 0.2, 0.2, 0.3);
+        cairo_move_to (cr, x, y + offset);
+        cairo_rel_line_to (cr, -(length / 2)+(w / 2), sign * slider->cur_fan.height);
+        cairo_rel_line_to (cr, length, 0);
+        cairo_line_to (cr, x + w, y + offset);
+        cairo_close_path (cr);
 
-	cairo_fill(cr);
+        cairo_set_source_rgba (cr, 0.2, 0.2, 0.2, 0.3);
 
-	cairo_move_to (cr, x, y+offset);
+        cairo_fill (cr);
 
-	cairo_line_to (cr, x-(length/2)+(w/2), y + offset + (sign * (slider->cur_fan.height)));
-	cairo_rel_line_to (cr, length*value, 0);
-	cairo_line_to (cr, x+(w*value), y+offset);
-	cairo_close_path (cr);
+        cairo_move_to (cr, x, y + offset);
 
-	/* patterns might be a bit over the top... :)
-	pat = cairo_pattern_create_linear (x0, y0, x1,  y1);
-	cairo_pattern_add_color_stop_rgb (pat, 0.0, 0.490, 0.647, 0.764);
-	cairo_pattern_add_color_stop_rgb (pat, 1.0, 0.380, 0.556, 0.717);*/
-	cairo_set_source_rgba(cr, 0.380, 0.556, 0.717, 0.6);
-	cairo_set_line_width (cr, 2.0);
-	cairo_fill(cr);
+        cairo_line_to (cr, x - (length / 2)+(w / 2), y + offset + (sign * (slider->cur_fan.height)));
+        cairo_rel_line_to (cr, length*value, 0);
+        cairo_line_to (cr, x + (w * value), y + offset);
+        cairo_close_path (cr);
 
-	cairo_destroy(cr);
+        /* patterns might be a bit over the top... :)
+        pat = cairo_pattern_create_linear (x0, y0, x1,  y1);
+        cairo_pattern_add_color_stop_rgb (pat, 0.0, 0.490, 0.647, 0.764);
+        cairo_pattern_add_color_stop_rgb (pat, 1.0, 0.380, 0.556, 0.717);*/
+        cairo_set_source_rgba (cr, 0.380, 0.556, 0.717, 0.6);
+        cairo_set_line_width (cr, 2.0);
+        cairo_fill (cr);
+
+        cairo_destroy (cr);
 
     }
 
 }
 
-static void phat_fan_slider_calc_layout (PhatFanSlider* slider,
-                                         int* x, int* y, int* w, int* h)
+static void
+phat_fan_slider_calc_layout (PhatFanSlider* slider,
+                             int* x, int* y, int* w, int* h)
 {
     GtkWidget* widget = GTK_WIDGET (slider);
     int focus_width, focus_pad;
     int pad;
-          
+
     gtk_widget_style_get (widget,
                           "focus-line-width", &focus_width,
                           "focus-padding", &focus_pad,
@@ -1618,25 +1652,26 @@ static void phat_fan_slider_calc_layout (PhatFanSlider* slider,
         *x = widget->allocation.x + (widget->allocation.width - SLIDER_WIDTH) / 2;
         *y = widget->allocation.y + pad;
         *w = SLIDER_WIDTH;
-        *h = widget->allocation.height - 2*pad;
+        *h = widget->allocation.height - 2 * pad;
     }
     else
     {
         *x = widget->allocation.x + pad;
         *y = widget->allocation.y + (widget->allocation.height - SLIDER_WIDTH) / 2;
-        *w = widget->allocation.width - 2*pad;
+        *w = widget->allocation.width - 2 * pad;
         *h = SLIDER_WIDTH;
     }
 }
 
-static void phat_fan_slider_update_value (PhatFanSlider* slider,
-                                          int x_root, int y_root)
+static void
+phat_fan_slider_update_value (PhatFanSlider* slider,
+                              int x_root, int y_root)
 {
     int length;
     double oldval;
     double value;
     double inc;
-     
+
     if (slider->state != STATE_CLICKED)
         return;
 
@@ -1689,7 +1724,7 @@ static void phat_fan_slider_update_value (PhatFanSlider* slider,
                                          (gpointer) slider);
 
         gtk_adjustment_set_value (slider->adjustment_prv, value);
-          
+
         g_signal_emit (G_OBJECT (slider),
                        phat_fan_slider_signals[VALUE_CHANGED_SIGNAL], 0);
 
@@ -1699,8 +1734,9 @@ static void phat_fan_slider_update_value (PhatFanSlider* slider,
     }
 }
 
-static void phat_fan_slider_update_fan (PhatFanSlider* slider,
-                                        int x, int y)
+static void
+phat_fan_slider_update_fan (PhatFanSlider* slider,
+                            int x, int y)
 {
     int width;
     int height;
@@ -1720,10 +1756,10 @@ static void phat_fan_slider_update_fan (PhatFanSlider* slider,
         {
             width = x - w;
             //width = CLAMP (width, 0, slider->fan_max_thickness);
-          
-	    slider->cur_fan.width = width;
-	    slider->cur_fan.height = fan_max_height;
-	    slider->direction = 1;
+
+            slider->cur_fan.width = width;
+            slider->cur_fan.height = fan_max_height;
+            slider->direction = 1;
 
             if (!GTK_WIDGET_VISIBLE (slider->fan_window))
                 gtk_window_present (GTK_WINDOW (slider->fan_window));
@@ -1738,9 +1774,9 @@ static void phat_fan_slider_update_fan (PhatFanSlider* slider,
             width = -x;
             //width = CLAMP (width, 0, slider->fan_max_thickness);
 
-	    slider->cur_fan.width = width;
-	    slider->cur_fan.height = fan_max_height;
-	    slider->direction = 0;
+            slider->cur_fan.width = width;
+            slider->cur_fan.height = fan_max_height;
+            slider->direction = 0;
 
             if (!GTK_WIDGET_VISIBLE (slider->fan_window))
                 gtk_window_present (GTK_WINDOW (slider->fan_window));
@@ -1761,10 +1797,10 @@ static void phat_fan_slider_update_fan (PhatFanSlider* slider,
         {
             height = y - h;
             //height = CLAMP (height, 0, slider->fan_max_thickness);
-          
-    	    slider->cur_fan.width = fan_max_width;
-	    slider->cur_fan.height = height;      
-	    slider->direction = 1;
+
+            slider->cur_fan.width = fan_max_width;
+            slider->cur_fan.height = height;
+            slider->direction = 1;
 
             if (!GTK_WIDGET_VISIBLE (slider->fan_window))
                 gtk_window_present (GTK_WINDOW (slider->fan_window));
@@ -1779,14 +1815,14 @@ static void phat_fan_slider_update_fan (PhatFanSlider* slider,
             height = -y;
             //height = CLAMP (height, 0, slider->fan_max_thickness);
 
-       	    slider->cur_fan.width = fan_max_width;
-	    slider->cur_fan.height = height;
-	    slider->direction = 0;
+            slider->cur_fan.width = fan_max_width;
+            slider->cur_fan.height = height;
+            slider->direction = 0;
 
             if (!GTK_WIDGET_VISIBLE (slider->fan_window))
                 gtk_window_present (GTK_WINDOW (slider->fan_window));
 
-	    if (GTK_WIDGET_VISIBLE (slider->hint_window0))
+            if (GTK_WIDGET_VISIBLE (slider->hint_window0))
                 gtk_widget_hide (slider->hint_window0);
             if (GTK_WIDGET_VISIBLE (slider->hint_window1))
                 gtk_widget_hide (slider->hint_window1);
@@ -1798,40 +1834,43 @@ static void phat_fan_slider_update_fan (PhatFanSlider* slider,
     }
 }
 
-static int phat_fan_slider_get_fan_length (PhatFanSlider* slider)
+static int
+phat_fan_slider_get_fan_length (PhatFanSlider* slider)
 {
     if (slider->orientation == GTK_ORIENTATION_VERTICAL)
     {
         return 2 * (FAN_RISE / FAN_RUN)
-            * slider->cur_fan.width
-            + GTK_WIDGET (slider)->allocation.height;
+                * slider->cur_fan.width
+                + GTK_WIDGET (slider)->allocation.height;
     }
     else
     {
         return 2 * (FAN_RISE / FAN_RUN)
-            * slider->cur_fan.height
-            + GTK_WIDGET (slider)->allocation.width;
+                * slider->cur_fan.height
+                + GTK_WIDGET (slider)->allocation.width;
     }
 }
 
-static gboolean phat_fan_slider_fan_expose (GtkWidget*      widget,
-                                            GdkEventExpose* event,
-                                            PhatFanSlider*  slider)
+static gboolean
+phat_fan_slider_fan_expose (GtkWidget*      widget,
+                            GdkEventExpose* event,
+                            PhatFanSlider*  slider)
 {
     phat_fan_slider_draw_fan (slider);
 
     return TRUE;
 }
 
-static void phat_fan_slider_fan_show (GtkWidget* widget,
-                                      GtkWidget* slider)
-{
+static void
+phat_fan_slider_fan_show (GtkWidget* widget,
+                          GtkWidget* slider) {
     //gdk_window_set_background (widget->window, &slider->style->dark[GTK_STATE_NORMAL]);
 }
 
-static gboolean phat_fan_slider_hint_expose (GtkWidget* widget,
-                                             GdkEventExpose* event,
-                                             GtkWidget* slider)
+static gboolean
+phat_fan_slider_hint_expose (GtkWidget* widget,
+                             GdkEventExpose* event,
+                             GtkWidget* slider)
 {
     /*gdk_draw_rectangle (widget->window,
                         slider->style->fg_gc[GTK_STATE_NORMAL],
@@ -1846,14 +1885,15 @@ static gboolean phat_fan_slider_hint_expose (GtkWidget* widget,
 /* setup 9x9 hint arrows; I had to do a lot of juggling to get things
  * to look right, and I have no clue why I ended up needing to write
  * the code as follows */
-static void phat_fan_slider_update_hints (PhatFanSlider* slider)
+static void
+phat_fan_slider_update_hints (PhatFanSlider* slider)
 {
     int x, y, w, h, root_x, root_y;
     int length;
     float value;
     int offset;
     int sign;
-    
+
     slider->stub_size = 50;
     GtkWidget* widget = GTK_WIDGET (slider);
 
@@ -1863,7 +1903,7 @@ static void phat_fan_slider_update_hints (PhatFanSlider* slider)
     y += root_y;
     //gtk_window_get_position (GTK_WINDOW (slider->fan_window),&x, &y);
 
-    cairo_t *cr = gdk_cairo_create(slider->hint_window0->window);
+    cairo_t *cr = gdk_cairo_create (slider->hint_window0->window);
 
     if (supports_alpha)
         cairo_set_source_rgba (cr, 1.0, 1.0, 1.0, 0.0); /* transparent */
@@ -1879,99 +1919,100 @@ static void phat_fan_slider_update_hints (PhatFanSlider* slider)
 
     if (slider->orientation == GTK_ORIENTATION_VERTICAL)
     {
-	gtk_window_resize (GTK_WINDOW (slider->hint_window0), slider->stub_size, h);
-	gtk_window_resize (GTK_WINDOW (slider->hint_window1), slider->stub_size, h);
+        gtk_window_resize (GTK_WINDOW (slider->hint_window0), slider->stub_size, h);
+        gtk_window_resize (GTK_WINDOW (slider->hint_window1), slider->stub_size, h);
 
         if (slider->inverted)
             value = 1.0 - slider->adjustment_prv->value;
         else
             value = slider->adjustment_prv->value;
-            
+
         if (slider->direction)
-	{
+        {
             sign = 1;
-	    offset = w;
-	}
-	else
-	{ 
-	    sign = -1;
-	    offset = 0;
-	}
+            offset = w;
+        }
+        else
+        {
+            sign = -1;
+            offset = 0;
+        }
 
-	//debug("length is %d \n", length);
-	cairo_move_to (cr, x+offset, y);
-	cairo_rel_line_to (cr, sign * slider->stub_size, -((length/2)-(h/2)));
-	cairo_rel_line_to (cr, 0, length);
-	cairo_line_to(cr, x+offset, y+h);
-	cairo_close_path (cr);  
-       
-	cairo_set_source_rgba(cr, 0.2, 0.2, 0.2, 0.3);
+        //debug("length is %d \n", length);
+        cairo_move_to (cr, x + offset, y);
+        cairo_rel_line_to (cr, sign * slider->stub_size, -((length / 2)-(h / 2)));
+        cairo_rel_line_to (cr, 0, length);
+        cairo_line_to (cr, x + offset, y + h);
+        cairo_close_path (cr);
 
-	cairo_fill(cr);
+        cairo_set_source_rgba (cr, 0.2, 0.2, 0.2, 0.3);
 
-	cairo_move_to (cr, x+offset, y+h);
+        cairo_fill (cr);
 
-	cairo_line_to (cr, x + offset + (sign * (slider->stub_size)), y+(length/2)+(h/2));
-	cairo_rel_line_to (cr, 0, -length*value);
-	cairo_line_to (cr, x+offset, y+(h*(1-value)));
-	cairo_close_path (cr);
-	
-	cairo_set_source_rgba(cr, 1, 1, 0.2, 0.6);
-	cairo_set_line_width (cr, 2.0);
-	cairo_fill(cr);
+        cairo_move_to (cr, x + offset, y + h);
 
-	cairo_destroy(cr);
+        cairo_line_to (cr, x + offset + (sign * (slider->stub_size)), y + (length / 2)+(h / 2));
+        cairo_rel_line_to (cr, 0, -length * value);
+        cairo_line_to (cr, x + offset, y + (h * (1 - value)));
+        cairo_close_path (cr);
+
+        cairo_set_source_rgba (cr, 1, 1, 0.2, 0.6);
+        cairo_set_line_width (cr, 2.0);
+        cairo_fill (cr);
+
+        cairo_destroy (cr);
 
     }
     else
     {
-	gtk_window_resize (GTK_WINDOW (slider->hint_window0), 9, 9);
-	gtk_window_resize (GTK_WINDOW (slider->hint_window1), 9, 9);
+        gtk_window_resize (GTK_WINDOW (slider->hint_window0), 9, 9);
+        gtk_window_resize (GTK_WINDOW (slider->hint_window1), 9, 9);
 
-	if (slider->inverted)
+        if (slider->inverted)
             value = 1.0 - slider->adjustment_prv->value;
         else
             value = slider->adjustment_prv->value;
-            
+
         if (slider->direction)
-	{
+        {
             sign = 1;
-	    offset = h;
-	}
-	else
-	{ 
-	    sign = -1;
-	    offset = 0;
-	}
+            offset = h;
+        }
+        else
+        {
+            sign = -1;
+            offset = 0;
+        }
 
-	cairo_move_to (cr, x, y+offset);
-	cairo_rel_line_to (cr, -(length/2)+(w/2), sign * slider->stub_size);
-	cairo_rel_line_to (cr, length, 0);
-	cairo_line_to(cr, x+w, y+offset);
-	cairo_close_path (cr);  
-       
-	cairo_set_source_rgba(cr, 0.2, 0.2, 0.2, 0.3);
+        cairo_move_to (cr, x, y + offset);
+        cairo_rel_line_to (cr, -(length / 2)+(w / 2), sign * slider->stub_size);
+        cairo_rel_line_to (cr, length, 0);
+        cairo_line_to (cr, x + w, y + offset);
+        cairo_close_path (cr);
 
-	cairo_fill(cr);
+        cairo_set_source_rgba (cr, 0.2, 0.2, 0.2, 0.3);
 
-	cairo_move_to (cr, x, y+offset);
+        cairo_fill (cr);
 
-	cairo_line_to (cr, x-(length/2)+(w/2), y + offset + (sign * (slider->stub_size)));
-	cairo_rel_line_to (cr, length*value, 0);
-	cairo_line_to (cr, x+(w*value), y+offset);
-	cairo_close_path (cr);
-	
-	cairo_set_source_rgba(cr, 1, 1, 0.2, 0.6);
-	cairo_set_line_width (cr, 2.0);
-	cairo_fill(cr);
+        cairo_move_to (cr, x, y + offset);
 
-	cairo_destroy(cr);
+        cairo_line_to (cr, x - (length / 2)+(w / 2), y + offset + (sign * (slider->stub_size)));
+        cairo_rel_line_to (cr, length*value, 0);
+        cairo_line_to (cr, x + (w * value), y + offset);
+        cairo_close_path (cr);
+
+        cairo_set_source_rgba (cr, 1, 1, 0.2, 0.6);
+        cairo_set_line_width (cr, 2.0);
+        cairo_fill (cr);
+
+        cairo_destroy (cr);
 
     }
 }
 
-static void phat_fan_slider_adjustment_changed (GtkAdjustment* adjustment,
-                                                PhatFanSlider* slider)
+static void
+phat_fan_slider_adjustment_changed (GtkAdjustment* adjustment,
+                                    PhatFanSlider* slider)
 {
     GtkWidget* widget;
 
@@ -1991,7 +2032,7 @@ static void phat_fan_slider_adjustment_changed (GtkAdjustment* adjustment,
 
     slider->val = ((adjustment->value - adjustment->lower)
                    / (adjustment->upper - adjustment->lower));
-     
+
     gtk_widget_queue_draw (GTK_WIDGET (slider));
 
     if (GTK_WIDGET_REALIZED (widget))
@@ -2001,8 +2042,9 @@ static void phat_fan_slider_adjustment_changed (GtkAdjustment* adjustment,
                    phat_fan_slider_signals[CHANGED_SIGNAL], 0);
 }
 
-static void phat_fan_slider_adjustment_value_changed (GtkAdjustment* adjustment,
-                                                      PhatFanSlider* slider)
+static void
+phat_fan_slider_adjustment_value_changed (GtkAdjustment* adjustment,
+                                          PhatFanSlider* slider)
 {
     GtkWidget* widget;
 
@@ -2023,6 +2065,6 @@ static void phat_fan_slider_adjustment_value_changed (GtkAdjustment* adjustment,
 
     if (slider->adjustment != NULL)
     {
-        phat_fan_slider_get_value(slider); /* update value of external adjustment */
+        phat_fan_slider_get_value (slider); /* update value of external adjustment */
     }
 }

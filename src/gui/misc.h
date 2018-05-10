@@ -25,14 +25,14 @@
 
 #include <gtk/gtk.h>
 
-GtkWidget * gui_misc_add_menu_item (GtkWidget *menu, char *type, char *label, GCallback callback, 
-                                    gpointer data, GClosureNotify destroy_data);
-void        gui_misc_dropdown_prepend (GtkWidget *combo_box, char *text);
-void        gui_misc_dropdown_append (GtkWidget *combo_box, char *text);
-char *      gui_misc_dropdown_get_text (GtkWidget *combo_box, int index);
-char *      gui_misc_dropdown_get_active_text (GtkWidget *combo_box);
-void        gui_misc_dropdown_set_active_text (GtkWidget *combo_box, char *text);
-void        gui_misc_dropdown_clear (GtkWidget *combo_box);
-void        gui_misc_normalize_dialog_spacing (GtkWidget *widget);
+GtkWidget * gui_misc_add_menu_item(GtkWidget *menu, char *type, char *label, GCallback callback,
+        gpointer data, GClosureNotify destroy_data);
+void gui_misc_dropdown_prepend(GtkWidget *combo_box, char *text);
+void gui_misc_dropdown_append(GtkWidget *combo_box, char *text);
+char * gui_misc_dropdown_get_text(GtkWidget *combo_box, int index);
+char * gui_misc_dropdown_get_active_text(GtkWidget *combo_box);
+void gui_misc_dropdown_set_active_text(GtkWidget *combo_box, char *text);
+void gui_misc_dropdown_clear(GtkWidget *combo_box);
+void gui_misc_normalize_dialog_spacing(GtkWidget *widget);
 
 #endif

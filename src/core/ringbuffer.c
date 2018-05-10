@@ -24,48 +24,48 @@
 #include "ringbuffer.h"
 #include "pa_ringbuffer.h"
 
-struct ringbuffer_t 
+struct ringbuffer_t
 {
-  PaUtilRingBuffer  pa_rb;
-  void *            data;
-};
+    PaUtilRingBuffer  pa_rb;
+    void *            data;
+} ;
 
 ringbuffer_t *
 ringbuffer_create (int size)
 {
-  ringbuffer_t *rb = malloc (sizeof (ringbuffer_t));
-  rb->data = malloc (size);
-  PaUtil_InitializeRingBuffer (&rb->pa_rb, size, rb->data);
-  return rb;
+    ringbuffer_t *rb = malloc (sizeof (ringbuffer_t));
+    rb->data = malloc (size);
+    PaUtil_InitializeRingBuffer (&rb->pa_rb, size, rb->data);
+    return rb;
 }
 
-void          
+void
 ringbuffer_free (ringbuffer_t *rb)
 {
-  free (rb->data);
-  free (rb);
+    free (rb->data);
+    free (rb);
 }
 
-int           
+int
 ringbuffer_read_space (ringbuffer_t *rb)
 {
-  return PaUtil_GetRingBufferReadAvailable (&rb->pa_rb);
+    return PaUtil_GetRingBufferReadAvailable (&rb->pa_rb);
 }
 
-int           
+int
 ringbuffer_write_space (ringbuffer_t *rb)
 {
-  return PaUtil_GetRingBufferWriteAvailable (&rb->pa_rb);
+    return PaUtil_GetRingBufferWriteAvailable (&rb->pa_rb);
 }
 
-int           
-ringbuffer_read(ringbuffer_t *rb, char *dest, int cnt)
+int
+ringbuffer_read (ringbuffer_t *rb, char *dest, int cnt)
 {
-  return PaUtil_ReadRingBuffer (&rb->pa_rb, (void *) dest, cnt);
+    return PaUtil_ReadRingBuffer (&rb->pa_rb, (void *) dest, cnt);
 }
 
-int           
-ringbuffer_write(ringbuffer_t *rb, const char *src, size_t cnt)
+int
+ringbuffer_write (ringbuffer_t *rb, const char *src, size_t cnt)
 {
-  return PaUtil_WriteRingBuffer (&rb->pa_rb, (void *) src, cnt);
+    return PaUtil_WriteRingBuffer (&rb->pa_rb, (void *) src, cnt);
 }

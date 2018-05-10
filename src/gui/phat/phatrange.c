@@ -24,25 +24,25 @@
  * files for a list of changes.  These files are distributed with
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
- 
- 
- 
- /* porting notes. delete these when the port to phat is completed
-  *
-  * i've implemented the intl macros as simple pass thoughs. (P_ and I_)
-  * this is because we don't use intl at the moment. although we probably
-  * should now that property information is visible in glade. if we add
-  * intl at a later date, we only need to delete the macro definitions
-  * below and it should work
-  *
-  * i replaced GTK_PARAM_READWRITE and GTK_PARAM_READABLE with G_*
-  * but they aren't equivilent. the G*_STATIC_* varients included in
-  * the GTK_* definitions in gtkprivate.h require gobject >= 2.8 so
-  * we'd need to check for that to use them. which is probably what i'll do
-  *
-  * we need to sort out the credits above too. pete.
-  */
-  
+
+
+
+/* porting notes. delete these when the port to phat is completed
+ *
+ * i've implemented the intl macros as simple pass thoughs. (P_ and I_)
+ * this is because we don't use intl at the moment. although we probably
+ * should now that property information is visible in glade. if we add
+ * intl at a later date, we only need to delete the macro definitions
+ * below and it should work
+ *
+ * i replaced GTK_PARAM_READWRITE and GTK_PARAM_READABLE with G_*
+ * but they aren't equivilent. the G*_STATIC_* varients included in
+ * the GTK_* definitions in gtkprivate.h require gobject >= 2.8 so
+ * we'd need to check for that to use them. which is probably what i'll do
+ *
+ * we need to sort out the credits above too. pete.
+ */
+
 #include <config.h>
 #include <stdio.h>
 #include <math.h>
@@ -56,51 +56,53 @@
 #define P_(string) (string) /* override intl macros for now */
 #define I_(string) (string) /* don't want to remove them only to add them again */
 
-enum {
-  PROP_0,
-  PROP_ADJUSTMENT,
-  PROP_VALUE_MAPPER,
-};
+enum
+{
+    PROP_0,
+    PROP_ADJUSTMENT,
+    PROP_VALUE_MAPPER,
+} ;
 
-enum {
-  VALUE_CHANGED,
-  LAST_SIGNAL
-};
+enum
+{
+    VALUE_CHANGED,
+    LAST_SIGNAL
+} ;
 
 
 
 static void phat_range_set_property   (GObject          *object,
-                                      guint             prop_id,
-                                      const GValue     *value,
-                                      GParamSpec       *pspec);
+                                       guint             prop_id,
+                                       const GValue     *value,
+                                       GParamSpec       *pspec);
 static void phat_range_get_property   (GObject          *object,
-                                      guint             prop_id,
-                                      GValue           *value,
-                                      GParamSpec       *pspec);
+                                       guint             prop_id,
+                                       GValue           *value,
+                                       GParamSpec       *pspec);
 static void phat_range_destroy        (GtkObject        *object);
 static void phat_range_realize        (GtkWidget        *widget);
 static void phat_range_unrealize      (GtkWidget        *widget);
 static void phat_range_map            (GtkWidget        *widget);
 static void phat_range_unmap          (GtkWidget        *widget);
 static void phat_range_size_allocate  (GtkWidget        *widget,
-                                        GtkAllocation *allocation);
+                                       GtkAllocation *allocation);
 
 
 /* Internals */
 
 static void          phat_range_adjustment_changed (GtkAdjustment *adjustment,
-			                                              gpointer       data);                
+                                                    gpointer       data);
 static void          phat_range_adjustment_value_changed (GtkAdjustment *adjustment,
-				                                          gpointer       data);
+                                                          gpointer       data);
 
 static void
-phat_range_update_internal_value(PhatRange *range_ptr);
+phat_range_update_internal_value (PhatRange *range_ptr);
 
 static void
-phat_range_update_internals(PhatRange *range_ptr);
+phat_range_update_internals (PhatRange *range_ptr);
 
 static void
-phat_range_queue_redraw(PhatRange *range_ptr);
+phat_range_queue_redraw (PhatRange *range_ptr);
 
 static guint signals[LAST_SIGNAL];
 
@@ -122,45 +124,43 @@ phat_range_class_init (PhatRangeClass *class)
 
     object_class->destroy = phat_range_destroy;
     widget_class->realize = phat_range_realize;
-    widget_class->unrealize = phat_range_unrealize;  
+    widget_class->unrealize = phat_range_unrealize;
     widget_class->map = phat_range_map;
     widget_class->unmap = phat_range_unmap;
     widget_class->size_allocate = phat_range_size_allocate;
-    
+
     signals[VALUE_CHANGED] =
-        g_signal_new (I_("value_changed"),
-                  G_TYPE_FROM_CLASS (gobject_class),
-                  G_SIGNAL_RUN_LAST,
-                  G_STRUCT_OFFSET (PhatRangeClass, value_changed),
-                  NULL, NULL,
-                  g_cclosure_marshal_VOID__VOID,
-                  G_TYPE_NONE, 0);
-  
-    g_object_class_install_property (gobject_class,
-                                   PROP_ADJUSTMENT,
-                                   g_param_spec_object ("adjustment",
-							P_("Adjustment"),
-							P_("The GtkAdjustment that contains the current value of this range object"),
-                                                        GTK_TYPE_ADJUSTMENT,
-                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+            g_signal_new (I_ ("value_changed"),
+                          G_TYPE_FROM_CLASS (gobject_class),
+                          G_SIGNAL_RUN_LAST,
+                          G_STRUCT_OFFSET (PhatRangeClass, value_changed),
+                          NULL, NULL,
+                          g_cclosure_marshal_VOID__VOID,
+                          G_TYPE_NONE, 0);
 
-                                                         
     g_object_class_install_property (gobject_class,
-                                   PROP_VALUE_MAPPER,
-                                   g_param_spec_object ("value-mapper",
-							P_("Value Mapper"),
-							P_("The object that converts between relative knob position and desired value"),
-                                                        G_TYPE_OBJECT,
-                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+                                     PROP_ADJUSTMENT,
+                                     g_param_spec_object ("adjustment",
+                                                          P_ ("Adjustment"),
+                                                          P_ ("The GtkAdjustment that contains the current value of this range object"),
+                                                          GTK_TYPE_ADJUSTMENT,
+                                                          G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+
+
+    g_object_class_install_property (gobject_class,
+                                     PROP_VALUE_MAPPER,
+                                     g_param_spec_object ("value-mapper",
+                                                          P_ ("Value Mapper"),
+                                                          P_ ("The object that converts between relative knob position and desired value"),
+                                                          G_TYPE_OBJECT,
+                                                          G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 }
-                                                         
-
 
 static void
 phat_range_set_property (GObject      *object,
-			guint         prop_id,
-			const GValue *value,
-			GParamSpec   *pspec)
+                         guint         prop_id,
+                         const GValue *value,
+                         GParamSpec   *pspec)
 {
     PhatRange *range;
 
@@ -180,13 +180,11 @@ phat_range_set_property (GObject      *object,
     }
 }
 
-
-
 static void
 phat_range_get_property (GObject      *object,
-			guint         prop_id,
-			GValue       *value,
-			GParamSpec   *pspec)
+                         guint         prop_id,
+                         GValue       *value,
+                         GParamSpec   *pspec)
 {
     PhatRange *range;
 
@@ -206,8 +204,6 @@ phat_range_get_property (GObject      *object,
     }
 }
 
-
-
 static void
 phat_range_init (PhatRange *range)
 {
@@ -220,8 +216,6 @@ phat_range_init (PhatRange *range)
     range->internal_step = 0.0;
     range->internal_bigstep = 0.0;
 }
-
-
 
 /**
  * phat_range_get_adjustment:
@@ -245,8 +239,6 @@ phat_range_get_adjustment (PhatRange *range)
     return range->adjustment;
 }
 
-
-
 /**
  * phat_range_set_adjustment:
  * @range: a #PhatRange
@@ -263,10 +255,10 @@ phat_range_get_adjustment (PhatRange *range)
  **/
 void
 phat_range_set_adjustment (PhatRange      *range,
-			  GtkAdjustment *adjustment)
+                           GtkAdjustment *adjustment)
 {
     g_return_if_fail (PHAT_IS_RANGE (range));
-  
+
     if (!adjustment)
         adjustment = (GtkAdjustment*) gtk_adjustment_new (0.0, 0.0, 10.0, 1.0, 1.0, 1.0);
     else
@@ -275,34 +267,32 @@ phat_range_set_adjustment (PhatRange      *range,
     if (range->adjustment != adjustment)
     {
         if (range->adjustment)
-	{
-	    g_signal_handlers_disconnect_by_func (range->adjustment,
-						phat_range_adjustment_changed,
-						range);
-	    g_signal_handlers_disconnect_by_func (range->adjustment,
-						phat_range_adjustment_value_changed,
-						range);
-	    g_object_unref (range->adjustment);
-	}
+        {
+            g_signal_handlers_disconnect_by_func (range->adjustment,
+                                                  phat_range_adjustment_changed,
+                                                  range);
+            g_signal_handlers_disconnect_by_func (range->adjustment,
+                                                  phat_range_adjustment_value_changed,
+                                                  range);
+            g_object_unref (range->adjustment);
+        }
 
         range->adjustment = adjustment;
-        phat_range_update_internals(range);
+        phat_range_update_internals (range);
 
         g_object_ref_sink (adjustment);
-      
+
         g_signal_connect (adjustment, "changed",
-			    G_CALLBACK (phat_range_adjustment_changed),
-			    range);
+                          G_CALLBACK (phat_range_adjustment_changed),
+                          range);
         g_signal_connect (adjustment, "value_changed",
-			    G_CALLBACK (phat_range_adjustment_value_changed),
-			    range);
-      
+                          G_CALLBACK (phat_range_adjustment_value_changed),
+                          range);
+
         phat_range_adjustment_changed (adjustment, range);
         g_object_notify (G_OBJECT (range), "adjustment");
     }
 }
-
-
 
 /**
  * phat_range_set_increments:
@@ -318,8 +308,8 @@ phat_range_set_adjustment (PhatRange      *range,
  **/
 void
 phat_range_set_increments (PhatRange *range,
-                          gdouble   step,
-                          gdouble   page)
+                           gdouble   step,
+                           gdouble   page)
 {
     g_return_if_fail (PHAT_IS_RANGE (range));
 
@@ -328,8 +318,6 @@ phat_range_set_increments (PhatRange *range,
 
     gtk_adjustment_changed (range->adjustment);
 }
-
-
 
 /**
  * phat_range_set_range:
@@ -343,26 +331,24 @@ phat_range_set_increments (PhatRange *range,
  **/
 void
 phat_range_set_range (PhatRange *range,
-                     gdouble   min,
-                     gdouble   max)
+                      gdouble   min,
+                      gdouble   max)
 {
     gdouble value;
-  
+
     g_return_if_fail (PHAT_IS_RANGE (range));
     g_return_if_fail (min < max);
-  
+
     range->adjustment->lower = min;
     range->adjustment->upper = max;
 
     value = CLAMP (range->adjustment->value,
-                 range->adjustment->lower,
-                 (range->adjustment->upper - range->adjustment->page_size));
+                   range->adjustment->lower,
+                   (range->adjustment->upper - range->adjustment->page_size));
 
     gtk_adjustment_set_value (range->adjustment, value);
     gtk_adjustment_changed (range->adjustment);
 }
-
-
 
 /**
  * phat_range_set_value:
@@ -377,17 +363,15 @@ phat_range_set_range (PhatRange *range,
  **/
 void
 phat_range_set_value (PhatRange *range,
-                     gdouble   value)
+                      gdouble   value)
 {
     g_return_if_fail (PHAT_IS_RANGE (range));
-  
+
     value = CLAMP (value, range->adjustment->lower,
-                 (range->adjustment->upper));
+                   (range->adjustment->upper));
 
     gtk_adjustment_set_value (range->adjustment, value);
 }
-
-
 
 /**
  * phat_range_get_value:
@@ -406,87 +390,85 @@ phat_range_get_value (PhatRange *range)
 }
 
 gdouble
-phat_range_get_internal_value(PhatRange *range_ptr)
+phat_range_get_internal_value (PhatRange *range_ptr)
 {
     return range_ptr->internal_value;
 }
 
 void
-phat_range_set_internal_value(PhatRange *range_ptr, gdouble value)
+phat_range_set_internal_value (PhatRange *range_ptr, gdouble value)
 {
-    value = CLAMP(value, 0.0, 1.0);
+    value = CLAMP (value, 0.0, 1.0);
 
     if (range_ptr->internal_value == value)
     {
         return;
     }
-/*
-    range_ptr->internal_value = value;
+    /*
+        range_ptr->internal_value = value;
 
-    range_ptr->adjustment->value = range_ptr->adjustment->lower + range_ptr->internal_value * (range_ptr->adjustment->upper - range_ptr->adjustment->lower);
-    */
+        range_ptr->adjustment->value = range_ptr->adjustment->lower + range_ptr->internal_value * (range_ptr->adjustment->upper - range_ptr->adjustment->lower);
+     */
     /*
     printf("value: %f, step: %f, div+round: %f, lower: %f, upper: %f\n", value, range_ptr->adjustment->step_increment, 
                             util_round (
                                       (range_ptr->adjustment->lower + value * (range_ptr->adjustment->upper - range_ptr->adjustment->lower) 
                                           / range_ptr->adjustment->step_increment), )
     );
-    */
+     */
     range_ptr->adjustment->value = util_round (
-                                      (range_ptr->adjustment->lower + value * (range_ptr->adjustment->upper - range_ptr->adjustment->lower)) 
-                                          / range_ptr->adjustment->step_increment)
-                                   * range_ptr->adjustment->step_increment;
+                                               (range_ptr->adjustment->lower + value * (range_ptr->adjustment->upper - range_ptr->adjustment->lower))
+                                               / range_ptr->adjustment->step_increment)
+            * range_ptr->adjustment->step_increment;
 
-    phat_range_update_internal_value(range_ptr);
+    phat_range_update_internal_value (range_ptr);
 
-    phat_range_queue_redraw(range_ptr);
+    phat_range_queue_redraw (range_ptr);
 }
 
 static void
 phat_range_destroy (GtkObject *object)
 {
-  PhatRange *range = PHAT_RANGE (object);
-  
-  if (range->adjustment)
+    PhatRange *range = PHAT_RANGE (object);
+
+    if (range->adjustment)
     {
-      g_signal_handlers_disconnect_by_func (range->adjustment,
-					    phat_range_adjustment_changed,
-					    range);
-      g_signal_handlers_disconnect_by_func (range->adjustment,
-					    phat_range_adjustment_value_changed,
-					    range);
-      g_object_unref (range->adjustment);
-      range->adjustment = NULL;
+        g_signal_handlers_disconnect_by_func (range->adjustment,
+                                              phat_range_adjustment_changed,
+                                              range);
+        g_signal_handlers_disconnect_by_func (range->adjustment,
+                                              phat_range_adjustment_value_changed,
+                                              range);
+        g_object_unref (range->adjustment);
+        range->adjustment = NULL;
     }
-    
-  if (range->value_mapper)
-  {
-      /* WARNING remember to flesh this out by disconnecting
-         any signals when the mapper is implemented */
-      g_object_unref (range->value_mapper);
-      range->value_mapper = NULL;
-  }
 
-  (* GTK_OBJECT_CLASS (phat_range_parent_class)->destroy) (object);
+    if (range->value_mapper)
+    {
+        /* WARNING remember to flesh this out by disconnecting
+           any signals when the mapper is implemented */
+        g_object_unref (range->value_mapper);
+        range->value_mapper = NULL;
+    }
+
+    (* GTK_OBJECT_CLASS (phat_range_parent_class)->destroy) (object);
 }
-
-
 
 static void
 phat_range_realize (GtkWidget *widget)
 {
     PhatRange *range;
     GdkWindowAttr attributes;
-    gint attributes_mask;  
+    gint attributes_mask;
 
     range = PHAT_RANGE (widget);
-  
+
     GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
 
     widget->window = gtk_widget_get_parent_window (widget);
     /* make use of parent window optional ? */
     g_object_ref (widget->window);
-  
+
     attributes.window_type = GDK_WINDOW_CHILD;
     attributes.x = widget->allocation.x;
     attributes.y = widget->allocation.y;
@@ -495,49 +477,43 @@ phat_range_realize (GtkWidget *widget)
     attributes.wclass = GDK_INPUT_ONLY;
     attributes.event_mask = gtk_widget_get_events (widget);
     attributes.event_mask |= (GDK_BUTTON_PRESS_MASK |
-			    GDK_BUTTON_RELEASE_MASK |
-			    GDK_ENTER_NOTIFY_MASK |
-			    GDK_LEAVE_NOTIFY_MASK |
-                GDK_POINTER_MOTION_MASK |
-                GDK_POINTER_MOTION_HINT_MASK);
+                              GDK_BUTTON_RELEASE_MASK |
+                              GDK_ENTER_NOTIFY_MASK |
+                              GDK_LEAVE_NOTIFY_MASK |
+                              GDK_POINTER_MOTION_MASK |
+                              GDK_POINTER_MOTION_HINT_MASK);
 
     attributes_mask = GDK_WA_X | GDK_WA_Y;
 
     range->event_window = gdk_window_new (gtk_widget_get_parent_window (widget),
-					&attributes, attributes_mask);
+                                          &attributes, attributes_mask);
     gdk_window_set_user_data (range->event_window, range);
 
     widget->style = gtk_style_attach (widget->style, widget->window);
 }
 
-
-
 static void
 phat_range_unrealize (GtkWidget *widget)
 {
     PhatRange *range = PHAT_RANGE (widget);
-  
+
     gdk_window_set_user_data (range->event_window, NULL);
     gdk_window_destroy (range->event_window);
     range->event_window = NULL;
-  
+
     if (GTK_WIDGET_CLASS (phat_range_parent_class)->unrealize)
         (* GTK_WIDGET_CLASS (phat_range_parent_class)->unrealize) (widget);
 }
-
-
 
 static void
 phat_range_map (GtkWidget *widget)
 {
     PhatRange *range = PHAT_RANGE (widget);
-  
+
     gdk_window_show (range->event_window);
 
     GTK_WIDGET_CLASS (phat_range_parent_class)->map (widget);
 }
-
-
 
 static void
 phat_range_unmap (GtkWidget *widget)
@@ -549,113 +525,111 @@ phat_range_unmap (GtkWidget *widget)
     GTK_WIDGET_CLASS (phat_range_parent_class)->unmap (widget);
 }
 
-
-
 static void
 phat_range_adjustment_value_changed (GtkAdjustment *adjustment,
-				    gpointer       data)
+                                     gpointer       data)
 {
     PhatRange *range = PHAT_RANGE (data);
 
-    phat_range_update_internal_value(range);
+    phat_range_update_internal_value (range);
 
-    phat_range_queue_redraw(range);
+    phat_range_queue_redraw (range);
 }
 
 static void
-phat_range_queue_redraw(PhatRange *range_ptr)
+phat_range_queue_redraw (PhatRange *range_ptr)
 {
-    gtk_widget_queue_draw(GTK_WIDGET(range_ptr));
+    gtk_widget_queue_draw (GTK_WIDGET (range_ptr));
 
     /* This is so we don't lag the widget being scrolled. */
-    if (GTK_WIDGET_REALIZED(range_ptr))
-        gdk_window_process_updates(GTK_WIDGET(range_ptr)->window, FALSE);
+    if (GTK_WIDGET_REALIZED (range_ptr))
+        gdk_window_process_updates (GTK_WIDGET (range_ptr)->window, FALSE);
 
-    g_signal_emit(range_ptr, signals[VALUE_CHANGED], 0);
+    g_signal_emit (range_ptr, signals[VALUE_CHANGED], 0);
 }
 
 static void
 phat_range_adjustment_changed (GtkAdjustment *adjustment,
-			      gpointer       data)
+                               gpointer       data)
 {
     PhatRange *range = PHAT_RANGE (data);
 
-    phat_range_update_internals(range);
- 
+    phat_range_update_internals (range);
+
     gtk_widget_queue_draw (GTK_WIDGET (range));
 }
 
 static void
 phat_range_size_allocate (GtkWidget     *widget,
-                         GtkAllocation *allocation)
+                          GtkAllocation *allocation)
 {
-  PhatRange *range;
+    PhatRange *range;
 
-  range = PHAT_RANGE (widget);
+    range = PHAT_RANGE (widget);
 
-  widget->allocation = *allocation;
+    widget->allocation = *allocation;
 
-  if (GTK_WIDGET_REALIZED (range))
-    gdk_window_move_resize (range->event_window,
-			    widget->allocation.x,
-			    widget->allocation.y,
-			    widget->allocation.width,
-			    widget->allocation.height);
+    if (GTK_WIDGET_REALIZED (range))
+        gdk_window_move_resize (range->event_window,
+                                widget->allocation.x,
+                                widget->allocation.y,
+                                widget->allocation.width,
+                                widget->allocation.height);
 }
 
 /* Updates internal value from adjustment */
 static
 void
-phat_range_update_internal_value(PhatRange *range_ptr)
+phat_range_update_internal_value (PhatRange *range_ptr)
 {
-    range_ptr->internal_value = (range_ptr->adjustment->value - range_ptr->adjustment->lower)/(range_ptr->adjustment->upper - range_ptr->adjustment->lower);
+    range_ptr->internal_value = (range_ptr->adjustment->value - range_ptr->adjustment->lower) / (range_ptr->adjustment->upper - range_ptr->adjustment->lower);
 }
 
 /* Update internals from adjustment */
 static
 void
-phat_range_update_internals(PhatRange *range_ptr)
+phat_range_update_internals (PhatRange *range_ptr)
 {
-    range_ptr->internal_page = range_ptr->adjustment->page_increment/(range_ptr->adjustment->upper - range_ptr->adjustment->lower);
-    range_ptr->internal_step = range_ptr->adjustment->step_increment/(range_ptr->adjustment->upper - range_ptr->adjustment->lower);
+    range_ptr->internal_page = range_ptr->adjustment->page_increment / (range_ptr->adjustment->upper - range_ptr->adjustment->lower);
+    range_ptr->internal_step = range_ptr->adjustment->step_increment / (range_ptr->adjustment->upper - range_ptr->adjustment->lower);
     range_ptr->internal_bigstep = range_ptr->internal_step * 3; /* from phatknob, should be configurable in future */
-    phat_range_update_internal_value(range_ptr);
+    phat_range_update_internal_value (range_ptr);
 }
 
 void
-phat_range_page_up(PhatRange *range_ptr)
+phat_range_page_up (PhatRange *range_ptr)
 {
-    phat_range_set_internal_value(range_ptr, range_ptr->internal_value + range_ptr->internal_page);
+    phat_range_set_internal_value (range_ptr, range_ptr->internal_value + range_ptr->internal_page);
 }
 
 void
-phat_range_page_down(PhatRange *range_ptr)
+phat_range_page_down (PhatRange *range_ptr)
 {
-    phat_range_set_internal_value(range_ptr, range_ptr->internal_value - range_ptr->internal_page);
+    phat_range_set_internal_value (range_ptr, range_ptr->internal_value - range_ptr->internal_page);
 }
 
 void
-phat_range_step_up(PhatRange *range_ptr)
+phat_range_step_up (PhatRange *range_ptr)
 {
-    phat_range_set_internal_value(range_ptr, range_ptr->internal_value + range_ptr->internal_step);
+    phat_range_set_internal_value (range_ptr, range_ptr->internal_value + range_ptr->internal_step);
 }
 
 void
-phat_range_step_down(PhatRange *range_ptr)
+phat_range_step_down (PhatRange *range_ptr)
 {
-    phat_range_set_internal_value(range_ptr, range_ptr->internal_value - range_ptr->internal_step);
+    phat_range_set_internal_value (range_ptr, range_ptr->internal_value - range_ptr->internal_step);
 }
 
 void
-phat_range_step_left(PhatRange *range_ptr)
+phat_range_step_left (PhatRange *range_ptr)
 {
-    phat_range_set_internal_value(range_ptr, range_ptr->internal_value + range_ptr->internal_bigstep);
+    phat_range_set_internal_value (range_ptr, range_ptr->internal_value + range_ptr->internal_bigstep);
 }
 
 void
-phat_range_step_right(PhatRange *range_ptr)
+phat_range_step_right (PhatRange *range_ptr)
 {
-    phat_range_set_internal_value(range_ptr, range_ptr->internal_value - range_ptr->internal_bigstep);
+    phat_range_set_internal_value (range_ptr, range_ptr->internal_value - range_ptr->internal_bigstep);
 }
 
 #define __PHAT_RANGE_C__

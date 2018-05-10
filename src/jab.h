@@ -32,9 +32,9 @@
 
 typedef struct jab_t jab_t;
 
-jab_t *       jab_open (char *path, int mode, progress_callback_t progress_callback, void *progress_data, int *error);
-void          jab_add_sequence (jab_t *jab, sequence_t *sequence);
-sequence_t *  jab_retrieve_sequence (jab_t *jab, stream_t *stream, char *sequence_name, int *error);
-int           jab_close (jab_t *jab);
+jab_t * jab_open(char *path, int mode, progress_callback_t progress_callback, void *progress_data, int *error);
+void jab_add_sequence(jab_t *jab, sequence_t *sequence);
+sequence_t * jab_retrieve_sequence(jab_t *jab, stream_t *stream, char *sequence_name, int *error);
+int jab_close(jab_t *jab);
 
 #endif

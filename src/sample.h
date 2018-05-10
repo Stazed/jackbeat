@@ -29,30 +29,29 @@
 
 #include "types.h"
 
-typedef struct sample_t
-{
-    float *     data;
-    int         channels_num;
-    sf_count_t  frames;
-    int         framerate;
-    int         orig_format;
-    char        name[256];
-    char        filename[1024];
-    FILE *      cache;
-    off_t       last_file_size;
-    time_t      last_file_ctime;
-    float       peak;
-    int         ref_num;
+typedef struct sample_t {
+    float * data;
+    int channels_num;
+    sf_count_t frames;
+    int framerate;
+    int orig_format;
+    char name[256];
+    char filename[1024];
+    FILE * cache;
+    off_t last_file_size;
+    time_t last_file_ctime;
+    float peak;
+    int ref_num;
 } sample_t;
 
-sample_t *  sample_new (char *filename, progress_callback_t progress_callback, 
-                        void *progress_data);
-int         sample_write (sample_t *sample, char *path, progress_callback_t progress_callback, 
-                          void *progress_data);
-char *      sample_storage_basename (sample_t *sample);
-int         sample_compare (sample_t * sample, char *filename);
-void        sample_ref (sample_t *sample);
-void        sample_unref (sample_t *sample);
-char **     sample_list_known_extensions();
+sample_t * sample_new(char *filename, progress_callback_t progress_callback,
+        void *progress_data);
+int sample_write(sample_t *sample, char *path, progress_callback_t progress_callback,
+        void *progress_data);
+char * sample_storage_basename(sample_t *sample);
+int sample_compare(sample_t * sample, char *filename);
+void sample_ref(sample_t *sample);
+void sample_unref(sample_t *sample);
+char ** sample_list_known_extensions();
 
 #endif

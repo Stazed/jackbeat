@@ -27,10 +27,10 @@ typedef struct gui_prefs_t gui_prefs_t;
 
 #include "gui/common.h"
 
-void  gui_prefs_init (gui_t *gui);
-void  gui_prefs_cleanup (gui_t *gui);
-void  gui_prefs_run (gui_t *gui, guint action, GtkWidget *widget);
-int   gui_prefs_is_running (gui_t *gui);
-void  gui_prefs_update_audio_status (gui_t *gui);
+void gui_prefs_init(gui_t *gui);
+void gui_prefs_cleanup(gui_t *gui);
+void gui_prefs_run(gui_t *gui, guint action, GtkWidget *widget);
+int gui_prefs_is_running(gui_t *gui);
+void gui_prefs_update_audio_status(gui_t *gui);
 
 #endif

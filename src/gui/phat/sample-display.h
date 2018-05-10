@@ -29,8 +29,8 @@
 #define SAMPLE_DISPLAY_CLASS(klass)  GTK_CHECK_CLASS_CAST (klass, sample_display_get_type (), SampleDisplayClass)
 #define IS_SAMPLE_DISPLAY(obj)       GTK_CHECK_TYPE (obj, sample_display_get_type ())
 
-typedef struct _SampleDisplay       SampleDisplay;
-typedef struct _SampleDisplayClass  SampleDisplayClass;
+typedef struct _SampleDisplay SampleDisplay;
+typedef struct _SampleDisplayClass SampleDisplayClass;
 
 enum {
     SAMPLE_DISPLAYCOL_BG,
@@ -42,15 +42,14 @@ enum {
 };
 
 typedef enum {
-    SAMPLE_DISPLAY_DATA_INT8,   // Interlaced signed int8
-    SAMPLE_DISPLAY_DATA_INT16,  // Interlaced signed int16
-    SAMPLE_DISPLAY_DATA_FLOAT   // Interlaced float 
+    SAMPLE_DISPLAY_DATA_INT8, // Interlaced signed int8
+    SAMPLE_DISPLAY_DATA_INT16, // Interlaced signed int16
+    SAMPLE_DISPLAY_DATA_FLOAT // Interlaced float 
 } SampleDisplayDataType;
 
-struct _SampleDisplay
-{
+struct _SampleDisplay {
     GtkWidget widget;
-    int edit;                                     /* enable loop / selection editing */
+    int edit; /* enable loop / selection editing */
 
     int width, height;
     GdkGC *bg_gc, *fg_gc, *loop_gc, *mixerpos_gc;
@@ -60,12 +59,12 @@ struct _SampleDisplay
     int channels;
     int datalen;
     int datatype;
-    gboolean datacopy;                            /* do we have our own copy */
+    gboolean datacopy; /* do we have our own copy */
     int datacopylen;
 
     int win_start, win_length;
 
-    int mixerpos, old_mixerpos;                   /* current playing offset of the sample */
+    int mixerpos, old_mixerpos; /* current playing offset of the sample */
 
     gboolean display_zero_line;
     GdkGC *zeroline_gc;
@@ -73,19 +72,18 @@ struct _SampleDisplay
     gboolean display_marker_handles;
 
     /* selection handling */
-    int sel_start, sel_end;                       /* offsets into the sample data or -1 */
+    int sel_start, sel_end; /* offsets into the sample data or -1 */
     int old_ss, old_se;
-    int button;                                   /* button index which started the selection */
+    int button; /* button index which started the selection */
     int selecting;
-    int selecting_x0;                             /* the coordinate where the mouse was clicked */
+    int selecting_x0; /* the coordinate where the mouse was clicked */
     int selecting_wins0;
 
     /* loop points */
-    int loop_start, loop_end;                     /* offsets into the sample data or -1 */
+    int loop_start, loop_end; /* offsets into the sample data or -1 */
 };
 
-struct _SampleDisplayClass
-{
+struct _SampleDisplayClass {
     GtkWidgetClass parent_class;
 
     GdkColor colors[SAMPLE_DISPLAYCOL_LAST];
@@ -95,22 +93,22 @@ struct _SampleDisplayClass
     void (*window_changed)(SampleDisplay *s, int start, int end);
 };
 
-guint          sample_display_get_type            (void);
-GtkWidget*     sample_display_new                 (gboolean edit);
+guint sample_display_get_type(void);
+GtkWidget* sample_display_new(gboolean edit);
 
 #ifndef G_DISABLE_DEPRECATED
-void           sample_display_set_data_16         (SampleDisplay *s, gint16 *data, int len, gboolean copy);
-void           sample_display_set_data_8          (SampleDisplay *s, gint8 *data, int len, gboolean copy);
+void sample_display_set_data_16(SampleDisplay *s, gint16 *data, int len, gboolean copy);
+void sample_display_set_data_8(SampleDisplay *s, gint8 *data, int len, gboolean copy);
 #endif
-void           sample_display_set_data            (SampleDisplay *s, void *data, 
-                                                   SampleDisplayDataType type, int channels_num, 
-                                                   int len, gboolean copy);
-void           sample_display_set_loop            (SampleDisplay *s, int start, int end);
-void           sample_display_set_selection       (SampleDisplay *s, int start, int end);
-void           sample_display_set_mixer_position  (SampleDisplay *s, int offset);
-void           sample_display_enable_zero_line    (SampleDisplay *s, gboolean enable);
-void           sample_display_enable_marker_handles (SampleDisplay *s, gboolean enable);
+void sample_display_set_data(SampleDisplay *s, void *data,
+        SampleDisplayDataType type, int channels_num,
+        int len, gboolean copy);
+void sample_display_set_loop(SampleDisplay *s, int start, int end);
+void sample_display_set_selection(SampleDisplay *s, int start, int end);
+void sample_display_set_mixer_position(SampleDisplay *s, int offset);
+void sample_display_enable_zero_line(SampleDisplay *s, gboolean enable);
+void sample_display_enable_marker_handles(SampleDisplay *s, gboolean enable);
 
-void           sample_display_set_window          (SampleDisplay *s, int start, int end);
+void sample_display_set_window(SampleDisplay *s, int start, int end);
 
 #endif /* _SAMPLE_DISPLAY_H */

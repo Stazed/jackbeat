@@ -26,10 +26,10 @@
 typedef struct ringbuffer_t ringbuffer_t;
 
 ringbuffer_t *ringbuffer_create(int size);
-void          ringbuffer_free(ringbuffer_t *rb);
-int           ringbuffer_read_space(ringbuffer_t *rb);
-int           ringbuffer_write_space(ringbuffer_t *rb);
-int           ringbuffer_read(ringbuffer_t *rb, char *dest, int cnt);
-int           ringbuffer_write(ringbuffer_t *rb, const char *src, size_t cnt);
+void ringbuffer_free(ringbuffer_t *rb);
+int ringbuffer_read_space(ringbuffer_t *rb);
+int ringbuffer_write_space(ringbuffer_t *rb);
+int ringbuffer_read(ringbuffer_t *rb, char *dest, int cnt);
+int ringbuffer_write(ringbuffer_t *rb, const char *src, size_t cnt);
 
 #endif

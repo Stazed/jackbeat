@@ -64,33 +64,37 @@
 /* get REG_EIP from ucontext.h */
 #include <ucontext.h>
 
-void print_backtrace(void **trace, int size) {
-    printf("CAUGHT SIGSEGV >> DUMPING BACKTRACE\n");
+void
+print_backtrace (void **trace, int size)
+{
+    printf ("CAUGHT SIGSEGV >> DUMPING BACKTRACE\n");
 
-    backtrace_symbols_fd(trace + 1, size - 1, STDOUT_FILENO);
+    backtrace_symbols_fd (trace + 1, size - 1, STDOUT_FILENO);
 
-    printf("#####################################################################\n");
-    printf("#                             KRASH !!!                             #\n");
-    printf("#                                                                   #\n");
-    printf("#  Please help fixing this issue by describing what you were doing  #\n");
-    printf("#    and attaching the above console output in a new ticket at:     #\n");
-    printf("#              http://jackbeat.samalyse.org/newticket               #\n");
-    printf("#                                                                   #\n");
-    printf("#####################################################################\n\n");
+    printf ("#####################################################################\n");
+    printf ("#                             KRASH !!!                             #\n");
+    printf ("#                                                                   #\n");
+    printf ("#  Please help fixing this issue by describing what you were doing  #\n");
+    printf ("#    and attaching the above console output in a new ticket at:     #\n");
+    printf ("#              http://jackbeat.samalyse.org/newticket               #\n");
+    printf ("#                                                                   #\n");
+    printf ("#####################################################################\n\n");
 
-    exit(0);
+    exit (0);
 }
 
-void handle_sigsegv_siginfo(int sig, siginfo_t *info, void *secret) {
+void
+handle_sigsegv_siginfo (int sig, siginfo_t *info, void *secret)
+{
     void *trace[200];
     int trace_size = 0;
-    ucontext_t *uc = (ucontext_t *)secret;
+    ucontext_t *uc = (ucontext_t *) secret;
 
-    trace_size = backtrace(trace, 200);
+    trace_size = backtrace (trace, 200);
 
 #ifndef __APPLE__
 
-/* overwrite sigaction with caller's address */
+    /* overwrite sigaction with caller's address */
 #ifdef __FreeBSD__
 
 #if defined(__i386__)
@@ -110,48 +114,54 @@ void handle_sigsegv_siginfo(int sig, siginfo_t *info, void *secret) {
 #endif /* __FreeBSD__ */
 #endif /* ! __APPLE__ */
 
-    print_backtrace(trace, trace_size);
+    print_backtrace (trace, trace_size);
 }
 
-void handle_sigsegv(int sig) {
+void
+handle_sigsegv (int sig)
+{
     void *trace[200];
     int trace_size = 0;
 
-    trace_size = backtrace(trace, 200);
-    print_backtrace(trace, trace_size);
+    trace_size = backtrace (trace, 200);
+    print_backtrace (trace, trace_size);
 }
 
 #endif /* HAVE_UCONTEXT_H */
 #endif /* HAVE_EXECINFO_H */
 
 #ifdef HAVE_GTK_QUARTZ
+
 static pascal OSErr
 osx_desktop_open_handler (const AppleEvent *event, AppleEvent *reply, long refCon)
 {
     AEDescList docs;
-    DEBUG("Received Mac OS Open event");
-    if (AEGetParamDesc(event, keyDirectObject, typeAEList,
-                       &docs) == noErr) {
+    DEBUG ("Received Mac OS Open event");
+    if (AEGetParamDesc (event, keyDirectObject, typeAEList,
+                        &docs) == noErr)
+    {
         long n = 0;
         int i;
-        AECountItems(&docs, &n);
-        DEBUG("About to open %ld file(s)", n);
+        AECountItems (&docs, &n);
+        DEBUG ("About to open %ld file(s)", n);
         UInt8 strBuffer[256];
-        for (i = 0; i < n; i++) {
+        for (i = 0; i < n; i++)
+        {
             FSRef ref;
-            if (AEGetNthPtr(&docs, i + 1, typeFSRef, 0, 0,
-                            &ref, sizeof(ref), 0)
-                    != noErr)
+            if (AEGetNthPtr (&docs, i + 1, typeFSRef, 0, 0,
+                             &ref, sizeof (ref), 0)
+                != noErr)
                 continue;
-            if (FSRefMakePath(&ref, strBuffer, 256)
-                    == noErr) {
-                DEBUG("Sending desktop open event for: %s\n", (char *) strBuffer);
-                event_fire(NULL, "desktop-open-action", strdup((char *) strBuffer),
-                           free);
+            if (FSRefMakePath (&ref, strBuffer, 256)
+                == noErr)
+            {
+                DEBUG ("Sending desktop open event for: %s\n", (char *) strBuffer);
+                event_fire (NULL, "desktop-open-action", strdup ((char *) strBuffer),
+                            free);
             }
         }
-     }
-     return noErr;
+    }
+    return noErr;
 }
 #endif
 
@@ -170,70 +180,72 @@ main (int argc, char *argv[])
     sa.sa_flags = SA_RESTART;
 #endif /* SA_SIGINFO  */
 
-    sigemptyset(&sa.sa_mask);
-    sigaction(SIGSEGV, &sa, NULL);
+    sigemptyset (&sa.sa_mask);
+    sigaction (SIGSEGV, &sa, NULL);
 #endif /* HAVE_UCONTEXT_H */
 #endif /* HAVE_EXECINFO_H */
 
 #ifdef __WIN32__
-  if (AttachConsole(ATTACH_PARENT_PROCESS)) {
-      freopen("CONOUT$", "w", stdout);
-  }
+    if (AttachConsole (ATTACH_PARENT_PROCESS))
+    {
+        freopen ("CONOUT$", "w", stdout);
+    }
 #endif
 
-  util_init_paths();
+    util_init_paths ();
 
-  DEBUG("Initializing event manager");
-  event_init ();
-  event_enable_queue(NULL);
-  event_register (NULL, "desktop-open-action");
+    DEBUG ("Initializing event manager");
+    event_init ();
+    event_enable_queue (NULL);
+    event_register (NULL, "desktop-open-action");
 
 #ifdef HAVE_GTK_QUARTZ
-  OSStatus err = AEInstallEventHandler(kCoreEventClass, kAEOpenDocuments,
-                                       NewAEEventHandlerUPP(osx_desktop_open_handler), 
-                                       0, false);
-  if (err) {
-      printf("Can't install Mac OS Open event handler\n");
-  }
+    OSStatus err = AEInstallEventHandler (kCoreEventClass, kAEOpenDocuments,
+                                          NewAEEventHandlerUPP (osx_desktop_open_handler),
+                                          0, false);
+    if (err)
+    {
+        printf ("Can't install Mac OS Open event handler\n");
+    }
 #endif
 
-  DEBUG ("Loading RC settings");
-  rc_t rc;  
-  rc_read (&rc);
+    DEBUG ("Loading RC settings");
+    rc_t rc;
+    rc_read (&rc);
 
-  DEBUG ("Parsing arguments");
-  arg_t *arg = arg_parse (argc, argv);
- 
-  DEBUG ("Creating threads pool");
-  pool_t *pool = pool_new (4);
+    DEBUG ("Parsing arguments");
+    arg_t *arg = arg_parse (argc, argv);
 
-  DEBUG ("Creating song");
-  song_t *song = song_new (pool);
+    DEBUG ("Creating threads pool");
+    pool_t *pool = pool_new (4);
 
-  DEBUG ("Bringing OSC up");
-  osc_t *osc = osc_new (song);
+    DEBUG ("Creating song");
+    song_t *song = song_new (pool);
 
-  DEBUG ("Creating audio stream");
-  char *client_name = arg->client_name ? arg->client_name : rc.client_name;
-  stream_t *stream = stream_new ();
-  stream_auto_connect (stream, rc.auto_connect);
-  if (!arg->null_stream)
-    stream_device_open (stream, rc.audio_output, rc.audio_sample_rate, client_name, rc.jack_auto_start);
+    DEBUG ("Bringing OSC up");
+    osc_t *osc = osc_new (song);
 
-  DEBUG ("Creating GUI");
-  gui_new (&rc, arg, song, osc, stream);
+    DEBUG ("Creating audio stream");
+    char *client_name = arg->client_name ? arg->client_name : rc.client_name;
+    stream_t *stream = stream_new ();
+    stream_auto_connect (stream, rc.auto_connect);
+    if (!arg->null_stream)
+        stream_device_open (stream, rc.audio_output, rc.audio_sample_rate, client_name, rc.jack_auto_start);
 
-  stream_destroy (stream);
+    DEBUG ("Creating GUI");
+    gui_new (&rc, arg, song, osc, stream);
 
-  osc_destroy (osc);
+    stream_destroy (stream);
 
-  song_destroy (song);
+    osc_destroy (osc);
 
-  pool_destroy (pool);
+    song_destroy (song);
 
-  event_cleanup ();
+    pool_destroy (pool);
 
-  arg_cleanup (arg);
-  
-  return 0;
+    event_cleanup ();
+
+    arg_cleanup (arg);
+
+    return 0;
 }

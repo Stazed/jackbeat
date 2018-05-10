@@ -27,12 +27,12 @@
 
 typedef struct toggle_t toggle_t;
 
-toggle_t *  toggle_new (GtkWidget *layout, const char *text);
-int         toggle_get_width (toggle_t *toggle);
-void        toggle_allocate (toggle_t *toggle, GtkAllocation * alloc);
-void        toggle_get_allocation (toggle_t *toggle, GtkAllocation * alloc);
-int         toggle_get_active (toggle_t *toggle);
-void        toggle_set_active (toggle_t *toggle, int active);
-void        toggle_set_hsv_shift(toggle_t *toggle, dk_hsv_t *shift);
+toggle_t * toggle_new(GtkWidget *layout, const char *text);
+int toggle_get_width(toggle_t *toggle);
+void toggle_allocate(toggle_t *toggle, GtkAllocation * alloc);
+void toggle_get_allocation(toggle_t *toggle, GtkAllocation * alloc);
+int toggle_get_active(toggle_t *toggle);
+void toggle_set_active(toggle_t *toggle, int active);
+void toggle_set_hsv_shift(toggle_t *toggle, dk_hsv_t *shift);
 
 #endif

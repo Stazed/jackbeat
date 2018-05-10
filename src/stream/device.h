@@ -30,10 +30,10 @@
 #define STREAM_DEVICE_JACK "JACK"
 #define STREAM_DEVICE_PULSE "PulseAudio"
 
-int stream_device_open (stream_t *stream, char *device_name, int sample_rate, 
-                        const char *client_name, int auto_start_server);
-char ** stream_device_list ();
-char * stream_device_get_default ();
-char * stream_device_get_name (stream_t *stream);
+int stream_device_open(stream_t *stream, char *device_name, int sample_rate,
+        const char *client_name, int auto_start_server);
+char ** stream_device_list();
+char * stream_device_get_default();
+char * stream_device_get_name(stream_t *stream);
 
 #endif

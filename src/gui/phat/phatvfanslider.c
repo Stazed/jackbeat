@@ -9,24 +9,24 @@ static void phat_vfan_slider_class_init (PhatVFanSliderClass* klass);
 static void phat_vfan_slider_init (PhatVFanSlider* slider);
 static void phat_vfan_slider_destroy (GtkObject* object);
 
-GType phat_vfan_slider_get_type ( )
+GType
+phat_vfan_slider_get_type ( )
 {
     static GType type = 0;
 
     if (!type)
     {
-        static const GTypeInfo info =
-            {
-                sizeof (PhatVFanSliderClass),
-                NULL,
-                NULL,
-                (GClassInitFunc) phat_vfan_slider_class_init,
-                NULL,
-                NULL,
-                sizeof (PhatVFanSlider),
-                0,
-                (GInstanceInitFunc) phat_vfan_slider_init,
-            };
+        static const GTypeInfo info ={
+            sizeof (PhatVFanSliderClass),
+            NULL,
+            NULL,
+            (GClassInitFunc) phat_vfan_slider_class_init,
+            NULL,
+            NULL,
+            sizeof (PhatVFanSlider),
+            0,
+            (GInstanceInitFunc) phat_vfan_slider_init,
+        };
 
         type = g_type_register_static (PHAT_TYPE_FAN_SLIDER,
                                        "PhatVFanSlider",
@@ -46,7 +46,8 @@ GType phat_vfan_slider_get_type ( )
  * Returns: a newly created #PhatVFanSlider
  * 
  */
-GtkWidget* phat_vfan_slider_new (GtkAdjustment* adjustment)
+GtkWidget*
+phat_vfan_slider_new (GtkAdjustment* adjustment)
 {
     PhatVFanSlider* slider;
 
@@ -77,17 +78,19 @@ GtkWidget* phat_vfan_slider_new (GtkAdjustment* adjustment)
  * Returns: a newly created #PhatVFanSlider
  *
  */
-GtkWidget* phat_vfan_slider_new_with_range (double value, double lower,
-                                            double upper, double step)
+GtkWidget*
+phat_vfan_slider_new_with_range (double value, double lower,
+                                 double upper, double step)
 {
     GtkAdjustment* adj;
 
     adj = (GtkAdjustment*) gtk_adjustment_new (value, lower, upper, step, step, 0);
-     
+
     return phat_vfan_slider_new (adj);
 }
 
-static void phat_vfan_slider_class_init (PhatVFanSliderClass* klass)
+static void
+phat_vfan_slider_class_init (PhatVFanSliderClass* klass)
 {
     GtkObjectClass* object_class = (GtkObjectClass*) klass;
 
@@ -96,15 +99,17 @@ static void phat_vfan_slider_class_init (PhatVFanSliderClass* klass)
     object_class->destroy = phat_vfan_slider_destroy;
 }
 
-static void phat_vfan_slider_init (PhatVFanSlider* slider)
+static void
+phat_vfan_slider_init (PhatVFanSlider* slider)
 {
     return;
 }
 
-static void phat_vfan_slider_destroy (GtkObject* object)
+static void
+phat_vfan_slider_destroy (GtkObject* object)
 {
     GtkObjectClass* klass;
-     
+
     g_return_if_fail (object != NULL);
     g_return_if_fail (PHAT_IS_VFAN_SLIDER (object));
 

@@ -27,9 +27,9 @@
 
 typedef struct gui_builder_t gui_builder_t;
 
-gui_builder_t * gui_builder_new (char *filename, void * userdata, ...);
-void            gui_builder_destroy (gui_builder_t *);
-GtkWidget *     gui_builder_get_widget (gui_builder_t *, char *name);
-void            gui_builder_get_widgets (gui_builder_t *, ...);
+gui_builder_t * gui_builder_new(char *filename, void * userdata, ...);
+void gui_builder_destroy(gui_builder_t *);
+GtkWidget * gui_builder_get_widget(gui_builder_t *, char *name);
+void gui_builder_get_widgets(gui_builder_t *, ...);
 
 #endif

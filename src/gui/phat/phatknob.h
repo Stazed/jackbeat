@@ -34,8 +34,8 @@ G_BEGIN_DECLS
 #define PHAT_TYPE_KNOB          (phat_knob_get_type ( ))
 
 
-typedef struct _PhatKnob        PhatKnob;
-typedef struct _PhatKnobClass   PhatKnobClass;
+typedef struct _PhatKnob PhatKnob;
+typedef struct _PhatKnobClass PhatKnobClass;
 
 struct _PhatKnob {
     GtkRange range;
@@ -56,27 +56,26 @@ struct _PhatKnob {
     GdkGC *red_gc;
 };
 
-struct _PhatKnobClass
-{
+struct _PhatKnobClass {
     GtkRangeClass parent_class;
 };
 
-GType phat_knob_get_type ( );
+GType phat_knob_get_type();
 
-GtkWidget* phat_knob_new (GtkAdjustment* adjustment);
+GtkWidget* phat_knob_new(GtkAdjustment* adjustment);
 
-GtkWidget* phat_knob_new_with_range (double value,
-                                     double lower,
-                                     double upper,
-                                     double step);
+GtkWidget* phat_knob_new_with_range(double value,
+        double lower,
+        double upper,
+        double step);
 GtkAdjustment *phat_knob_get_adjustment(PhatKnob *knob);
-double phat_knob_get_value (PhatKnob* knob);
-void phat_knob_set_value (PhatKnob* knob, double value);
-void phat_knob_set_range (PhatKnob* knob, double lower, double upper);
-void phat_knob_set_update_policy(PhatKnob *knob, GtkUpdateType  policy);
+double phat_knob_get_value(PhatKnob* knob);
+void phat_knob_set_value(PhatKnob* knob, double value);
+void phat_knob_set_range(PhatKnob* knob, double lower, double upper);
+void phat_knob_set_update_policy(PhatKnob *knob, GtkUpdateType policy);
 void phat_knob_set_adjustment(PhatKnob *knob, GtkAdjustment *adjustment);
-void phat_knob_set_log (PhatKnob* knob, gboolean is_log);
-gboolean phat_knob_is_log (PhatKnob* knob);
+void phat_knob_set_log(PhatKnob* knob, gboolean is_log);
+gboolean phat_knob_is_log(PhatKnob* knob);
 
 G_END_DECLS
 

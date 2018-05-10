@@ -26,10 +26,10 @@
 typedef struct pool_t pool_t;
 typedef int (* pool_process_callback_t) (void *data);
 
-pool_t *  pool_new (int nthreads);
-void      pool_destroy (pool_t *pool);
+pool_t * pool_new(int nthreads);
+void pool_destroy(pool_t *pool);
 #define pool_add_process(pool, callback, data) _pool_add_process (pool, callback, data, __func__)
-void      _pool_add_process (pool_t *pool, pool_process_callback_t callback, void *data, const char *caller);
-void      pool_remove_process (pool_t *pool, pool_process_callback_t callback, void *data);
+void _pool_add_process(pool_t *pool, pool_process_callback_t callback, void *data, const char *caller);
+void pool_remove_process(pool_t *pool, pool_process_callback_t callback, void *data);
 
 #endif

@@ -25,32 +25,31 @@
 
 #include <stdarg.h>
 
-typedef struct event_t
-{
-  void *            self;
-  void *            source;
-  char              name[32];
-  void *            data;
+typedef struct event_t {
+    void * self;
+    void * source;
+    char name[32];
+    void * data;
 } event_t;
 
 typedef void(* event_callback_t) (event_t *event);
 
-void      event_init ();
-void      event_cleanup ();
+void event_init();
+void event_cleanup();
 #define   event_register(source, name) _event_register (__func__, source, name) 
-void      _event_register (const char *caller, void *source, char *name);
+void _event_register(const char *caller, void *source, char *name);
 #define   event_fire(source, name, data, free_data) _event_fire (__func__, source, name, data, free_data)
-void      _event_fire (const char *caller, void *source, char *name, void *data, void (* free_data) (void *));
+void _event_fire(const char *caller, void *source, char *name, void *data, void (* free_data) (void *));
 #define   event_subscribe(source, name, self, callback) _event_subscribe (__func__, source, name, self, callback)
-void      _event_subscribe (const char *caller, void *source, char *name, void *self, event_callback_t callback);
+void _event_subscribe(const char *caller, void *source, char *name, void *self, event_callback_t callback);
 #define   event_remove_source(source) _event_remove_source (__func__, source)
-void      _event_remove_source (const char *caller, void *source);
-void      event_enable_queue (void *self);
-void      event_disable_queue (void *self);
-void      event_process_queue (void *self);
-void      event_unsubscribe_all (void *self);
-void      event_scope_add (void *self, void *source);
-int       event_has_subscribers (void *source, char *name);
+void _event_remove_source(const char *caller, void *source);
+void event_enable_queue(void *self);
+void event_disable_queue(void *self);
+void event_process_queue(void *self);
+void event_unsubscribe_all(void *self);
+void event_scope_add(void *self, void *source);
+int event_has_subscribers(void *source, char *name);
 
 
 

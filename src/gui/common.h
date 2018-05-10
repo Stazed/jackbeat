@@ -75,74 +75,73 @@
 #endif
 
 /* GUI object type */
-struct gui_t
-{
-  /* nested objects */
-  song_t *              song;
-  sequence_t *          sequence;
-  rc_t *                rc;
-  arg_t *               arg;
-  osc_t                 *osc;
-  stream_t              *stream;
-  /* flags & info */
-  char                  filename[256];
-  int                   sequence_is_modified;
-  int                   refreshing;
-  int                   filename_is_set;
-  int                   transpose_volumes_round;
-  int                   instance_index;
-  int                   last_export_framerate;
-  int                   last_export_sustain_type;
-  char                  last_export_wdir[512];
-  int                   window_sized;
-  int                   window_grown_by;
-  int                   is_initial;
-  /* widgets */
-  gui_builder_t *       builder;
-  GtkWidget *           window;
-  GtkWidget *           main_vbox;
-  gui_sequence_editor_t * sequence_editor;
-  GtkWidget *           tracks_num;
-  GtkWidget *           beats_num;
-  GtkWidget *           measure_len;
-  GtkWidget *           bpm;
-  GtkWidget *           loop;
-  GtkWidget *           rewind;
-  GtkWidget *           progress_window;
-  GtkWidget *           progress_bar;
-  GtkTooltips *         tooltips;
-  GtkWidget *           menubar;
-  GtkWidget *           menubar_quit_item;
-  gui_prefs_t *         prefs;
-  //grid_t *              grid;
-  GtkWidget *           sample_display;
-  /* callback helpers */
-  gint                  timeout_tag;
+struct gui_t {
+    /* nested objects */
+    song_t * song;
+    sequence_t * sequence;
+    rc_t * rc;
+    arg_t * arg;
+    osc_t *osc;
+    stream_t *stream;
+    /* flags & info */
+    char filename[256];
+    int sequence_is_modified;
+    int refreshing;
+    int filename_is_set;
+    int transpose_volumes_round;
+    int instance_index;
+    int last_export_framerate;
+    int last_export_sustain_type;
+    char last_export_wdir[512];
+    int window_sized;
+    int window_grown_by;
+    int is_initial;
+    /* widgets */
+    gui_builder_t * builder;
+    GtkWidget * window;
+    GtkWidget * main_vbox;
+    gui_sequence_editor_t * sequence_editor;
+    GtkWidget * tracks_num;
+    GtkWidget * beats_num;
+    GtkWidget * measure_len;
+    GtkWidget * bpm;
+    GtkWidget * loop;
+    GtkWidget * rewind;
+    GtkWidget * progress_window;
+    GtkWidget * progress_bar;
+    GtkTooltips * tooltips;
+    GtkWidget * menubar;
+    GtkWidget * menubar_quit_item;
+    gui_prefs_t * prefs;
+    //grid_t *              grid;
+    GtkWidget * sample_display;
+    /* callback helpers */
+    gint timeout_tag;
 };
 
-void      gui_new_child (rc_t *rc, arg_t *arg, gui_t *parent, song_t *song, 
-                         sequence_t *sequence, char *filename, osc_t *osc,
-                         stream_t *stream);
+void gui_new_child(rc_t *rc, arg_t *arg, gui_t *parent, song_t *song,
+        sequence_t *sequence, char *filename, osc_t *osc,
+        stream_t *stream);
 #define gui_set_modified(G,S) _gui_set_modified(G, S,__func__)
 
-void      _gui_set_modified (gui_t * gui, int status, const char *func);
-gboolean  gui_no_delete (GtkWidget *widget, GdkEvent  *event, gpointer data);
-void      gui_show_progress (gui_t *gui, char *title, char *text);
-void      gui_hide_progress (gui_t * gui);
-void      gui_refresh (gui_t * gui);
-void      gui_progress_callback (char * status, double fraction, void * data);
-void      gui_display_error (gui_t * gui, char *text);
-void      gui_display_error_from_window (gui_t * gui, char *text, GtkWidget *window);
-int       gui_ask_confirmation (gui_t * gui, char *text);
-char *    gui_get_next_sequence_name (gui_t *);
-void      gui_enable_timeout (gui_t *gui);
-void      gui_disable_timeout (gui_t *gui);
-void      gui_block_handler (gui_t *gui, GtkWidget *widget, gpointer handler);
-void      gui_unblock_handler (gui_t *gui, GtkWidget *widget, gpointer handler);
-void      gui_wait_cursor (GdkWindow *window, int state);
-GtkWidget * gui_add_menu_item (GtkWidget *menu, char *type, char *label, GCallback callback, gpointer data,
-                               GClosureNotify destroy_data);
-char *    gui_ask_track_name (gui_t *gui, char *current_name, int is_name_doublon, int allow_cancel);
+void _gui_set_modified(gui_t * gui, int status, const char *func);
+gboolean gui_no_delete(GtkWidget *widget, GdkEvent *event, gpointer data);
+void gui_show_progress(gui_t *gui, char *title, char *text);
+void gui_hide_progress(gui_t * gui);
+void gui_refresh(gui_t * gui);
+void gui_progress_callback(char * status, double fraction, void * data);
+void gui_display_error(gui_t * gui, char *text);
+void gui_display_error_from_window(gui_t * gui, char *text, GtkWidget *window);
+int gui_ask_confirmation(gui_t * gui, char *text);
+char * gui_get_next_sequence_name(gui_t *);
+void gui_enable_timeout(gui_t *gui);
+void gui_disable_timeout(gui_t *gui);
+void gui_block_handler(gui_t *gui, GtkWidget *widget, gpointer handler);
+void gui_unblock_handler(gui_t *gui, GtkWidget *widget, gpointer handler);
+void gui_wait_cursor(GdkWindow *window, int state);
+GtkWidget * gui_add_menu_item(GtkWidget *menu, char *type, char *label, GCallback callback, gpointer data,
+        GClosureNotify destroy_data);
+char * gui_ask_track_name(gui_t *gui, char *current_name, int is_name_doublon, int allow_cancel);
 
 #define DEBUG(M, ...) { printf("GUI %.2d  %s(): ",gui->instance_index, __func__); printf(M, ## __VA_ARGS__); printf("\n"); }
 

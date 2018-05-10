@@ -37,124 +37,124 @@
 #define BIND_DATA(self, data) stream_driver_stereo_data_t *data = (stream_driver_stereo_data_t *) (CAST(self)->data)
 #define BIND_PARENT(self, parent) stream_driver_t *parent = CAST(self)->parent; 
 
-typedef struct stream_driver_stereo_data_t 
+typedef struct stream_driver_stereo_data_t
 {
-  unsigned long position;
-  int           playing;
+    unsigned long position;
+    int           playing;
 } stream_driver_stereo_data_t;
 
-static unsigned long   
+static unsigned long
 get_position (stream_driver_t *self)
 {
-  BIND_DATA(self, data);
-  return data->position;
+    BIND_DATA (self, data);
+    return data->position;
 }
 
-static int           
+static int
 is_started (stream_driver_t *self)
 {
-  BIND_DATA(self, data);
-  return data->playing;
+    BIND_DATA (self, data);
+    return data->playing;
 }
 
-static void            
+static void
 start (stream_driver_t *self)
 {
-  BIND_DATA(self, data);
-  data->playing = 1;
+    BIND_DATA (self, data);
+    data->playing = 1;
 }
 
-static void            
+static void
 stop (stream_driver_t *self)
 {
-  BIND_DATA(self, data);
-  data->playing = 0;
+    BIND_DATA (self, data);
+    data->playing = 0;
 }
 
-static void            
+static void
 seek (stream_driver_t *self, unsigned long position)
 {
-  BIND_DATA(self, data);
-  data->position = position;
+    BIND_DATA (self, data);
+    data->position = position;
 }
 
 static void
 destroy (stream_driver_t *self)
 {
-  BIND (self, parent, data);
+    BIND (self, parent, data);
 
-  free (data);
+    free (data);
 
-  parent->interface->destroy (self);
+    parent->interface->destroy (self);
 
-  self = CAST (self);
-  free (self->classname);
-  free (self->interface);
-  free (self);
+    self = CAST (self);
+    free (self->classname);
+    free (self->interface);
+    free (self);
 }
 
 static int
-activate(stream_driver_t *self)
+activate (stream_driver_t *self)
 {
-  BIND (self, parent, data);
-  data->position = 0;
-  data->playing = 0;
-  return parent->interface->activate (self);
+    BIND (self, parent, data);
+    data->position = 0;
+    data->playing = 0;
+    return parent->interface->activate (self);
 }
 
-static int 
+static int
 iterate (stream_driver_t *self, int nframes, ...)
 {
-  BIND (self, parent, data);
-  va_list ap;
-  va_start (ap, nframes);
-  float *output = va_arg (ap, float *);
-  va_end (ap);
+    BIND (self, parent, data);
+    va_list ap;
+    va_start (ap, nframes);
+    float *output = va_arg (ap, float *);
+    va_end (ap);
 
-  int len = parent->interface->iterate (self, nframes);
+    int len = parent->interface->iterate (self, nframes);
 
-  stream_driver_port_t **ports = stream_driver_get_ports(self);
-  int nports = stream_driver_get_ports_num(self);
+    stream_driver_port_t **ports = stream_driver_get_ports (self);
+    int nports = stream_driver_get_ports_num (self);
 
-  int j, k;
-  for (j = 0; j < len * 2; j++)
-    output[j] = 0;
+    int j, k;
+    for (j = 0; j < len * 2; j++)
+        output[j] = 0;
 
-  for (j = 0; j < nports; j++)
-  {
-    stream_driver_port_t *port = ports[j];
-    if (port->flags & STREAM_LEFT)
-      for (k = 0; k < len; k++)
-        output[k * 2] += port->buffer[k];
+    for (j = 0; j < nports; j++)
+    {
+        stream_driver_port_t *port = ports[j];
+        if (port->flags & STREAM_LEFT)
+            for (k = 0; k < len; k++)
+                output[k * 2] += port->buffer[k];
 
-    if (port->flags & STREAM_RIGHT)
-      for (k = 0; k < len; k++)
-        output[k * 2 + 1] += port->buffer[k];
-  }
-  if (data->playing)
-    data->position += len;
+        if (port->flags & STREAM_RIGHT)
+            for (k = 0; k < len; k++)
+                output[k * 2 + 1] += port->buffer[k];
+    }
+    if (data->playing)
+        data->position += len;
 
-  return len;    
-}  
+    return len;
+}
 
 stream_driver_t *
 stream_driver_stereo_new (char *client_name)
 {
-  stream_driver_t *self = stream_driver_subclass (CLASSNAME, stream_driver_new ());
-  self->data = malloc (sizeof (stream_driver_stereo_data_t));
-  BIND_DATA (self, data);
+    stream_driver_t *self = stream_driver_subclass (CLASSNAME, stream_driver_new ());
+    self->data = malloc (sizeof (stream_driver_stereo_data_t));
+    BIND_DATA (self, data);
 
-  data->position = 0;
-  data->playing = 0;
+    data->position = 0;
+    data->playing = 0;
 
-  self->interface->get_position      = get_position;
-  self->interface->is_started        = is_started;
-  self->interface->start             = start;
-  self->interface->stop              = stop;
-  self->interface->seek              = seek;
-  self->interface->destroy           = destroy;
-  self->interface->iterate           = iterate;
-  self->interface->activate          = activate;
+    self->interface->get_position      = get_position;
+    self->interface->is_started        = is_started;
+    self->interface->start             = start;
+    self->interface->stop              = stop;
+    self->interface->seek              = seek;
+    self->interface->destroy           = destroy;
+    self->interface->iterate           = iterate;
+    self->interface->activate          = activate;
 
-  return self;
+    return self;
 }

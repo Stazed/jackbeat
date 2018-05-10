@@ -25,24 +25,24 @@
 
 #include "config.h"
 
-char *  util_resampler_type_to_str (int type);
-int     util_str_to_resampler_type (char *str);
-char *  util_get_wd ();
-double  util_round (double value);
-int     util_version_cmp (const char *v1, const char *v2);
-void    util_init_paths();
-char *  util_pkgdata_path (char *filename);
-char *  util_home_dir();
-char *  util_settings_dir();
-void    util_strcanon(char *str, char *valid, char subst);
-int     util_exec(char *command, ...);
-char *  util_path(char *path);
-int     util_mkdir(const char *path, int mode);
-char *  util_mktmpdir();
-int     util_wipe_tmpdir(char *path);
-char *  util_basename(const char *path);
-char *  util_dirname(const char *path);
-char *  util_str_creplace(char *subject, char from, char to);
+char * util_resampler_type_to_str(int type);
+int util_str_to_resampler_type(char *str);
+char * util_get_wd();
+double util_round(double value);
+int util_version_cmp(const char *v1, const char *v2);
+void util_init_paths();
+char * util_pkgdata_path(char *filename);
+char * util_home_dir();
+char * util_settings_dir();
+void util_strcanon(char *str, char *valid, char subst);
+int util_exec(char *command, ...);
+char * util_path(char *path);
+int util_mkdir(const char *path, int mode);
+char * util_mktmpdir();
+int util_wipe_tmpdir(char *path);
+char * util_basename(const char *path);
+char * util_dirname(const char *path);
+char * util_str_creplace(char *subject, char from, char to);
 
 
 #endif /* JACKBEAT_UTIL_H */

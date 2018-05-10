@@ -26,32 +26,30 @@
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
 
-typedef struct dk_color_t 
-{
-  unsigned char  red;
-  unsigned char  green;
-  unsigned char  blue;
+typedef struct dk_color_t {
+    unsigned char red;
+    unsigned char green;
+    unsigned char blue;
 } dk_color_t;
 
-typedef struct dk_hsv_t 
-{
-  float hue;
-  float saturation;
-  float value;
+typedef struct dk_hsv_t {
+    float hue;
+    float saturation;
+    float value;
 } dk_hsv_t;
 
 #define DK_COLOR_SET(color, r, g, b) color.red = r; color.green = g; color.blue = b
 
-GdkGC * dk_make_gc (GdkDrawable *drawable, dk_color_t *color);
-void    dk_make_gradient (GdkGC *colors[], GdkDrawable *drawable,  
-                          dk_color_t *from, dk_color_t *to, int steps);
-void    dk_draw_hgradient (GdkDrawable *drawable, GtkAllocation *alloc, 
-                          dk_color_t *from, dk_color_t *to);
-void    dk_draw_vgradient (GdkDrawable *drawable, GtkAllocation *alloc, 
-                           dk_color_t *from, dk_color_t *to);
-void    dk_draw_line (GdkDrawable *drawable, dk_color_t *color, int x1, int y1, int x2, int y2);
-int     dk_em (GtkWidget *widget, float em_size);
-void    dk_draw_track_bg (GdkDrawable *drawable, GtkAllocation *alloc, int active, 
-                          dk_hsv_t *hsv_shift, dk_color_t *hborder);
-void    dk_transform_hsv (dk_color_t *color, dk_hsv_t *hsv_shift);
+GdkGC * dk_make_gc(GdkDrawable *drawable, dk_color_t *color);
+void dk_make_gradient(GdkGC *colors[], GdkDrawable *drawable,
+        dk_color_t *from, dk_color_t *to, int steps);
+void dk_draw_hgradient(GdkDrawable *drawable, GtkAllocation *alloc,
+        dk_color_t *from, dk_color_t *to);
+void dk_draw_vgradient(GdkDrawable *drawable, GtkAllocation *alloc,
+        dk_color_t *from, dk_color_t *to);
+void dk_draw_line(GdkDrawable *drawable, dk_color_t *color, int x1, int y1, int x2, int y2);
+int dk_em(GtkWidget *widget, float em_size);
+void dk_draw_track_bg(GdkDrawable *drawable, GtkAllocation *alloc, int active,
+        dk_hsv_t *hsv_shift, dk_color_t *hborder);
+void dk_transform_hsv(dk_color_t *color, dk_hsv_t *hsv_shift);
 #endif

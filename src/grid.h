@@ -30,23 +30,23 @@ typedef struct {
     int value;
 } grid_cell_state_t;
 
-grid_t *    grid_new                          ();
-void        grid_destroy                      (grid_t *grid);
-void        grid_resize                       (grid_t *grid, int col_num, int row_num);
-GtkWidget * grid_get_widget                   (grid_t *grid);
-void        grid_set_value                    (grid_t *grid, int col, int row, int value);
-void        grid_set_mask                     (grid_t *grid, int col, int row, int mask);
-void        grid_highlight_cell               (grid_t *grid, int col, int row, float level);
-void        grid_set_cell_size                (grid_t *grid, int min_width, int max_width, 
-                                               int min_height, int max_height);
-void        grid_set_spacing                  (grid_t *grid, int min_col_spacing, int row_spacing);
-void        grid_set_column_group_size        (grid_t *grid, int column_num);
-void        grid_set_header_height            (grid_t *grid, int height);
-void        grid_set_header_height_no_redraw  (grid_t *grid, int height);
-void        grid_set_vpadding                 (grid_t *grid, int padding);
-void        grid_set_header_label_ypos        (grid_t *grid, int y);
-void        grid_set_scroll_adjustments       (grid_t* grid, GtkAdjustment *hadj, GtkAdjustment *vadj);
-int         grid_get_minimum_width            (grid_t *grid);
-int         grid_get_minimum_height           (grid_t *grid);
+grid_t * grid_new();
+void grid_destroy(grid_t *grid);
+void grid_resize(grid_t *grid, int col_num, int row_num);
+GtkWidget * grid_get_widget(grid_t *grid);
+void grid_set_value(grid_t *grid, int col, int row, int value);
+void grid_set_mask(grid_t *grid, int col, int row, int mask);
+void grid_highlight_cell(grid_t *grid, int col, int row, float level);
+void grid_set_cell_size(grid_t *grid, int min_width, int max_width,
+        int min_height, int max_height);
+void grid_set_spacing(grid_t *grid, int min_col_spacing, int row_spacing);
+void grid_set_column_group_size(grid_t *grid, int column_num);
+void grid_set_header_height(grid_t *grid, int height);
+void grid_set_header_height_no_redraw(grid_t *grid, int height);
+void grid_set_vpadding(grid_t *grid, int padding);
+void grid_set_header_label_ypos(grid_t *grid, int y);
+void grid_set_scroll_adjustments(grid_t* grid, GtkAdjustment *hadj, GtkAdjustment *vadj);
+int grid_get_minimum_width(grid_t *grid);
+int grid_get_minimum_height(grid_t *grid);
 
 

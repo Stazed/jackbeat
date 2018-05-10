@@ -27,35 +27,33 @@
 
 typedef struct osc_t osc_t;
 
-typedef enum
-{
-  OSC_IN,
-  OSC_OUT
+typedef enum {
+    OSC_IN,
+    OSC_OUT
 } osc_method_type_t;
 
-typedef struct
-{
-  osc_method_type_t     type;
-  char *                path;
-  char *                name;
-  char *                typespec;
-  char **               parameters;
-  char *                comment;
+typedef struct {
+    osc_method_type_t type;
+    char * path;
+    char * name;
+    char * typespec;
+    char ** parameters;
+    char * comment;
 } osc_method_desc_t;
 
-osc_t * osc_new (song_t *song);
-void    osc_destroy (osc_t *osc);
-void    osc_print_interface ();
-int     osc_set_port (osc_t *osc, int port);
-int     osc_get_port (osc_t *osc);
-void    osc_set_sequence_target (osc_t *osc, sequence_t *sequence, const char *host, 
-                                 int port, const char *prefix);
-void    osc_get_sequence_target (osc_t *osc, sequence_t *sequence, char **host, 
-                                 int *port, char **prefix);
-void    osc_set_sequence_input_prefix (osc_t *osc, sequence_t *sequence, 
-                                       const char *prefix);
-int     osc_get_sequence_input_prefix (osc_t *osc, sequence_t *sequence, 
-                                       char **prefix);
-osc_method_desc_t ** osc_reflect_sequence_methods (osc_t *osc, sequence_t *sequence);
-void    osc_reflect_free (osc_method_desc_t **descs);
+osc_t * osc_new(song_t *song);
+void osc_destroy(osc_t *osc);
+void osc_print_interface();
+int osc_set_port(osc_t *osc, int port);
+int osc_get_port(osc_t *osc);
+void osc_set_sequence_target(osc_t *osc, sequence_t *sequence, const char *host,
+        int port, const char *prefix);
+void osc_get_sequence_target(osc_t *osc, sequence_t *sequence, char **host,
+        int *port, char **prefix);
+void osc_set_sequence_input_prefix(osc_t *osc, sequence_t *sequence,
+        const char *prefix);
+int osc_get_sequence_input_prefix(osc_t *osc, sequence_t *sequence,
+        char **prefix);
+osc_method_desc_t ** osc_reflect_sequence_methods(osc_t *osc, sequence_t *sequence);
+void osc_reflect_free(osc_method_desc_t **descs);
 #endif

@@ -30,19 +30,19 @@
 typedef struct msg_t msg_t;
 
 typedef struct msg_call_t {
-  int feature;
-  char params[255];
+    int feature;
+    char params[255];
 } msg_call_t;
 
-msg_t *   msg_new (int buffer_size, int item_size);
-void      msg_destroy (msg_t *msg);
-void      msg_send (msg_t *msg, void *data, int flags);
-void      msg_sync(msg_t *msg);
-int       msg_receive (msg_t *msg, void *data);
+msg_t * msg_new(int buffer_size, int item_size);
+void msg_destroy(msg_t *msg);
+void msg_send(msg_t *msg, void *data, int flags);
+void msg_sync(msg_t *msg);
+int msg_receive(msg_t *msg, void *data);
 #define   msg_event_fire(M,N,D,S,F) _msg_event_fire (M,N,D,S,F,__LINE__, __func__)
-void      _msg_event_fire (msg_t *msg, char *name, void *data, int data_size,
-                           void (* free_data) (void *), int line, const char *func);
-void      msg_process_events (msg_t * msg, void *source);
+void _msg_event_fire(msg_t *msg, char *name, void *data, int data_size,
+        void (* free_data) (void *), int line, const char *func);
+void msg_process_events(msg_t * msg, void *source);
 
 #define   msg_call(MSG, FEATURE, FLAGS, FORMAT, ...) \
   { msg_call_t _call; _call.feature = FEATURE; sprintf(_call.params, FORMAT, ## __VA_ARGS__); \

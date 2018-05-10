@@ -25,6 +25,6 @@
 
 #include "stream.h"
 
-stream_driver_t * stream_driver_stereo_new ();
+stream_driver_t * stream_driver_stereo_new();
 
 #endif

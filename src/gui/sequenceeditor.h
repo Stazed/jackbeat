@@ -28,8 +28,8 @@
 
 typedef struct gui_sequence_editor_t gui_sequence_editor_t;
 
-gui_sequence_editor_t * gui_sequence_editor_new (sequence_t *);
-GtkWidget *             gui_sequence_editor_get_widget (gui_sequence_editor_t *self);
-int                     gui_sequence_editor_get_active_track (gui_sequence_editor_t *);
+gui_sequence_editor_t * gui_sequence_editor_new(sequence_t *);
+GtkWidget * gui_sequence_editor_get_widget(gui_sequence_editor_t *self);
+int gui_sequence_editor_get_active_track(gui_sequence_editor_t *);
 
 #endif

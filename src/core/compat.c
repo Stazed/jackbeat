@@ -27,11 +27,12 @@
 
 #include "compat.h"
 
-void compat_sleep(unsigned long miliseconds)
+void
+compat_sleep (unsigned long miliseconds)
 {
 #ifdef __WIN32__
-		Sleep(miliseconds);
+    Sleep (miliseconds);
 #else
-		usleep(miliseconds * 1000);
+    usleep (miliseconds * 1000);
 #endif
 }

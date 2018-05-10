@@ -25,6 +25,6 @@
 
 #include "stream.h"
 
-stream_driver_t * stream_driver_jack_new (const char *client_name, int auto_start);
+stream_driver_t * stream_driver_jack_new(const char *client_name, int auto_start);
 
 #endif

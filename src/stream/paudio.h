@@ -25,8 +25,8 @@
 
 #include "stream.h"
 
-stream_driver_t * stream_driver_portaudio_new (char *device_name, int sample_rate);
-char ** stream_driver_portaudio_list_devices ();
-char * stream_driver_portaudio_get_current_device (stream_driver_t *self);
+stream_driver_t * stream_driver_portaudio_new(char *device_name, int sample_rate);
+char ** stream_driver_portaudio_list_devices();
+char * stream_driver_portaudio_get_current_device(stream_driver_t *self);
 
 #endif

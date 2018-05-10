@@ -28,13 +28,13 @@
 
 typedef struct song_t song_t;
 
-song_t *      song_new (pool_t * pool);
-void          song_destroy (song_t * song);
-void          song_register_sequence (song_t *song, sequence_t *sequence);
-void          song_register_sequence_samples (song_t *song, sequence_t *sequence);
-int           song_count_sequences (song_t * song);
-sequence_t ** song_list_sequences (song_t * song);
-void          song_register_sample (song_t *song, sample_t *sample);
-sample_t *    song_try_reuse_sample (song_t *song, char *filename);
-  
+song_t * song_new(pool_t * pool);
+void song_destroy(song_t * song);
+void song_register_sequence(song_t *song, sequence_t *sequence);
+void song_register_sequence_samples(song_t *song, sequence_t *sequence);
+int song_count_sequences(song_t * song);
+sequence_t ** song_list_sequences(song_t * song);
+void song_register_sample(song_t *song, sample_t *sample);
+sample_t * song_try_reuse_sample(song_t *song, char *filename);
+
 #endif /* JACKBEAT_SONG_H */
