@@ -29,6 +29,7 @@ void          gui_file_load_sample (gui_t *gui, int track);
 sequence_t *  gui_file_do_load_sequence (gui_t *gui, char *filename);
 void          gui_file_load_sequence (gui_t * gui, guint action, GtkWidget * w);
 void          gui_file_export_sequence (gui_t * gui, guint action, GtkWidget * w);
+int           gui_file_do_save_sequence (gui_t * gui, char *filename);
 void          gui_file_save_as_sequence (gui_t * gui, guint action, GtkWidget * w);
 void          gui_file_save_sequence (gui_t * gui, guint action, GtkWidget * w);
 GtkWidget *   gui_file_build_recent_samples_menu (gui_t *gui, int track);

@@ -21,6 +21,7 @@
  */
 
 #include "gui/common.h"
+#include <fcntl.h>		/* for fcntl, O_NONBLOCK  - signal handlers */
 
 #define GUI_ANIMATION_INTERVAL 34 // miliseconds
 
@@ -28,6 +29,7 @@ static int      gui_instance_counter  = 0;
 static int      gui_instances_num     = 0;
 static gui_t ** gui_instances         = NULL;
 gui_t *         gui_last_focus        = NULL;
+static int      signal_pipe[2];
 
 static void gui_clear_sequence (gui_t * gui, guint action, GtkWidget * w);
 static void gui_new_instance (gui_t * gui, guint action, GtkWidget * w);
@@ -47,6 +49,9 @@ G_MODULE_EXPORT gboolean gui_track_name_focus_lost (GtkWidget * widget, GdkEvent
 static void gui_add_track (gui_t * gui, guint action, GtkWidget * w);
 static void gui_remove_track (gui_t * gui, guint action, GtkWidget * w);
 static void gui_shift_track_volume (gui_t * gui, guint action, GtkWidget * w);
+gboolean deliver_signal(GIOChannel *source, GIOCondition cond, gpointer d);
+void pipe_signals(int signal);
+void install_signal_handlers();
 #ifdef HAVE_GTK_QUARTZ
 static void gui_mac_prefs_run (gui_t *gui, guint action, GtkWidget *widget);
 #endif
@@ -1485,6 +1490,9 @@ gui_new_child (rc_t *rc, arg_t *arg, gui_t *parent, song_t *song,
   while (gtk_events_pending ())
     gtk_main_iteration ();
   gui_set_modified (gui, 0);
+  
+  install_signal_handlers();
+  
   if (!parent) {
       gtk_main ();
   }
@@ -1501,6 +1509,21 @@ static void
 gui_close_from_menu (gui_t * gui, guint action, GtkWidget * w)
 {
   gui_close (NULL, NULL, gui);
+}
+
+static void
+gui_save ()
+{
+    int i = 0;
+    for (i = 0; i < gui_instances_num; i++) {
+        if (gui_instances[i]->sequence_is_modified)
+        {
+            if(gui_instances[i]->filename_is_set)
+                gui_file_do_save_sequence(gui_instances[i],gui_instances[i]->filename);
+            else
+                gui_file_save_as_sequence(gui_instances[i],0,0);
+        }
+  }
 }
     
 static void
@@ -1592,3 +1615,165 @@ gui_ask_track_name (gui_t *gui, char *current_name, int error, int allow_cancel)
   return new_name;
 }
 
+/*
+ * The signal handler is modified from catch_signals.c
+ * http://askra.de/software/gtk-signals/x2992.html
+ * Declined GTK Tutorial Contribution
+ * Unofficial Appendix. Catching Unix signals
+ */
+
+void pipe_signals(int signal)
+{
+  if(write(signal_pipe[1], &signal, sizeof(int)) != sizeof(int))
+    {
+      fprintf(stderr, "unix signal %d lost\n", signal);
+    }
+}
+
+void install_signal_handlers()
+{
+    /*
+     * In order to register the reading end of the pipe with the event loop
+     * we must convert it into a GIOChannel.
+     */
+    GIOChannel *g_signal_in;
+
+    GError *error = NULL;	/* handle errors */
+    long fd_flags; 	    /* used to change the pipe into non-blocking mode */
+    
+    /*
+     * Set the unix signal handling up.
+     * First create a pipe.
+     */
+    if(pipe(signal_pipe))
+    {
+        perror("pipe");
+        exit(1);
+    }
+
+    /*
+     * put the write end of the pipe into nonblocking mode,
+     * need to read the flags first, otherwise we would clear other flags too.
+     */
+    fd_flags = fcntl(signal_pipe[1], F_GETFL);
+    if(fd_flags == -1)
+    {
+        perror("read descriptor flags");
+        exit(1);
+    }
+    if(fcntl(signal_pipe[1], F_SETFL, fd_flags | O_NONBLOCK) == -1)
+    {
+        perror("write descriptor flags");
+        exit(1);
+    }
+
+    /* Install the unix signal handler pipe_signals for the signals of interest */
+    signal(SIGINT, pipe_signals);
+    signal(SIGUSR1, pipe_signals);
+
+    /* convert the reading end of the pipe into a GIOChannel */
+    g_signal_in = g_io_channel_unix_new(signal_pipe[0]);
+
+    /*
+     * we only read raw binary data from the pipe,
+     * therefore clear any encoding on the channel
+     */
+    g_io_channel_set_encoding(g_signal_in, NULL, &error);
+    if(error != NULL) 		/* handle potential errors */
+    {
+        fprintf(stderr, "g_io_channel_set_encoding failed %s\n",
+                error->message);
+        exit(1);
+    }
+
+    /* put the reading end also into non-blocking mode */
+    g_io_channel_set_flags(g_signal_in,
+                           g_io_channel_get_flags(g_signal_in) | G_IO_FLAG_NONBLOCK, &error);
+
+    if(error != NULL) 		/* tread errors */
+    {
+        fprintf(stderr, "g_io_set_flags failed %s\n",
+                error->message);
+        exit(1);
+    }
+
+    /* register the reading end with the event loop */
+    g_io_add_watch(g_signal_in, G_IO_IN | G_IO_PRI, deliver_signal, NULL);
+
+}
+
+
+/*
+ * The event loop callback that handles the unix signals. Must be a GIOFunc.
+ * The source is the reading end of our pipe, cond is one of
+ *   G_IO_IN or G_IO_PRI (I don't know what could lead to G_IO_PRI)
+ * the pointer d is always NULL
+ */
+gboolean deliver_signal(GIOChannel *source, GIOCondition cond, gpointer d)
+{
+    GError *error = NULL;		/* for error handling */
+
+    /*
+     * There is no g_io_channel_read or g_io_channel_read_int, so we read
+     * char's and use a union to recover the unix signal number.
+     */
+    union
+    {
+        gchar chars[sizeof(int)];
+        int signal;
+    } buf;
+    GIOStatus status;		/* save the reading status */
+    gsize bytes_read;		/* save the number of chars read */
+
+
+    /*
+     * Read from the pipe as long as data is available. The reading end is
+     * also in non-blocking mode, so if we have consumed all unix signals,
+     * the read returns G_IO_STATUS_AGAIN.
+     */
+    while((status = g_io_channel_read_chars(source, buf.chars,
+                                            sizeof(int), &bytes_read, &error)) == G_IO_STATUS_NORMAL)
+    {
+        g_assert(error == NULL);	/* no error if reading returns normal */
+
+        /*
+         * There might be some problem resulting in too few char's read.
+         * Check it.
+         */
+        if(bytes_read != sizeof(int))
+        {
+            fprintf(stderr, "lost data in signal pipe (expected %d, received %d)\n",
+                    (int)sizeof(int),(int) bytes_read);
+            continue;	      /* discard the garbage and keep fingers crossed */
+        }
+
+        /* Ok, we read a unix signal number, so save or exit based on type */
+        if(buf.signal == SIGUSR1)
+        {
+            gui_save();
+        }
+        
+        if(buf.signal == SIGINT)
+        {
+            gui_exit(gui_last_focus,0,0);
+        }
+    }
+
+    /*
+     * Reading from the pipe has not returned with normal status. Check for
+     * potential errors and return from the callback.
+     */
+    if(error != NULL)
+    {
+        fprintf(stderr, "reading signal pipe failed: %s\n", error->message);
+        return(FALSE);
+    }
+    if(status == G_IO_STATUS_EOF)
+    {
+        fprintf(stderr, "signal pipe has been closed\n");
+        return(FALSE);
+    }
+
+    g_assert(status == G_IO_STATUS_AGAIN);
+    return (TRUE);		/* keep the event source */
+}
