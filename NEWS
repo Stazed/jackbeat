@@ -1,0 +1,144 @@
+=============
+Jackbeat News
+=============
+
+New release: 0.7.6
+==================
+
+- A issue which prevented Jackbeat to compile on recent 64bit Linux systems
+  has been fixed. This affected Fedora 13, Ubuntu 10.10, Arch Linux and 
+  possibly others.
+- Jackbeat doesn't try and connect to PulseAudio by default anymore, since this
+  may hang on certain systems. The PulseAudio output driver must be explicitly
+  selected in the preferences.
+
+Olivier Guilyardi - September 8th, 2010
+
+New release: 0.7.5
+==================
+
+- A critical compatibility issue with gtk >= 2.19 has been fixed
+
+Olivier Guilyardi - April 25th, 2010
+
+New release: 0.7.4
+==================
+
+- A bug which may prevent to load samples have been fixed
+
+Olivier Guilyardi - November 29rd, 2009
+
+------------------------------------------------------------------------
+
+New release: 0.7.3
+==================
+
+- Tracks can now be reordered
+- A buffer overflow and a bug preventing to load some jab files have been fixed
+
+Olivier Guilyardi - November 23rd, 2009
+
+------------------------------------------------------------------------
+
+New release: 0.7.2
+==================
+
+- Jackbeat now runs on Windows in addition to Mac OS X and Linux
+- Track solo controls have been added, OSC bindings included
+- Minor file access and user interface bugs have been fixed
+
+Olivier Guilyardi - June 26th, 2009
+
+------------------------------------------------------------------------
+
+New release: 0.7.0
+==================
+
+- The GUI has been re-designed for the pleasure of the eye and more ergonomy
+- New shortcuts, knobs and waveform animation bring more interactivity
+- OSC is now supported with a fair amount of methods and events
+- Mac OS X integration has been much improved
+- ALSA, CoreAudio and PulseAudio are now directly supported in addition to JACK
+- Several bugs and usability issues have been fixed
+- The internal architecture has been improved
+
+Olivier Guilyardi - April 29th, 2009
+
+------------------------------------------------------------------------
+
+New release: 0.6.2
+==================
+
+- The export framerate and sustain handling can now be customized
+- The pattern can be edited using the keyboard
+- The GUI has been improved and fixed
+- Optional support for the Phat Audio Toolkit is available
+- Some audio processing and JACK issues have been fixed
+- Simple drum kits are now available from Jackbeat's homepage
+
+Olivier Guilyardi - January 10th, 2008
+
+------------------------------------------------------------------------
+
+New release: 0.6.1
+==================
+
+- The sequence can now be exported as a WAV file
+- The intel 64bit platform is supported
+- VU meters now use full color scale
+- The user interface has been improved and several issues fixed
+- The code has been optimized and some random krash fixed
+
+Olivier Guilyardi - March 1st, 2007
+
+------------------------------------------------------------------------
+
+New release: 0.6
+================
+
+- The drummachine interface is more interactive and features VU meters
+- The JACK realtime thread now uses ringbuffers, for syscall-free operation 
+- Support for Mac OS X is now complete
+- Various other minor issues have been fixed
+- Jackbeat is now available through Subversion
+
+Olivier Guilyardi - November 24th, 2006
+
+------------------------------------------------------------------------
+
+New release: 0.5.4
+==================
+
+- The JACK client name handling has been improved
+- Errors are now better detected and reported
+- Usability has been slightly improved
+
+Olivier Guilyardi - October 20th, 2005
+
+------------------------------------------------------------------------
+
+New release: 0.5.3 
+==================
+
+- A set of basic command line options is now supported
+- A few bugs that disturbed the user experience were fixed
+- The debugging output was slightly improved
+
+Olivier Guilyardi - September 14th, 2005
+
+------------------------------------------------------------------------
+
+New release: 0.5.2 
+==================
+
+- A ennoying bug that forbade jab files containing empty tracks to load
+  has been fixed.
+- The helpful segfault handler is unfortunately not very portable,
+  it has caused troubles on the powerpc and is now only included when
+  compiling on the i386 architecture.
+- The current graphical animation which is heavy due to a design problem,
+  is now refreshed at a much lower rate, as a cpu-friendly workaround.
+
+Olivier Guilyardi - June 20th, 2005
+
+------------------------------------------------------------------------

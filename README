@@ -1,0 +1,144 @@
+===============================
+Jackbeat - Audio Sequencer
+===============================
+
+Introduction
+============
+
+Jackbeat is an audio sequencer running on Linux and Mac OS X, for musicians 
+and sound artists:
+
+* Drummachine interface with animations for easy and playful editing
+* Built for both composition and live setups with high interactivity needs
+* Extremely easy to use but yet powerful by connecting with other 
+  applications and plugins using JACK and OSC
+* Loads and saves .jab files, Jackbeat's xml+tar open file format
+* Supports native audio devices, PulseAudio and JACK
+
+Requirements
+============
+
+Required dependencies
+~~~~~~~~~~~~~~~~~~~~~
+
+* PortAudio (http://www.portaudio.com/)
+
+* Linux only: libasound (http://www.alsa-project.org)
+
+* GTK+-2.0 (gtk.org)
+
+* libsndfile (www.mega-nerd.com/libsndfile)
+
+* libxml2 (http://xmlsoft.org)
+
+* libsamplerate (http://www.mega-nerd.com/SRC)
+
+* liblo (http://liblo.sourceforge.net)
+
+Optional dependencies
+~~~~~~~~~~~~~~~~~~~~~
+
+* JACK, the Jack Audio Connection Kit (http://jackaudio.org) : a running server
+  as well as the API header files. Mac OS X users should see 
+  http://www.jackosx.com
+
+* PulseAudio (http://www.pulseaudio.org)
+
+Installation
+============
+
+Jackbeat uses autoconf and automake, so you should just need to type:: 
+
+    ./configure
+    make 
+    make install
+
+This should be straightforward on Linux. 
+
+For Mac OS X please check:
+http://jackbeat.samalyse.org/wiki/MacInstallation
+
+For Windows please see:
+http://jackbeat.samalyse.org/browser/trunk/mingw/README
+
+Developer/maintainer mode
+=========================
+
+If you want to compile Jackbeat and run it without installation, you
+need to::
+
+    ./configure --enable-devmode
+    make
+    # run jackbeat from the current directory:
+    src/jackbeat
+
+Usage
+=====
+
+Jackbeat is pretty simple to use. Browse through the main menu, it is meant to
+be quite obvious. The Sequence and Track buttons at the bottom of the window
+open the corresponding properties panel where you'll find convenient functions.
+
+To begin, just a load a few samples using the track panel properties or the edit menu. 
+Then by toggling some of the buttons on the drummachine and clicking Play you shall 
+hear some music. Well... hopefully ;)
+
+Notes about export parameters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When you export the current sequence as a WAV file, you are given a choice
+about how to handle samples that continue playing passed the end of the sequence:
+
+  - loop: mix at the beginning. This is optimal for playing the exported
+    WAV file as a loop in some external software.
+  - truncate: don't play at all. This will sound like the initial sequence
+    playback, before it has looped at least once.
+  - keep: continue playing samples until they terminate. Beware that the
+    exported file may thus be (much) longer than the sequence.
+
+The double function
+~~~~~~~~~~~~~~~~~~~
+
+Available in the Edit menu, Double increases the beats number by a factor of 2, 
+and duplicates the beats data. This feature allows you to increase your workspace 
+size, while keeping the output unchanged.
+
+About track masking
+~~~~~~~~~~~~~~~~~~~
+
+Track masks allow you to insert silences into a track interactively.
+  
+Use Shift-Click (or press N) to toggle the mask for a given beat. The corresponding track 
+will then get muted during the duration of that beat. 
+
+Keyboard shortcuts
+~~~~~~~~~~~~~~~~~~
+
+You can learn about most of the keyboard shortcuts by looking at the main menu.
+
+There also are a few pattern editing shortcuts:
+
+- B or <return>: toggle beat
+- N: toggle mask
+- <up>/<down>/<right>/<left>/<home>/<end> : move
+
+Feedback and Support
+====================
+
+Please give me some feedback. Tell me if Jackbeat inspires you. 
+
+For user support, mailing list and bug reports please see:
+http://jackbeat.samalyse.org/wiki/UserSupport
+
+You may also send me links to your musical productions so that I can include 
+them on the musical examples page at: 
+http://jackbeat.samalyse.org/wiki/MusicExamples
+
+Contact
+=======
+
+Home page : http://jackbeat.samalyse.org
+
+Olivier Guilyardi <olivier {at} samalyse {dot} com>
+
+ 

@@ -1,0 +1,366 @@
+jackbeat (0.7.6)
+    * #61: fix compiling on recent x86_64 Linux systems such as Fedora 13
+    * do not try and connect to PulseAudio by default, it may deadlock
+
+ -- Olivier Guilyardi <olivier {at} samalyse {dot} com>  Wed, 08 Sep 2010 16:31:42 +0200
+
+jackbeat (0.7.5)
+    * #47: fix startup crash with gtk >= 2.19 caused by new GtkBuilder widget name
+      handling
+
+ -- Olivier Guilyardi <olivier {at} samalyse {dot} com>  Sun, 25 Apr 2010 01:57:23 +0200
+
+jackbeat (0.7.4)
+    * #43: fix buffer overflow in sample file filter building routine
+
+ -- Olivier Guilyardi <olivier {at} samalyse {dot} com>  Sun, 29 Nov 2009 18:29:40 +0100
+
+jackbeat (0.7.3)
+    * #40: allow to reorder tracks (move up/down)
+    * #43: fix buffer overflow in core messaging routine
+    * fix bogus track name conflict when loading jab, thanks Florent
+
+ -- Olivier Guilyardi <olivier {at} samalyse {dot} com>  Mon, 23 Nov 2009 20:48:45 +0100
+
+jackbeat (0.7.2)
+    * #14: add filters in file dialogs
+    * #18: add track solo controls
+    * #37: fix opening jab files whose path contains spaces
+    * #39: fix conflict between single-letter shortcuts and UI input
+    * win32 support: now cross-compiles on Linux with mingw32
+    * wipe temporary directories in a more secure manner
+    * fix bogus modified status when changing current track
+    * libtool isn't needed anymore
+    * some consolidation
+
+ -- Olivier Guilyardi <olivier {at} samalyse {dot} com>  Fri, 26 Jun 2009 17:52:05 +0200
+
+jackbeat (0.7.1)
+    * improve volume sliders mouse interaction
+    * add menu entries and shortcuts to quickly increase/decrease track volume
+
+ -- Olivier Guilyardi <olivier {at} samalyse {dot} com>  Fri, 01 May 2009 20:11:54 +0200
+
+jackbeat (0.7.0)
+    * require gtk >= 2.12 (previously 2.6) for proper gtk builder support
+    * liblo is now a required dependency
+    * Portaudio is now a required dependency
+    * JACK/libjack isn't a required dependency anymore, it is now optional
+    * PulseAudio/libpulse is now an optional dependency (recommended on Ubuntu)
+    * #13: gui volume controls are now logarithmic
+    * #15: default resampling quality set to Hi-Fi (SRC_SINC_FASTEST)
+    * #16: fix quit and close dialogs
+    * #20/#21, add OSC support with methods: start, stop, rewind, set_transport,
+      mute_beat, rewind, set_bpm, mute_track, set_track_pitch, set_track_volume, 
+      set_beat, set_track_volume_db
+    * add OSC events: beat_on, beat_off, beat_changed
+    * #26: new layout system, track controls and ruler are now always visible 
+      when scrolling
+    * #27: track buttons sensitivity problem is gone with the new sequence editor
+    * #31: smartly handle jack shutdown, warning the user, allow to reconnect
+    * #32: verify that the process callback is called by JACK after client activation, 
+      otherwise fail sequence creation ; improve activation debugging and error message
+    * #36: add Mac application bundle building scripts
+    * command line: add -o to list the supported OSC methods/events, 
+      -c clientname, remove -p portprefix
+    * add preferences dialog
+    * add OSC preferences, global and per-sequence, with methods and events list
+    * add audio preferences with ability to change output device, disconnect and
+      reconnect 
+    * use libphat knobs for pitch octave, semitone and fine-tune. no more pitch
+      controls in the sequence display
+    * fix some faulty memory access and leaks
+    * new sexy growing volume sliders with wheel scroll support
+    * support compiling against GTK+ OS X (Framework and custom build): now runs
+      on Mac without X11
+    * Mac OS X integration: mac menu, file associations and native file dialogs
+    * export parameters now in an separate dialog
+    * fit initial window size to sequence
+    * build main window structure using glade
+    * use gtk builder instead of glade
+    * use sndfile's sf_command() to retrieve supported audio file extensions 
+    * now using gtk builder signals autoconnect with custom connect func
+    * add bootstrap.sh for easy installation of dependencies ; tested on osx 10.5.6
+    * add --without-jack option to configure
+    * update README
+    * new internal event layer
+    * concurrent threads can now safely access the sequence API
+    * simplify sample garbage collection
+    * changed edit/clear to edit/clear pattern: now only clears the pattern, 
+      not sample or tracks
+    * improve jack connect error message
+    * fix random krash due to memory allocation size error
+    * add about dialog
+    * new driver-based audio stream layer: direct support of JACK, Portaudio, and 
+      PulseAudio. Driver can be changed at runtime. Features an automatic driver 
+      loading mode which is the default.
+    * gui: added sexy track control background, to denote active track
+    * upgrade to libphat r118 (bundled)
+    * gui: new sequence and track properties panels
+    * gui: display sample waveform in track properties, with position animation
+    * gui: add pattern grid ruler, fancy mute button and other visual improvements
+    * gui: sequence editor encapsulation
+    * jab: add minVersion xml tag, and check if the current jackbeat version 
+      is higher than or equal to its value when opening a file. Prepare for 
+      jab BC break in a later release.
+    * now registers a single JACK client for any number of sequences
+    * auto_connect is now a stream-wide setting
+    * core: added thread pool
+    * switched to portaudio's ringbuffer (for memory barriers)
+    * sequence now use its own pool process for processing events coming from 
+      the audio thread: this is faster than the previous mechanism based on a
+      gtk timeout
+    * do not set the track name from the loaded sample filename
+    * validate track names (only letters, digits, underscores, dashes, plus 
+      signs and points)
+    * resampler type is now a global preferences setting
+    * protect all sequence functions against out of bound parameters
+    * gui: add load sample et track rename shortcuts, make active track follow
+      grid pointer, wrap pointer move
+    * grid: scroll if necessary when moving pointer with keyboard
+    * add playback menu, z shortcut for rewind and f2 for renaming track
+    * show/hide cursor on grid focus change, make grid cells fill the available space
+    * grid: add home/end shortcuts
+    * add add/remove track menu entries and shortcuts
+    * grid: use B or return for toggling beat, N for masking
+
+ -- Olivier Guilyardi <olivier {at} samalyse {dot} com>  Wed, 29 Apr 2009 20:55:44 +0200
+
+jackbeat (0.6.3) 
+    * transpose volumes did not work when using phat: fixed
+
+ -- Olivier Guilyardi <olivier {at} samalyse {dot} com>  Thu,  7 Feb 2008 17:36:57 +0100
+
+jackbeat (0.6.2) 
+    * new export parameters: framerate and sustain type
+    * added keyboard-based motion and toggling to the grid
+    * added (optional) support for the Phat Audio Toolkit
+    * switched from GtkFileSelection to GtkFileChooser
+    * remember export directory, export framerate and sustain type 
+    * sustain was randomly played with looping turned off: fixed
+    * properly restore rewind button sensitive-ness on startup
+    * use dots to indicate long filepath in sample history
+    * correctly remember filenames that contain spaces 
+      reported by Nicolai Lissner, nlissne {at} linux01 {dot} gwdg {dot} de
+    * properly handle JACK port registration failure
+    * reorganized gui code, and other code cleanup
+    * stopping sequence before destroying it to avoid random crash
+    * updated TODO, thanks furenku
+    * fix typo and add TODOs, thanks Henrik Bjerregaard Pedersen 
+      <henrikbp {at} vip {dot} cybercity {dot} dk>
+    * updated and converted README to reST
+
+ -- Olivier Guilyardi <olivier {at} samalyse {dot} com>  Thu, 10 Jan 2008 20:56:59 +0100
+
+jackbeat (0.6.1) 
+    * New waveform export feature
+    * Now compiles on 64bit, thanks Detlef <detlef {at} links2linux {dot} de>
+    * Added support for removing a given track
+    * Start/stop playback by pressing space
+    * VU meters now use full color scale according to the sample volume peak
+    * Added a note in README about fine-tuning pitch and volume
+    * Made README's Usage less verbose about track masking
+    * Fixed incorrect jack client name when filename passed on command line
+    * Save the auto-connect setting into the rc file
+    * Use L and R suffixes for JACK ports when a track has 2 channels
+    * Automatically add .jab when saving a sequence
+    * Fixed broken Edit/Clear routine
+    * Fixed random segfault when opening/creating a sequence
+    * Added ability to cancel when loading a sample with a duplicate name
+    * Fixed broken remembering of working directories
+    * Code cleanup/optimization + various fixes
+    * Updated TODO
+
+ -- Olivier Guilyardi <olivier {at} samalyse {dot} com>  Thu,  1 Mar 2007 16:42:53 +0100
+
+jackbeat (0.6) 
+    * New graphical tracks grid display
+    * Use jack ringbuffers instead of message queues for IPC
+    * Added support for Mac OS X 
+    * Remember working directories even if sample or sequence fails to load
+    * Fixed some compiler warnings
+    * SIGSEV Handler: detect the presence of execinfo/ucontext instead of relying 
+      on the i386 target. Updated crash message.
+    * README file: updated the Introduction and improved the Usage section
+    * Removed mask toggle: masking is now always enabled
+    * And others
+
+ -- Olivier Guilyardi <olivier {at} samalyse {dot} com>  Fri, 24 Nov 2006 13:07:19 +0100
+
+jackbeat (0.5.4) 
+    * Added and clarified some error messages. 
+      Thanks Paul Brossier <piem {at} altern {dot} org>
+    * Added Close and Quit menu entries
+    * When launching several Jackbeats, there was a JACK client name conflict:
+      fixed. Thanks Paul Brossier <piem {at} altern {dot} org>
+
+ -- Olivier Guilyardi <olivier {at} samalyse {dot} com>  Sun, 16 Oct 2005 23:07:46 +0200
+
+jackbeat (0.5.3) 
+
+    * Added basic command line options 
+    * Loading a jab or changing the resampler type stopped the playblack :
+      fixed, the beat goes on. Thanks Remy Lalanne <lalanne.remy {at} wanadoo {dot} fr>
+    * The transport type setting wasn't saved : fixed. Thanks Remy
+      Lalanne <lalanne.remy {at} wanadoo {dot} fr>
+    * When reading the sigsev handler message, users were likely to send the
+      backtrace only: fixed that message. Hopefully they will now send the 
+      whole console output.
+
+ -- Olivier Guilyardi <olivier {at} samalyse {dot} com>  Wed, 14 Sep 2005 19:57:49 +0200
+
+jackbeat (0.5.2) 
+
+    * Segfault when changing the pitch on a empty track : fixed, thanks
+      Guillaume Pellerin (http://yomix.org)
+    * The beats animation is very cpu-intensive : increased the refresh
+      period to 1000 ms as a temporary workaround
+    * The SIGSEV handler is not portable : now including it only when
+      compiling on i386. Thanks Paul Brossier (http://piem.org)
+
+ -- Olivier Guilyardi <olivier {at} xung {dot} org>  Mon, 20 Jun 2005 00:08:24 +0200
+
+jackbeat (0.5.1)
+
+    * Added a SIGSEV handler to dump the backtrace to stdout on crash 
+      (glibc's execinfo)
+    * Samples filename extension were not correctly striped : fixed
+    * Not writing the resampler type into jab files anymore : this setting
+      belongs exclusively to the rc file
+    * wrote a lightweight basic resampler : greatly reduces the cpu load, 
+      performing about 5 times faster than libsamplerate's linear converter
+
+ -- Olivier Guilyardi <olivier {at} xung {dot} org>  Wed, 18 May 2005 20:24:49 +0200
+
+jackbeat (0.5.0)
+
+    * Added pitch and volume controls
+    * Rewrote the sample history
+    * Masking beats might produce clicks : added an attack/release envelope
+    * Now converting sample rate in realtime instead of doing it when
+      loading a sample
+    * The song was not marked as modified when (un)muting a track, neither
+      when enabling/disabling a mask : fixed
+    * Muting/unmuting a track is now wrapped by a an attack/release envelope
+      (as masking) to avoid clicks
+    * Sometimes tryed to highlight an unexistent beat, segfault'ing : fixed 
+    * Added standalone Mute buttons.
+    * Changed the "Play" button into Play and Pause icons
+    * Added a Rewind button
+    * Now require GTK >= 2.6 (was >= 2.0)
+    * Added an option to select the converter type to be used by libsamplerate
+    * Fixed a bug with the XML description generation : float numbers (bpm, 
+      pitch, volume, etc..) were written in a locale-sensitive manner, which 
+      either wrote points or commas. Now always using the C locale internally.
+    * Added a volume "transposer" feature : acts as a pseudo-master,
+      transposing all tracks volumes by a given percentage
+    * New "Smoothing" feature : a sample starting over itself might produce a
+      click. This feature uses a short envelope to kindly stop the sample 
+      before its gets started again.  It is enabled by default on all tracks.
+
+ -- Olivier Guilyardi <olivier {at} xung {dot} org>  Tue,  3 May 2005 15:52:31 +0200
+
+jackbeat (0.4.3)
+
+    * New track-masking feature : allows to insert silences into a track, as 
+      requested by Guillaume Pellerin (http://yomix.org)
+    * When loading the same sample on several tracks, these tracks were
+      automatically assigned identical names, which caused Jack ports to 
+      conflict : a dialog now opens, asking for an alternate name. Additionally, 
+      it is possible to rename tracks at any time
+    * Serious bug which left temporary data into /tmp everytime a jab file was
+      loaded, including extracted sample files : corrected
+    * And a few cosmetic fixes
+
+ -- Olivier Guilyardi <olivier {at} xung {dot} org>  Tue, 12 Apr 2005 22:20:23 +0200
+ 
+jackbeat (0.4.2)
+
+    * Support for sample rate conversion when loading samples, to match 
+      Jack's framerate : added, using libsamplerate's best converter
+    * Progress bars when loading/saving samples/sequences : added, in a modal
+      window
+    * Some variables names in sample loading routines were obscure : clarified
+    * Unused samples were not cleant up : fixed, now freeing associated memory
+    * With Jack already rolling, lauching Jackbeat produced some noise : fixed
+    * Muting/unmuting a track often failed due to an IPC bug : squashed
+
+ -- Olivier Guilyardi <olivier {at} xung {dot} org>  Wed, 30 Mar 2005 19:51:02 +0200
+
+jackbeat (0.4.1)
+
+    * Tracks/beats spin buttons where randomly stepping by 1 or 2 : fixed
+    * gcc was passed the -g option by default : suppressed. The binary size 
+      droped from 530 to 80 kb. For debugging informations, run 
+      "export CFLAGS=-g" before "./configure"
+
+ -- Olivier Guilyardi <olivier {at} xung {dot} org>  Wed, 16 Mar 2005 18:33:53 +0100
+
+jackbeat (0.4.0)
+
+    * When unsetting the active beat on a given track, the sample continued 
+      playing. With an empty track, a long sample would then play entirely, 
+      which is quite pointless : Unsetting an active beat now stops the track
+    * New "Double" feature : duplicate the sequence, copying beats
+    * Pattern nesting code was a nightmare : wiped out
+    * .jackbeat directory was not properly created : fixed
+    * Freeing unallocated pointers at shutdown : fixed
+    * Samples working directory wasn't saved at shutdown : fixed
+    * README file : corrected and updated
+      
+ -- Olivier Guilyardi <olivier {at} xung {dot} org>  Fri,  4 Mar 2005 15:05:16 +0100
+
+jackbeat (0.3.3)
+
+    * Looping couldn't be turned off : fixed
+    * Experimental code for pattern nesting is very krash-prone : hidden until
+    it gets better
+
+ -- Olivier Guilyardi <olivier {at} xung {dot} org>  Sun, 20 Feb 2005 20:09:42 +0100
+
+jackbeat (0.3.2)
+
+    * Loading and saving song got rewritten : a new format is now implemented.
+      It stores metadata in an XML file, and samples as separate files in
+      a subdirectory. All that is then packed in a tar archive. 
+    * The above feature adds a new requirement : libxml2 (http://xmlsoft.org)
+    
+ -- Olivier Guilyardi <olivier {at} xung {dot} org>  Wed,  6 Oct 2004 01:10:27 +0200
+
+jackbeat (0.3.1)
+
+    * ftok() was passed the content of argv[0] (program name) as pathname.
+      That easily failed : fixed. Thanks Leito <leito69 {at} yahoo {dot} com>
+
+ -- Olivier Guilyardi <olivier {at} xung {dot} org>  Fri, 20 Aug 2004 14:17:18 +0200
+
+jackbeat (0.3.0)
+
+    * Note : This is a fork from version 0.2, so it does not include the
+      bugfixes of the subsequent 0.2 serie (0.2.1,  ...). 80% of 
+      the code has been rewritten, so changes are countless. I won't
+      enumerate them in here. This version is a development release,
+      with (enjoy ;-) broken features and high unstability.
+    * TODO file : that is the main new feature :-) Please contribute.  
+    * Improved the visual effect while playing : now beats are highlighted
+      according to the sample duration
+   
+ -- Olivier Guilyardi <olivier {at} xung {dot} org>  Mon, 16 Aug 2004 21:08:02 +0200
+ 
+jackbeat (0.2)
+
+    * The first frames of samples where almost never played : fixed
+    * Added support for JACK transport control (start, stop, and frame position)
+    * While playing, loading a sample always caused it to be played once:fixed
+    * Added a highlight effect to follow the sequence progress
+    * Changing the bpm rate when playing sometimes resulted in a
+      segfault : fixed
+      
+ -- Olivier Guilyardi <olivier {at} xung {dot} org>  Sat, 26 Jun 2004 15:11:44 +0200
+
+jackbeat (0.1)
+
+    * Initial release
+
+ -- Olivier Guilyardi <olivier {at} xung {dot} org>  Thu, 24 Jun 2004 01:49:04 +0200
+

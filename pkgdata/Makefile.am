@@ -1,0 +1,1 @@
+SUBDIRS = glade help pixmaps
