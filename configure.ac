@@ -1,6 +1,6 @@
 AC_INIT([jackbeat],[0.7.6])
 AC_CANONICAL_HOST
-AM_INIT_AUTOMAKE(jackbeat,0.7.6)
+AM_INIT_AUTOMAKE([subdir-objects])
 AM_CONFIG_HEADER(src/config.h)
 AC_PROG_CC
 AC_PROG_INSTALL
@@ -143,6 +143,11 @@ PKG_CHECK_MODULES(LIBLO, liblo >= 0.22, true,
                   AC_MSG_ERROR([you need liblo >= 0.22 - http://liblo.sourceforge.net ]))
 AC_SUBST(LIBLO_CFLAGS)
 AC_SUBST(LIBLO_LIBS)
+
+PKG_CHECK_MODULES(GMODULE, gmodule-2.0 >= 2.0, true,
+                  AC_MSG_ERROR([you need gmodule >= 2.0 ]))
+AC_SUBST(GMODULE_CFLAGS)
+AC_SUBST(GMODULE_LIBS)
 
 AC_ARG_ENABLE([dmalloc], AS_HELP_STRING([--enable-dmalloc],
             [link against dmalloc, for memory debugging (default: no)]),

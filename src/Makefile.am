@@ -56,6 +56,7 @@ jackbeat_CFLAGS = \
     $(XML_CFLAGS) \
     $(SRC_CFLAGS) \
     $(LIBLO_CFLAGS) \
+    $(GMODULE_CFLAGS) \
     $(PHAT_CFLAGS) \
     $(GLADE_CFLAGS) \
     $(MACINTEGRATION_CFLAGS) 
@@ -79,6 +80,7 @@ jackbeat_LDADD = \
     $(XML_LIBS) \
     $(SRC_LIBS) \
     $(LIBLO_LIBS) \
+    $(GMODULE_LIBS) \
     $(PHAT_LIBS) \
     $(GLADE_LIBS) \
     $(MACINTEGRATION_LIBS) \
