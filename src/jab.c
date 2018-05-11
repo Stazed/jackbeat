@@ -30,6 +30,7 @@
 #include <locale.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include "config.h"
 #include "sequence.h"
@@ -82,7 +83,13 @@ jab_open (char *path, int mode, progress_callback_t progress_callback,
     *error = 0;
     FILE *fd;
     char wd[256];
-    getcwd (wd, 256);
+    
+    if (getcwd (wd, 256) == NULL)
+    {
+        DEBUG("ERROR: getcwd: %d", errno);
+        return NULL;
+    }
+
     DEBUG ("Current working directory : %s", wd);
     switch (mode)
     {

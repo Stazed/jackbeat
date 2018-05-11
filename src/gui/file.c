@@ -290,7 +290,11 @@ gui_file_export_sequence (gui_t * gui, guint action, GtkWidget * w)
         }
         else
         {
-            getcwd (filename, 512);
+            if (getcwd (filename, 512) == NULL)
+            {
+              DEBUG("ERROR: getcwd: %d", errno);
+              return;
+            }
             strcat (filename, "/");
             tmp = strdup (gui->filename);
             strcat (filename, basename (tmp));

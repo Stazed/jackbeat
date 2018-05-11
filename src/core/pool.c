@@ -59,11 +59,10 @@ static void *
 pool_thread_start (void * arg)
 {
     pool_thread_t *thread = (pool_thread_t *) arg;
-    int i = 0;
+
     while (!thread->pool->terminate)
     {
         pool_process_t **new_processes;
-        char str[160];
         while (msg_receive (thread->msg, (void *) &new_processes))
             thread->processes = new_processes;
 

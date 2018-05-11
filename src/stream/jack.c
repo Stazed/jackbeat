@@ -109,7 +109,7 @@ static stream_driver_port_t *
 port_add (stream_driver_t *self, char *name, stream_port_flags_t flags, void *port_data)
 {
     BIND (self, parent, data);
-    stream_driver_port_t *port;
+    stream_driver_port_t *port = NULL;
     if (data->client)
     {
         jack_port_t *jack_port = port_register (self, name, flags);

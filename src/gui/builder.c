@@ -129,7 +129,7 @@ find_descendant_by_name (GtkWidget *widget, char *name)
     GtkWidget *result = NULL;
     if (GTK_IS_WIDGET (widget) && GTK_IS_BUILDABLE (widget))
     {
-        char *buildable_name = gtk_buildable_get_name (GTK_BUILDABLE (widget));
+        const char *buildable_name = gtk_buildable_get_name (GTK_BUILDABLE (widget));
         if (buildable_name)
         {
             if (!strcmp (buildable_name, name))

@@ -226,7 +226,7 @@ remove_process (stream_driver_t *self, char *name)
         stream_driver_process_t *new = calloc (data->nprocesses - 1, sizeof (stream_driver_process_t));
 
         int i, j = 0;
-        char *old_name;
+        char *old_name = NULL;
         for (i = 0; i < data->nprocesses; i++)
         {
             if (strcmp (old[i].name, name))
@@ -239,7 +239,8 @@ remove_process (stream_driver_t *self, char *name)
                   "processes=%p nprocesses=%d",
                   new, data->nprocesses - 1);
 
-        free (old_name);
+        if(old_name != NULL)
+            free (old_name);
         free (old);
     }
     else

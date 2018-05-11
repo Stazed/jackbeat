@@ -31,6 +31,7 @@
 #include <libgen.h>
 #include <config.h>
 #include <assert.h>
+#include <errno.h>
 #include <unistd.h>
 #include <math.h>
 #include <sys/types.h>

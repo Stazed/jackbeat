@@ -151,7 +151,7 @@ slider_position_to_value (slider_t *slider, slider_state_t state, int position)
                   "lower", &lower,
                   NULL);
 
-    double value;
+    double value = 0.0f;
     if (slider->curve == SLIDER_LINEAR)
         value = ratio * (upper - lower);
     else if (slider->curve == SLIDER_DECIBEL)
@@ -169,7 +169,7 @@ static int
 slider_value_to_position (slider_t *slider, slider_state_t state, double value)
 {
     int position;
-    double ratio;
+    double ratio = 0.5f;
     if (slider->curve == SLIDER_LINEAR)
     {
         gdouble lower, upper;

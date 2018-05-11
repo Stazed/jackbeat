@@ -99,7 +99,7 @@ sample_display_set_data (SampleDisplay *s,
                          int len,
                          gboolean copy)
 {
-    int typesize, datacopylen;
+    int typesize = 0, datacopylen;
 
     g_return_if_fail (s != NULL);
     g_return_if_fail (IS_SAMPLE_DISPLAY (s));

@@ -169,6 +169,8 @@ song_on_sequence_destroy (event_t *event)
     ARRAY_REMOVE (sequence_t, song->sequences, song->sequences_num, sequence)
 }
 
+/* Currently song_lock and song_unlock are unused */
+/*
 static void
 song_lock (song_t *song)
 {
@@ -180,6 +182,7 @@ song_unlock (song_t *song)
 {
     sem_post (&(song->mutex));
 }
+*/
 
 pool_t *
 song_pool (song_t *song)

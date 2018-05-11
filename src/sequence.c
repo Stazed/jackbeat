@@ -1107,7 +1107,7 @@ sequence_new (stream_t *stream, char *name, int *error)
         return NULL;
     }
 
-    DEBUG ("sizeof(float): %d", sizeof (float));
+    DEBUG ("sizeof(float): %d", (int)sizeof (float));
 
     return sequence;
 }

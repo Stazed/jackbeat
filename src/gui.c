@@ -424,8 +424,6 @@ gui_clear_sequence (gui_t * gui, guint action, GtkWidget * w)
 static GtkWidget *
 gui_make_menubar (gui_t * gui, GtkItemFactoryEntry * items, gint nitems)
 {
-    static int first_run = 1;
-
     GtkItemFactory *item_factory;
     GtkAccelGroup *accel_group;
 
@@ -439,15 +437,15 @@ gui_make_menubar (gui_t * gui, GtkItemFactoryEntry * items, gint nitems)
                                                            "/File/Quit");
 
 #ifdef HAVE_GTK_QUARTZ
+    static int first_run = 1;
     if (first_run)
     {
         GtkWidget *item = gtk_item_factory_get_widget (item_factory, "/Edit/Preferences");
         IgeMacMenuGroup *group = ige_mac_menu_add_app_menu_group ();
         ige_mac_menu_add_app_menu_item (group, GTK_MENU_ITEM (item), NULL);
     }
-#endif
-
     first_run = 0;
+#endif
 
     return gtk_item_factory_get_widget (item_factory, "<main>");
 }
@@ -609,7 +607,7 @@ gui_confirm_exit (gui_t *gui, int transient, char *msg)
         gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_CENTER);
     }
 
-    gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), msg);
+    gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "%s", msg);
     confirm = (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_OK);
     gtk_widget_hide (dialog);
     return confirm;
