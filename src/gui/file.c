@@ -431,7 +431,6 @@ guimenutest  (GtkContainer *container, GtkWidget    *widget, gpointer      user_
 GtkWidget *
 gui_file_build_recent_samples_menu (gui_t *gui, int track)
 {
-    GtkWidget *item;
     GtkWidget *menu = gtk_menu_new ();
     g_signal_connect (G_OBJECT (menu), "add",
                       G_CALLBACK (guimenutest), (gpointer) gui);
@@ -440,7 +439,7 @@ gui_file_build_recent_samples_menu (gui_t *gui, int track)
 
     if (gui->rc->sample_history_num == 0)
     {
-        item = gui_misc_add_menu_item (menu, "#ghost", "<No sample>", NULL, NULL, NULL);
+        gui_misc_add_menu_item (menu, "#ghost", "<No sample>", NULL, NULL, NULL);
     }
     else
     {

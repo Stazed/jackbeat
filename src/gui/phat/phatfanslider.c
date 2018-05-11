@@ -507,7 +507,7 @@ phat_fan_slider_destroy (GtkObject* object)
 {
     GtkObjectClass* klass;
     PhatFanSlider* slider;
-    GtkWidget* widget;
+//    GtkWidget* widget;
 
     debug ("destroy %p\n", object);
 
@@ -516,7 +516,7 @@ phat_fan_slider_destroy (GtkObject* object)
 
     klass = GTK_OBJECT_CLASS (parent_class);
     slider = (PhatFanSlider*) object;
-    widget = GTK_WIDGET (object);
+//    widget = GTK_WIDGET (object);
 
     if (slider->arrow_cursor != NULL)
     {

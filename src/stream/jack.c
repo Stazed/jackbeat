@@ -137,7 +137,8 @@ port_rename (stream_driver_t *self, stream_driver_port_t *port, char *name)
     BIND (self, parent, data);
     parent->interface->port_rename (self, port, name);
     if (data->client && PORTDATA (port))
-        jack_port_set_name (PORTDATA (port), name);
+//        jack_port_set_name (PORTDATA (port), name); // Depreciated in newer versions but some distro's still use older version
+        jack_port_rename (data->client, PORTDATA (port), name);   // The newer version - not all support this
 }
 
 static void
@@ -152,15 +153,21 @@ port_remove (stream_driver_t *self, stream_driver_port_t *port)
         jack_port_unregister (data->client, jack_port);
 }
 
+#ifdef JACK_GET_LATENCY
 static int
 port_get_latency (stream_driver_t *self, stream_driver_port_t *port)
 {
+    /*
+     * 
+    void jack_port_get_latency_range (jack_port_t *port, jack_latency_callback_mode_t mode, jack_latency_range_t *range);
+    */
     BIND (self, parent, data);
     if (data->client)
         return jack_port_get_total_latency (data->client, PORTDATA (port));
     else
         return parent->interface->port_get_latency (self, port);
 }
+#endif // JACK_GET_LATENCY
 
 static void
 auto_connect (stream_driver_t *self, int active)
@@ -401,7 +408,9 @@ stream_driver_jack_new (const char *client_name, int auto_start)
     self->interface->port_rename       = port_rename;
     self->interface->port_remove       = port_remove;
     self->interface->port_touch        = port_touch;
+#ifdef JACK_GET_LATENCY
     self->interface->port_get_latency  = port_get_latency;
+#endif
     self->interface->auto_connect      = auto_connect;
     self->interface->get_sample_rate   = get_sample_rate;
     self->interface->get_position      = get_position;

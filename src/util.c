@@ -49,7 +49,9 @@
 
 #define DEBUG(M, ...) { printf("UTL  %s(): ", __func__); printf(M, ## __VA_ARGS__); printf("\n"); fflush(stdout); }
 
+#ifdef __WIN32__
 static char *root_path = NULL;
+#endif // __WIN32__
 
 char *
 util_resampler_type_to_str (int type)

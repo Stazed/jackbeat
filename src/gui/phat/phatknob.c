@@ -370,6 +370,8 @@ phat_knob_size_request (GtkWidget *widget, GtkRequisition *requisition)
     requisition->height = knob->size;
 }
 
+/* draw_arc and draw_knob are currently not used */
+/*
 static void
 draw_arc (GdkDrawable *drawable, dk_color_t *color, GdkGC *gc, GtkAllocation *alloc, float value, int step)
 {
@@ -415,6 +417,7 @@ draw_knob (GdkDrawable *drawable, GdkGC *bg_gc, GtkAllocation *alloc, float valu
         g_object_unref (G_OBJECT (gradient[i]));
 
 }
+*/ 
 
 static gint
 phat_knob_expose (GtkWidget *widget, GdkEventExpose *event)

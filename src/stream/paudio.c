@@ -401,6 +401,7 @@ deactivate (stream_driver_t *self)
     return 1;
 }
 
+#ifdef JACK_GET_LATENCY
 static int
 port_get_latency (stream_driver_t *self, stream_driver_port_t *port)
 {
@@ -411,6 +412,7 @@ port_get_latency (stream_driver_t *self, stream_driver_port_t *port)
         return 0;
 
 }
+#endif // JACK_GET_LATENCY
 
 stream_driver_t *
 stream_driver_portaudio_new (char *device_name, int sample_rate)
@@ -431,7 +433,9 @@ stream_driver_portaudio_new (char *device_name, int sample_rate)
     self->interface->destroy           = destroy;
     self->interface->activate          = activate;
     self->interface->deactivate        = deactivate;
+#ifdef JACK_GET_LATENCY
     self->interface->port_get_latency  = port_get_latency;
+#endif
 
     return self;
 }
