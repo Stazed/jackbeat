@@ -25,8 +25,7 @@
 
 #include <string.h>
 
-#include <gtk/gtksignal.h>
-#include <gtk/gtkmain.h>
+#include <gtk/gtk.h>
 
 #define XPOS_TO_OFFSET(x) (s->win_start + ((guint64)(x)) * s->win_length / s->width)
 #define OFFSET_RANGE(l, x) (x < 0 ? 0 : (x >= l ? l - 1 : x))

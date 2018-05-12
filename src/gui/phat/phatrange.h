@@ -29,8 +29,6 @@
 
 
 #include <gdk/gdk.h>
-#include <gtk/gtkadjustment.h>
-#include <gtk/gtkwidget.h>
 
 
 G_BEGIN_DECLS

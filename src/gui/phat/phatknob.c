@@ -25,8 +25,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <gtk/gtkmain.h>
-#include <gtk/gtksignal.h>
+#include <gtk/gtk.h>
 #include "gui/phat/phatknob.h"
 #include "gui/phat/phatrange.h"
 #include "util.h"

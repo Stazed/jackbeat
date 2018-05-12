@@ -24,7 +24,6 @@
 #define __PHAT_KNOB_H__
 
 #include <gdk/gdk.h>
-#include <gtk/gtkrange.h>
 
 G_BEGIN_DECLS
 

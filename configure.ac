@@ -9,6 +9,8 @@ AC_PROG_RANLIB
 GLOBAL_CFLAGS="-O3"
 GLOBAL_LDFLAGS=""
 
+#GLOBAL_CFLAGS+=" -DGTK_DISABLE_SINGLE_INCLUDES"
+
 case "$host_os" in
     darwin*) 
         GLOBAL_LDFLAGS="$GLOBAL_LDFLAGS -bind_at_load"

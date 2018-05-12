@@ -46,9 +46,7 @@
 #include <config.h>
 #include <stdio.h>
 #include <math.h>
-#include <gdk/gdkkeysyms.h>
-#include <gtk/gtkmain.h>
-#include <gtk/gtksignal.h>
+#include <gtk/gtk.h>
 
 #include "util.h"
 #include "phatrange.h"
