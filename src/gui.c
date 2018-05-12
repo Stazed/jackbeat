@@ -816,6 +816,19 @@ gui_menu_play_clicked (gui_t * gui, guint action, GtkWidget * w)
         sequence_start (gui->sequence);
 }
 
+void start_sequence()
+{
+    int i = 0;
+    for (i = 0; i < gui_instances_num; i++)
+    {
+        if(!sequence_is_playing (gui_instances[i]->sequence))
+        {
+            if (stream_is_connected(gui_instances[i]->stream))
+                sequence_start (gui_instances[i]->sequence);
+        }
+    }
+}
+
 G_MODULE_EXPORT void
 gui_pause_clicked (GtkWidget * widget, gui_t * gui) // Glade callback
 {

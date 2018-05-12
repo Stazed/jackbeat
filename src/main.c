@@ -165,6 +165,8 @@ osx_desktop_open_handler (const AppleEvent *event, AppleEvent *reply, long refCo
 }
 #endif
 
+int jack_transport=0; // default false 
+
 int
 main (int argc, char *argv[])
 {

@@ -29,6 +29,7 @@
 #define JACKBEAT_ARG_H
 
 #include <stdio.h>
+extern int jack_transport;
 
 typedef struct arg_t {
     char * client_name;

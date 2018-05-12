@@ -46,6 +46,7 @@ arg_usage (char * executable)
     printf ("  -h, --help                Display help information\n");
     printf ("  -n, --null-stream         Do not load any audio stream driver on startup\n");
     printf ("  -o, --osc-reflect         Print OSC interface to standard output\n");
+    printf ("  -j, --jack-transport      Force all sequences to follow jack transport\n");
     printf ("  -v, --version             Output version\n");
 }
 
@@ -65,6 +66,7 @@ arg_parse (int argc, char *argv[])
         {"help",        0, 0, 'h'},
         {"null-stream", 0, 0, 'n'},
         {"osc-reflect", 0, 0, 'o'},
+        {"jack-tranport",0, 0, 'j'},
         {"version",     0, 0, 'v'},
         {0,             0, 0, 0}
     };
@@ -81,7 +83,7 @@ arg_parse (int argc, char *argv[])
     arg->filename     = NULL;
     arg->null_stream  = 0;
 
-    while ((c = getopt_long (argc, argv, "c:hnov", long_options, &option_index)) != EOF)
+    while ((c = getopt_long (argc, argv, "c:hnojv", long_options, &option_index)) != EOF)
     {
         switch (c)
         {
@@ -98,6 +100,10 @@ arg_parse (int argc, char *argv[])
             case 'o':
                 osc_print_interface ();
                 exit (0);
+                break;
+                
+            case 'j': 
+                jack_transport=1; // true
                 break;
 
             case 'v':

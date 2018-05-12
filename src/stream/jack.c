@@ -27,6 +27,7 @@
 #include <jack/jack.h>
 #include "jack.h"
 #include "driver.h"
+#include "../gui.h"
 
 #define CLASSNAME "JackStreamDriver"
 #define CAST(self) stream_driver_cast (self, CLASSNAME)
@@ -277,7 +278,16 @@ process (jack_nframes_t nframes, void *_data)
     if (data->client)
     {
         jack_position_t info;
-        jack_transport_query (data->client, &info);
+        
+        jack_transport_state_t state = jack_transport_query (data->client, &info);
+        if(jack_transport)
+        {
+            if(state == JackTransportRolling )
+            {
+                start_sequence();
+            }
+        }
+        
         data->position = info.frame;
 
         stream_driver_port_t **ports = stream_driver_get_ports (self);

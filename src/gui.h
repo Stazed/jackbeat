@@ -32,5 +32,6 @@
 typedef struct gui_t gui_t;
 
 void gui_new(rc_t *rc, arg_t *arg, song_t *song, osc_t *osc, stream_t *stream);
+void start_sequence();
 
 #endif
