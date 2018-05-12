@@ -385,7 +385,7 @@ util_mktmpdir ()
 #endif
     char basename[] = "/" PACKAGE ".tmp.%%%%%%%%";
     int i;
-    srand (time (NULL));
+    srand(time(NULL)+getpid());
     for (i = 0; i < strlen (basename); i++)
     {
         if (basename[i] == '%')
