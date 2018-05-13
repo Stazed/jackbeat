@@ -443,19 +443,19 @@ gui_menubar (gui_t * gui)
     
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(gui->fileFileMenu), gui->fileMenu);
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->fileMenu), gui->newFileMi);
-    g_signal_connect(GTK_OBJECT(gui->newFileMi), "activate", GTK_SIGNAL_FUNC (gui_new_instance), gui);
+    g_signal_connect(G_OBJECT(gui->newFileMi), "activate", G_CALLBACK (gui_new_instance), gui);
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->fileMenu), gui->openFileMi);
-    g_signal_connect(GTK_OBJECT(gui->openFileMi), "activate", GTK_SIGNAL_FUNC (gui_file_load_sequence), gui);
+    g_signal_connect(G_OBJECT(gui->openFileMi), "activate", G_CALLBACK (gui_file_load_sequence), gui);
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->fileMenu), gui->saveFileMi);
-    g_signal_connect(GTK_OBJECT(gui->saveFileMi), "activate", GTK_SIGNAL_FUNC (gui_file_save_sequence), gui);
+    g_signal_connect(G_OBJECT(gui->saveFileMi), "activate", G_CALLBACK (gui_file_save_sequence), gui);
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->fileMenu), gui->saveAsFileMi);
-    g_signal_connect(GTK_OBJECT(gui->saveAsFileMi), "activate", GTK_SIGNAL_FUNC (gui_file_save_as_sequence), gui);
+    g_signal_connect(G_OBJECT(gui->saveAsFileMi), "activate", G_CALLBACK (gui_file_save_as_sequence), gui);
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->fileMenu), gui->exportFileMi);
-    g_signal_connect(GTK_OBJECT(gui->exportFileMi), "activate", GTK_SIGNAL_FUNC (gui_file_export_sequence), gui);
+    g_signal_connect(G_OBJECT(gui->exportFileMi), "activate", G_CALLBACK (gui_file_export_sequence), gui);
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->fileMenu), gui->closeFileMi);
-    g_signal_connect(GTK_OBJECT(gui->closeFileMi), "activate", GTK_SIGNAL_FUNC (gui_close_from_menu), gui);
+    g_signal_connect(G_OBJECT(gui->closeFileMi), "activate", G_CALLBACK (gui_close_from_menu), gui);
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->fileMenu), gui->quitFileMi);
-    g_signal_connect(GTK_OBJECT(gui->quitFileMi), "activate", GTK_SIGNAL_FUNC (gui_exit), gui);
+    g_signal_connect(G_OBJECT(gui->quitFileMi), "activate", G_CALLBACK (gui_exit), gui);
     
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->menubar), gui->fileFileMenu);
     
@@ -463,6 +463,7 @@ gui_menubar (gui_t * gui)
     return gui->menubar;
 }
 
+#ifdef USE_DEPRECIATED
 static GtkWidget *
 gui_make_menubar (gui_t * gui, GtkItemFactoryEntry * items, gint nitems)
 {
@@ -491,6 +492,7 @@ gui_make_menubar (gui_t * gui, GtkItemFactoryEntry * items, gint nitems)
 
     return gtk_item_factory_get_widget (item_factory, "<main>");
 }
+#endif // USE_DEPRECIATED
 
 static void
 gui_set_handler_active (gui_t *gui, GtkWidget *widget, gpointer handler, int state)
