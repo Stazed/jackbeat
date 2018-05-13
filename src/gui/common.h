@@ -113,6 +113,54 @@ struct gui_t {
 #ifdef USE_DEPRECIATED
     GtkTooltips * tooltips;
 #endif
+    
+    /* File menu */
+    GtkWidget * fileMenu;
+    GtkWidget * fileFileMenu;
+    GtkWidget * newFileMi;
+    GtkWidget * openFileMi;
+    GtkWidget * saveFileMi;
+    GtkWidget * saveAsFileMi;
+    GtkWidget * exportFileMi;
+    GtkWidget * closeFileMi;
+    GtkWidget * quitFileMi;
+    
+        /* Edit menu */
+    GtkWidget * editMenu;
+    GtkWidget * editEditMenu;
+    GtkWidget * addTrackEditMi;
+    GtkWidget * loadSampleEditMi;
+    GtkWidget * renameTrackEditMi;
+    GtkWidget * muteTrackEditMi;
+    GtkWidget * toggleTrackSoloEditMi;
+    GtkWidget * volumeTrackEditMi;      // submenu
+    GtkWidget * volUp2dbVolumeMi;
+    GtkWidget * volDown2dbVolumeMi;
+    GtkWidget * volSeparator1Mi;
+    GtkWidget * volUp3dbVolumeMi;
+    GtkWidget * volDown3dbVolumeMi;
+    GtkWidget * volSeparator2Mi;
+    GtkWidget * volResetVolumeMi;       // end submenu
+    GtkWidget * removeTrackEditMi;
+    GtkWidget * separatorEditMi;
+    GtkWidget * clearEditMi;
+    GtkWidget * doubleEditMi;
+    GtkWidget * transposeEditMi;
+    GtkWidget * clearSoloEditMi;
+    GtkWidget * separatorPrefsEditMi;
+    GtkWidget * preferencsEditMi;
+    
+    /* Playback menu */
+    GtkWidget * playbackMenu;
+    GtkWidget * playbackPlaybackMenu;
+    GtkWidget * playPausePlaybackMenu;
+    GtkWidget * rewindPlaybackMenu;
+    
+    /* Help menu */
+    GtkWidget * helpMenu;
+    GtkWidget * helpHelpMenu;
+    GtkWidget * aboutHelpMenu;
+    
     GtkWidget * menubar;
     GtkWidget * menubar_quit_item;
     gui_prefs_t * prefs;

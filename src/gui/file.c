@@ -153,8 +153,9 @@ gui_file_do_load_sequence (gui_t *gui, char *filename)
 }
 
 void
-gui_file_load_sequence (gui_t * gui, guint action, GtkWidget * w)
+gui_file_load_sequence (GtkWidget * w,  gpointer data)
 {
+    gui_t *gui = data;
     char *exts[] = {"jab", NULL};
     char *filename = gui_file_dialog_open ("Load Sequence", gui->window, gui->rc->sequence_wdir,
                                            "JAB files", exts);
@@ -271,8 +272,9 @@ gui_file_get_export_settings (gui_t *gui, int *framerate, int *sustain_type)
 }
 
 void
-gui_file_export_sequence (gui_t * gui, guint action, GtkWidget * w)
+gui_file_export_sequence (GtkWidget * w, gpointer data)
 {
+    gui_t * gui = data;
     char filename[512];
     char *tmp;
 
@@ -364,8 +366,9 @@ gui_file_do_save_sequence (gui_t * gui, char *filename)
 }
 
 void
-gui_file_save_as_sequence (gui_t * gui, guint action, GtkWidget * w)
+gui_file_save_as_sequence (GtkWidget * w, gpointer data)
 {
+    gui_t * gui = data;
     char filename[512];
     if (gui->filename_is_set)
         strcpy (filename, gui->filename);
@@ -394,15 +397,16 @@ gui_file_save_as_sequence (gui_t * gui, guint action, GtkWidget * w)
 }
 
 void
-gui_file_save_sequence (gui_t * gui, guint action, GtkWidget * w)
+gui_file_save_sequence (GtkWidget * w, gpointer data)
 {
+    gui_t * gui = data;
     if (gui->filename_is_set)
     {
         DEBUG ("Ok, we already have a filename. Let's try and save...");
         gui_file_do_save_sequence (gui, gui->filename);
     }
     else
-        gui_file_save_as_sequence (gui, 0, w);
+        gui_file_save_as_sequence (0, gui);
 }
 
 static void

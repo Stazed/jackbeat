@@ -32,9 +32,9 @@ gui_t *         gui_last_focus        = NULL;
 static int      signal_pipe[2];
 
 static void gui_clear_sequence (gui_t * gui, guint action, GtkWidget * w);
-static void gui_new_instance (gui_t * gui, guint action, GtkWidget * w);
-static void gui_close_from_menu (gui_t * gui, guint action, GtkWidget * w);
-static void gui_exit (gui_t * gui, guint action, GtkWidget * w);
+static void gui_new_instance (GtkWidget *widget, gpointer data);
+static void gui_close_from_menu (GtkWidget * w, gpointer data);
+static void gui_exit (GtkWidget * w, gpointer data);
 static void gui_duplicate_sequence (gui_t * gui, guint action, GtkWidget * w);
 static void gui_transpose_volumes_dialog (gui_t *gui, guint action, GtkWidget *widget);
 static void gui_about_dialog (gui_t *gui, guint action, GtkWidget *widget);
@@ -65,6 +65,7 @@ enum
     GUI_SHIFT_UP_BIG
 } ;
 
+#ifdef USE_DEPRECIATED
 static GtkItemFactoryEntry gui_menu_items[] = {
     /* File menu */
     {"/_File", NULL, NULL, 0, "<Branch>"},
@@ -126,8 +127,10 @@ static GtkItemFactoryEntry gui_menu_items[] = {
     {"/_Help/_About Jackbeat", NULL, gui_about_dialog, 1, "<StockItem>", GTK_STOCK_ABOUT},
 };
 
+
 static gint gui_menu_nitems =
         sizeof (gui_menu_items) / sizeof (gui_menu_items[0]);
+#endif // USE_DEPRECIATED
 
 void gui_toggle_sequence_properties (GtkWidget *widget, gui_t *gui);
 void gui_toggle_track_properties (GtkWidget *widget, gui_t *gui);
@@ -419,6 +422,45 @@ gui_clear_sequence (gui_t * gui, guint action, GtkWidget * w)
                 sequence_set_mask_beat (gui->sequence, i, j, 1);
             }
     }
+}
+
+
+static GtkWidget *
+gui_menubar (gui_t * gui)
+{
+    gui->menubar = gtk_menu_bar_new();
+    
+    gui->fileMenu = gtk_menu_new();
+    
+    gui->fileFileMenu = gtk_menu_item_new_with_label("File");
+    gui->newFileMi = gtk_menu_item_new_with_label("New");
+    gui->openFileMi = gtk_menu_item_new_with_label("Open");
+    gui->saveFileMi = gtk_menu_item_new_with_label("Save");
+    gui->saveAsFileMi = gtk_menu_item_new_with_label("Save as");
+    gui->exportFileMi = gtk_menu_item_new_with_label("Export waveform");
+    gui->closeFileMi = gtk_menu_item_new_with_label("Close");
+    gui->quitFileMi = gtk_menu_item_new_with_label("Quit");
+    
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(gui->fileFileMenu), gui->fileMenu);
+    gtk_menu_shell_append(GTK_MENU_SHELL(gui->fileMenu), gui->newFileMi);
+    g_signal_connect(GTK_OBJECT(gui->newFileMi), "activate", GTK_SIGNAL_FUNC (gui_new_instance), gui);
+    gtk_menu_shell_append(GTK_MENU_SHELL(gui->fileMenu), gui->openFileMi);
+    g_signal_connect(GTK_OBJECT(gui->openFileMi), "activate", GTK_SIGNAL_FUNC (gui_file_load_sequence), gui);
+    gtk_menu_shell_append(GTK_MENU_SHELL(gui->fileMenu), gui->saveFileMi);
+    g_signal_connect(GTK_OBJECT(gui->saveFileMi), "activate", GTK_SIGNAL_FUNC (gui_file_save_sequence), gui);
+    gtk_menu_shell_append(GTK_MENU_SHELL(gui->fileMenu), gui->saveAsFileMi);
+    g_signal_connect(GTK_OBJECT(gui->saveAsFileMi), "activate", GTK_SIGNAL_FUNC (gui_file_save_as_sequence), gui);
+    gtk_menu_shell_append(GTK_MENU_SHELL(gui->fileMenu), gui->exportFileMi);
+    g_signal_connect(GTK_OBJECT(gui->exportFileMi), "activate", GTK_SIGNAL_FUNC (gui_file_export_sequence), gui);
+    gtk_menu_shell_append(GTK_MENU_SHELL(gui->fileMenu), gui->closeFileMi);
+    g_signal_connect(GTK_OBJECT(gui->closeFileMi), "activate", GTK_SIGNAL_FUNC (gui_close_from_menu), gui);
+    gtk_menu_shell_append(GTK_MENU_SHELL(gui->fileMenu), gui->quitFileMi);
+    g_signal_connect(GTK_OBJECT(gui->quitFileMi), "activate", GTK_SIGNAL_FUNC (gui_exit), gui);
+    
+    gtk_menu_shell_append(GTK_MENU_SHELL(gui->menubar), gui->fileFileMenu);
+    
+    
+    return gui->menubar;
 }
 
 static GtkWidget *
@@ -1302,8 +1344,13 @@ gui_init (gui_t * gui)
     gui->window = gui_builder_get_widget (gui->builder, "main_window");
     gui_update_window_title (gui);
     gui->main_vbox = gui_builder_get_widget (gui->builder, "main_vbox");
+    
+    gui->menubar = gui_menubar(gui);
+    
+#ifdef USE_DEPRECIATED
     gui->menubar = gui_make_menubar (gui, gui_menu_items,
                                      gui_menu_nitems);
+#endif
 
     gtk_box_pack_start (GTK_BOX (gui->main_vbox), gui->menubar, FALSE, TRUE, 0);
 
@@ -1553,16 +1600,20 @@ gui_new_child (rc_t *rc, arg_t *arg, gui_t *parent, song_t *song,
     }
 }
 
+
+
 static void
-gui_new_instance (gui_t * gui, guint action, GtkWidget * w)
+gui_new_instance (GtkWidget *widget,  gpointer data )
 {
+    gui_t *gui = data;
     gui_new_child (gui->rc, gui->arg, gui, gui->song, NULL, NULL, gui->osc, gui->stream);
     gui_refresh (gui);
 }
 
 static void
-gui_close_from_menu (gui_t * gui, guint action, GtkWidget * w)
+gui_close_from_menu (GtkWidget * w, gpointer data)
 {
+    gui_t * gui = data;
     gui_close (NULL, NULL, gui);
 }
 
@@ -1577,14 +1628,15 @@ gui_save ()
             if (gui_instances[i]->filename_is_set)
                 gui_file_do_save_sequence (gui_instances[i], gui_instances[i]->filename);
             else
-                gui_file_save_as_sequence (gui_instances[i], 0, 0);
+                gui_file_save_as_sequence (0, gui_instances[i]);
         }
     }
 }
 
 static void
-gui_exit (gui_t * gui, guint action, GtkWidget * w)
+gui_exit (GtkWidget * w, gpointer data)
 {
+    gui_t * gui = data;
     // FIXME: not checking if there's any unsaved sequences
     if (gui_last_focus)
         gui = gui_last_focus;
@@ -1816,7 +1868,7 @@ deliver_signal (GIOChannel *source, GIOCondition cond, gpointer d)
 
         if (buf.signal == SIGINT)
         {
-            gui_exit (gui_last_focus, 0, 0);
+            gui_exit (0, gui_last_focus);
         }
     }
 

@@ -27,10 +27,10 @@ typedef void (* gui_file_selected_callback_t) (gui_t *gui, char *filename, void 
 
 void gui_file_load_sample(gui_t *gui, int track);
 sequence_t * gui_file_do_load_sequence(gui_t *gui, char *filename);
-void gui_file_load_sequence(gui_t * gui, guint action, GtkWidget * w);
-void gui_file_export_sequence(gui_t * gui, guint action, GtkWidget * w);
+void gui_file_load_sequence(GtkWidget * w, gpointer data);
+void gui_file_export_sequence(GtkWidget * w, gpointer data);
 int gui_file_do_save_sequence(gui_t * gui, char *filename);
-void gui_file_save_as_sequence(gui_t * gui, guint action, GtkWidget * w);
-void gui_file_save_sequence(gui_t * gui, guint action, GtkWidget * w);
+void gui_file_save_as_sequence(GtkWidget * w, gpointer data);
+void gui_file_save_sequence(GtkWidget * w, gpointer data);
 GtkWidget * gui_file_build_recent_samples_menu(gui_t *gui, int track);
 #endif
