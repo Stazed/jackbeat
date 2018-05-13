@@ -153,13 +153,13 @@ struct gui_t {
     /* Playback menu */
     GtkWidget * playbackMenu;
     GtkWidget * playbackPlaybackMenu;
-    GtkWidget * playPausePlaybackMenu;
-    GtkWidget * rewindPlaybackMenu;
+    GtkWidget * playPausePlaybackMi;
+    GtkWidget * rewindPlaybackMi;
     
     /* Help menu */
     GtkWidget * helpMenu;
     GtkWidget * helpHelpMenu;
-    GtkWidget * aboutHelpMenu;
+    GtkWidget * aboutHelpMi;
     
     GtkWidget * menubar;
     GtkWidget * menubar_quit_item;

@@ -32,19 +32,19 @@ gui_t *         gui_last_focus        = NULL;
 static int      signal_pipe[2];
 
 static void gui_clear_sequence (gui_t * gui, guint action, GtkWidget * w);
-static void gui_new_instance (GtkWidget *widget, gpointer data);
+static void gui_new_instance (GtkWidget * w, gpointer data);
 static void gui_close_from_menu (GtkWidget * w, gpointer data);
 static void gui_exit (GtkWidget * w, gpointer data);
 static void gui_duplicate_sequence (gui_t * gui, guint action, GtkWidget * w);
 static void gui_transpose_volumes_dialog (gui_t *gui, guint action, GtkWidget *widget);
-static void gui_about_dialog (gui_t *gui, guint action, GtkWidget *widget);
+static void gui_about_dialog (GtkWidget * w, gpointer data);
 static void gui_load_sample (gui_t * gui, guint action, GtkWidget * w);
 static void gui_rename_track (gui_t * gui, guint action, GtkWidget * w);
 static void gui_mute_track (gui_t * gui, guint action, GtkWidget * w);
 static void gui_solo_track (gui_t * gui, guint action, GtkWidget * w);
 static void gui_clear_solo (gui_t * gui, guint action, GtkWidget * w);
-static void gui_menu_play_clicked (gui_t * gui, guint action, GtkWidget * w);
-static void gui_menu_rewind_clicked (gui_t * gui, guint action, GtkWidget * w);
+static void gui_menu_play_clicked (GtkWidget * w, gpointer data);
+static void gui_menu_rewind_clicked (GtkWidget * w, gpointer data);
 G_MODULE_EXPORT gboolean gui_track_name_focus_lost (GtkWidget * widget, GdkEventFocus *event, gui_t * gui); // Glade callback
 static void gui_add_track (gui_t * gui, guint action, GtkWidget * w);
 static void gui_remove_track (gui_t * gui, guint action, GtkWidget * w);
@@ -314,8 +314,10 @@ gui_wait_cursor (GdkWindow *window, int state)
 }
 
 static void
-gui_about_dialog (gui_t *gui, guint action, GtkWidget *widget)
+gui_about_dialog (GtkWidget * w, gpointer data)
 {
+    gui_t *gui = data;
+    
     GdkPixbuf *logo = gdk_pixbuf_new_from_file (util_pkgdata_path ("pixmaps/jackbeat_logo.png"), NULL);
     char *license;
     g_file_get_contents (util_pkgdata_path ("help/COPYING"), &license, NULL, NULL);
@@ -432,6 +434,7 @@ gui_menubar (gui_t * gui)
     
     gui->fileMenu = gtk_menu_new();
     
+    /* File menu */
     gui->fileFileMenu = gtk_menu_item_new_with_label("File");
     gui->newFileMi = gtk_menu_item_new_with_label("New");
     gui->openFileMi = gtk_menu_item_new_with_label("Open");
@@ -459,6 +462,30 @@ gui_menubar (gui_t * gui)
     
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->menubar), gui->fileFileMenu);
     
+    /* Playback menu */
+    gui->playbackMenu = gtk_menu_new();
+    gui->playbackPlaybackMenu = gtk_menu_item_new_with_label("Playback");
+    gui->playPausePlaybackMi = gtk_menu_item_new_with_label("Play/Pause");
+    gui->rewindPlaybackMi = gtk_menu_item_new_with_label("Rewind");
+    
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(gui->playbackPlaybackMenu), gui->playbackMenu);
+    gtk_menu_shell_append(GTK_MENU_SHELL(gui->playbackMenu), gui->playPausePlaybackMi);
+    g_signal_connect(G_OBJECT(gui->playPausePlaybackMi), "activate", G_CALLBACK (gui_menu_play_clicked), gui);
+    gtk_menu_shell_append(GTK_MENU_SHELL(gui->playbackMenu), gui->rewindPlaybackMi);
+    g_signal_connect(G_OBJECT(gui->rewindPlaybackMi), "activate", G_CALLBACK (gui_menu_rewind_clicked), gui);
+    
+    gtk_menu_shell_append(GTK_MENU_SHELL(gui->menubar), gui->playbackPlaybackMenu);
+    
+    /* Help menu */
+    gui->helpMenu = gtk_menu_new();
+    gui->helpHelpMenu  = gtk_menu_item_new_with_label("Help");
+    gui->aboutHelpMi  = gtk_menu_item_new_with_label("About Jackbeat");
+    
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(gui->helpHelpMenu), gui->helpMenu);
+    gtk_menu_shell_append(GTK_MENU_SHELL(gui->helpMenu), gui->aboutHelpMi);
+    g_signal_connect(G_OBJECT(gui->aboutHelpMi), "activate", G_CALLBACK (gui_about_dialog), gui);
+    
+    gtk_menu_shell_append(GTK_MENU_SHELL(gui->menubar), gui->helpHelpMenu);
     
     return gui->menubar;
 }
@@ -854,8 +881,9 @@ gui_play_clicked (GtkWidget * widget, gui_t * gui) // Glade callback
 }
 
 static void
-gui_menu_play_clicked (gui_t * gui, guint action, GtkWidget * w)
+gui_menu_play_clicked (GtkWidget * w, gpointer data)
 {
+    gui_t * gui = data;
     if (sequence_is_playing (gui->sequence))
         sequence_stop (gui->sequence);
     else
@@ -888,8 +916,9 @@ gui_rewind_clicked (GtkWidget * widget, gui_t * gui) // Glade callback
 }
 
 static void
-gui_menu_rewind_clicked (gui_t * gui, guint action, GtkWidget * w)
+gui_menu_rewind_clicked (GtkWidget * w, gpointer data)
 {
+    gui_t * gui = data;
     gui_rewind_clicked (w, gui);
 }
 
