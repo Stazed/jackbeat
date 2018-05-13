@@ -154,7 +154,7 @@ port_remove (stream_driver_t *self, stream_driver_port_t *port)
         jack_port_unregister (data->client, jack_port);
 }
 
-#ifdef JACK_GET_LATENCY
+#ifdef USE_DEPRECIATED
 static int
 port_get_latency (stream_driver_t *self, stream_driver_port_t *port)
 {
@@ -168,7 +168,7 @@ port_get_latency (stream_driver_t *self, stream_driver_port_t *port)
     else
         return parent->interface->port_get_latency (self, port);
 }
-#endif // JACK_GET_LATENCY
+#endif // USE_DEPRECIATED
 
 static void
 auto_connect (stream_driver_t *self, int active)
@@ -418,7 +418,7 @@ stream_driver_jack_new (const char *client_name, int auto_start)
     self->interface->port_rename       = port_rename;
     self->interface->port_remove       = port_remove;
     self->interface->port_touch        = port_touch;
-#ifdef JACK_GET_LATENCY
+#ifdef USE_DEPRECIATED
     self->interface->port_get_latency  = port_get_latency;
 #endif
     self->interface->auto_connect      = auto_connect;

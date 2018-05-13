@@ -124,13 +124,13 @@ auto_connect (stream_driver_t *self, int active) { }
 static void
 port_touch (stream_driver_t *self, stream_driver_port_t *port) { }
 
-#ifdef JACK_GET_LATENCY
+#ifdef USE_DEPRECIATED
 static int
 port_get_latency (stream_driver_t *self, stream_driver_port_t *port)
 {
     return 0;
 }
-#endif // JACK_GET_LATENCY
+#endif // USE_DEPRECIATED
 
 static int
 get_buffer_size (stream_driver_t *self)
@@ -479,7 +479,7 @@ stream_driver_new ()
     self->interface->port_get_buffer   = port_get_buffer;
     self->interface->port_remove       = port_remove;
     self->interface->port_touch        = port_touch;
-#ifdef JACK_GET_LATENCY
+#ifdef USE_DEPRECIATED
     self->interface->port_get_latency  = port_get_latency;
 #endif
     self->interface->auto_connect      = auto_connect;

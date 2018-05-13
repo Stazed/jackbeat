@@ -90,13 +90,13 @@ stream_port_touch (stream_t *self, stream_port_t *port)
     self->driver->interface->port_touch (self->driver, port->driver_port);
 }
 
-#ifdef JACK_GET_LATENCY
+#ifdef USE_DEPRECIATED
 int
 stream_port_get_latency (stream_t *self, stream_port_t *port)
 {
     return self->driver->interface->port_get_latency (self->driver, port->driver_port);
 }
-#endif // JACK_GET_LATENCY
+#endif // USE_DEPRECIATED
 
 int
 stream_get_buffer_size (stream_t *self)
