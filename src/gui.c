@@ -624,7 +624,9 @@ gui_close (GtkWidget * widget, GdkEvent  *event, gui_t * gui) // Glade callback
         sequence_destroy (gui->sequence);
         event_unsubscribe_all (gui);
         gui_prefs_cleanup (gui);
+#ifdef USE_DEPRECIATED
         gtk_object_destroy (GTK_OBJECT (gui->tooltips));
+#endif
         gui_builder_destroy (gui->builder);
         ARRAY_REMOVE (gui_t, gui_instances, gui_instances_num, gui);
         if (gui_instances_num == 0)
@@ -1523,7 +1525,10 @@ gui_new_child (rc_t *rc, arg_t *arg, gui_t *parent, song_t *song,
         gui->filename_is_set = 0;
     }
 
+#ifdef USE_DEPRECIATED
     gui->tooltips = gtk_tooltips_new ();
+#endif
+    
     gui_init (gui);
 
     DEBUG ("Starting GUI");

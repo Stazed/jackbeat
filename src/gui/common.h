@@ -110,7 +110,9 @@ struct gui_t {
     GtkWidget * rewind;
     GtkWidget * progress_window;
     GtkWidget * progress_bar;
+#ifdef USE_DEPRECIATED
     GtkTooltips * tooltips;
+#endif
     GtkWidget * menubar;
     GtkWidget * menubar_quit_item;
     gui_prefs_t * prefs;
