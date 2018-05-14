@@ -224,7 +224,7 @@ slider_update_pixmap (slider_t *slider, slider_state_t state)
     {
         gdk_draw_drawable (
                            slider->pixmaps[state],
-                           slider->layout->style->fg_gc[GTK_WIDGET_STATE (slider->layout)],
+                           slider->layout->style->fg_gc[gtk_widget_get_state (slider->layout)],
                            slider->gradients[state],
                            0, 0,
                            0, 0, slider->allocs[state]->width, slider->allocs[state]->height);
@@ -426,7 +426,7 @@ slider_expose (GtkWidget *layout, GdkEventExpose *event, slider_t *slider)
 
             gdk_draw_drawable (
                                GTK_LAYOUT (layout)->bin_window,
-                               layout->style->fg_gc[GTK_WIDGET_STATE (layout)],
+                               layout->style->fg_gc[gtk_widget_get_state (layout)],
                                pixmap,
                                srcx, srcy,
                                target.x, target.y, target.width, target.height);

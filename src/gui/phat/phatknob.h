@@ -29,7 +29,7 @@ G_BEGIN_DECLS
 
 #define PHAT_KNOB(obj)          G_TYPE_CHECK_INSTANCE_CAST(obj, phat_knob_get_type(), PhatKnob)
 #define PHAT_KNOB_CLASS(klass)  GTK_CHECK_CLASS_CAST(klass, phat_knob_get_type(), PhatKnobClass)
-#define PHAT_IS_KNOB(obj)       GTK_CHECK_TYPE(obj, phat_knob_get_type())
+#define PHAT_IS_KNOB(obj)       G_TYPE_CHECK_INSTANCE_TYPE(obj, phat_knob_get_type())
 #define PHAT_TYPE_KNOB          (phat_knob_get_type ( ))
 
 

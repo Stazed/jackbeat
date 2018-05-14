@@ -253,7 +253,7 @@ sample_display_set_mixer_position (SampleDisplay *s,
         s->mixerpos = offset;
         GdkRectangle area = { 0, 0, s->width, s->height };
 
-        if (GTK_WIDGET_MAPPED (GTK_WIDGET (s)))
+        if (gtk_widget_get_mapped (GTK_WIDGET (s)))
         {
             // By passing true to the queue_draw argument, sample_display_draw_update() will call
             // gtk_widget_queue_draw_area(). This provides the best result on Gtk-Quartz (Mac OS X),
@@ -313,7 +313,7 @@ sample_display_size_allocate (GtkWidget *widget,
     g_return_if_fail (allocation != NULL);
 
     widget->allocation = *allocation;
-    if (GTK_WIDGET_REALIZED (widget))
+    if (gtk_widget_get_realized (widget))
     {
         s = SAMPLE_DISPLAY (widget);
 
@@ -335,7 +335,7 @@ sample_display_realize (GtkWidget *widget)
     g_return_if_fail (widget != NULL);
     g_return_if_fail (IS_SAMPLE_DISPLAY (widget));
 
-    GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
+    gtk_widget_set_realized (widget, GTK_REALIZED);
     s = SAMPLE_DISPLAY (widget);
 
     attributes.x = widget->allocation.x;
@@ -714,7 +714,7 @@ sample_display_idle_draw_function (SampleDisplay *s)
 {
     GdkRectangle area = { 0, 0, s->width, s->height };
 
-    if (GTK_WIDGET_MAPPED (GTK_WIDGET (s)))
+    if (gtk_widget_get_mapped (GTK_WIDGET (s)))
     {
         sample_display_draw_update (GTK_WIDGET (s), &area, FALSE);
     }
@@ -1022,24 +1022,24 @@ sample_display_class_init (SampleDisplayClass *class)
 
     sample_display_signals[SIG_SELECTION_CHANGED] = gtk_signal_new ("selection_changed",
                                                                     GTK_RUN_FIRST,
-                                                                    GTK_CLASS_TYPE (object_class),
-                                                                    GTK_SIGNAL_OFFSET (SampleDisplayClass, selection_changed),
+                                                                    G_TYPE_FROM_CLASS (object_class),
+                                                                    G_STRUCT_OFFSET (SampleDisplayClass, selection_changed),
                                                                     gtk_marshal_NONE__INT_INT,
                                                                     GTK_TYPE_NONE, 2,
                                                                     GTK_TYPE_INT,
                                                                     GTK_TYPE_INT);
     sample_display_signals[SIG_LOOP_CHANGED] = gtk_signal_new ("loop_changed",
                                                                GTK_RUN_FIRST,
-                                                               GTK_CLASS_TYPE (object_class),
-                                                               GTK_SIGNAL_OFFSET (SampleDisplayClass, loop_changed),
+                                                               G_TYPE_FROM_CLASS (object_class),
+                                                               G_STRUCT_OFFSET (SampleDisplayClass, loop_changed),
                                                                gtk_marshal_NONE__INT_INT,
                                                                GTK_TYPE_NONE, 2,
                                                                GTK_TYPE_INT,
                                                                GTK_TYPE_INT);
     sample_display_signals[SIG_WINDOW_CHANGED] = gtk_signal_new ("window_changed",
                                                                  GTK_RUN_FIRST,
-                                                                 GTK_CLASS_TYPE (object_class),
-                                                                 GTK_SIGNAL_OFFSET (SampleDisplayClass, window_changed),
+                                                                 G_TYPE_FROM_CLASS (object_class),
+                                                                 G_STRUCT_OFFSET (SampleDisplayClass, window_changed),
                                                                  gtk_marshal_NONE__INT_INT,
                                                                  GTK_TYPE_NONE, 2,
                                                                  GTK_TYPE_INT,

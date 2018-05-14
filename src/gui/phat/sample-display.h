@@ -27,7 +27,7 @@
 
 #define SAMPLE_DISPLAY(obj)          G_TYPE_CHECK_INSTANCE_CAST (obj, sample_display_get_type (), SampleDisplay)
 #define SAMPLE_DISPLAY_CLASS(klass)  G_TYPE_CHECK_CLASS_CAST (klass, sample_display_get_type (), SampleDisplayClass)
-#define IS_SAMPLE_DISPLAY(obj)       GTK_CHECK_TYPE (obj, sample_display_get_type ())
+#define IS_SAMPLE_DISPLAY(obj)       G_TYPE_CHECK_INSTANCE_TYPE (obj, sample_display_get_type ())
 
 typedef struct _SampleDisplay SampleDisplay;
 typedef struct _SampleDisplayClass SampleDisplayClass;

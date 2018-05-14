@@ -302,7 +302,7 @@ gui_sequence_editor_control_update_bg (gui_sequence_editor_t *self, int active_t
                                 0, 0, width, self->top_padding);
             gdk_draw_drawable (
                                self->bg,
-                               layout->style->fg_gc[GTK_WIDGET_STATE (layout)],
+                               layout->style->fg_gc[ gtk_widget_get_state (layout)],
                                item,
                                0, 0,
                                0, i * track_height + self->top_padding, width, track_height);
@@ -531,7 +531,7 @@ gui_sequence_editor_control_expose_event (GtkWidget *widget, GdkEventExpose *eve
     {
         gdk_draw_drawable (
                            GTK_LAYOUT (widget)->bin_window,
-                           widget->style->fg_gc[GTK_WIDGET_STATE (widget)],
+                           widget->style->fg_gc[gtk_widget_get_state (widget)],
                            self->bg,
                            event->area.x, event->area.y,
                            event->area.x, event->area.y,
@@ -674,7 +674,7 @@ gui_sequence_editor_animate (gpointer data)
     int i;
     int tracks_num = sequence_get_tracks_num (self->sequence);
     event_process_queue (self);
-    if (sequence_is_playing (self->sequence) && self->layout && GTK_WIDGET_VISIBLE (self->layout))
+    if (sequence_is_playing (self->sequence) && self->layout && gtk_widget_get_visible (self->layout))
     {
         for (i = 0; i < tracks_num; i++)
         {

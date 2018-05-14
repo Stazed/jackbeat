@@ -567,7 +567,7 @@ phat_range_size_allocate (GtkWidget     *widget,
 
     widget->allocation = *allocation;
 
-    if (GTK_WIDGET_REALIZED (range))
+    if (gtk_widget_get_realized (GTK_WIDGET(range)))
         gdk_window_move_resize (range->event_window,
                                 widget->allocation.x,
                                 widget->allocation.y,

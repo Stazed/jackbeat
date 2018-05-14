@@ -142,7 +142,7 @@ toggle_update_pixmap (toggle_t *toggle)
     {
         gdk_draw_drawable (
                            toggle->pixmap,
-                           toggle->layout->style->fg_gc[GTK_WIDGET_STATE (toggle->layout)],
+                           toggle->layout->style->fg_gc[gtk_widget_get_state (toggle->layout)],
                            toggle->gradients[toggle->active],
                            0, 0,
                            0, 0, toggle->alloc->width, toggle->alloc->height);
@@ -150,7 +150,7 @@ toggle_update_pixmap (toggle_t *toggle)
         PangoLayout *layout = toggle_create_pango_layout (toggle, toggle->hover);
         int lwidth, lheight;
         pango_layout_get_pixel_size (layout, &lwidth, &lheight);
-        gdk_draw_layout (toggle->pixmap, toggle->layout->style->fg_gc[GTK_WIDGET_STATE (toggle->layout)],
+        gdk_draw_layout (toggle->pixmap, toggle->layout->style->fg_gc[gtk_widget_get_state (toggle->layout)],
                          (toggle->alloc->width - lwidth) / 2,
                          (toggle->alloc->height - lheight) / 2, layout);
         g_object_unref (layout);
@@ -279,7 +279,7 @@ toggle_expose (GtkWidget *layout, GdkEventExpose *event, toggle_t *toggle)
 
             gdk_draw_drawable (
                                GTK_LAYOUT (layout)->bin_window,
-                               layout->style->fg_gc[GTK_WIDGET_STATE (layout)],
+                               layout->style->fg_gc[gtk_widget_get_state (layout)],
                                toggle->pixmap,
                                srcx, srcy,
                                target.x, target.y, target.width, target.height);

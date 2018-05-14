@@ -1160,13 +1160,13 @@ phat_fan_slider_button_release (GtkWidget*      widget,
                            slider->xclick_root,
                            slider->yclick_root);
 
-        if (GTK_WIDGET_VISIBLE (slider->fan_window))
+        if (gtk_widget_get_visible (slider->fan_window))
             gtk_widget_hide (slider->fan_window);
 
-        if (GTK_WIDGET_VISIBLE (slider->hint_window0))
+        if (gtk_widget_get_visible (slider->hint_window0))
             gtk_widget_hide (slider->hint_window0);
 
-        if (GTK_WIDGET_VISIBLE (slider->hint_window1))
+        if (gtk_widget_get_visible (slider->hint_window1))
             gtk_widget_hide (slider->hint_window1);
     }
 
@@ -1315,7 +1315,7 @@ phat_fan_slider_motion_notify (GtkWidget*      widget,
         gdk_window_get_geometry (slider->event_window,
                                  NULL, NULL, &width, NULL, NULL);
 
-        if (GTK_WIDGET_VISIBLE (slider->fan_window))
+        if (gtk_widget_get_visible (slider->fan_window))
         {
             if (event->x_root > slider->xclick_root)
             {
@@ -1370,7 +1370,7 @@ phat_fan_slider_motion_notify (GtkWidget*      widget,
         gdk_window_get_geometry (slider->event_window,
                                  NULL, NULL, NULL, &height, NULL);
 
-        if (GTK_WIDGET_VISIBLE (slider->fan_window))
+        if (gtk_widget_get_visible (slider->fan_window))
         {
             if (event->y_root > slider->yclick_root)
             {
@@ -1421,7 +1421,7 @@ phat_fan_slider_motion_notify (GtkWidget*      widget,
     gtk_widget_queue_draw (widget);
 
     /* necessary in case update_fan() doesn't get called */
-    if (GTK_WIDGET_VISIBLE (slider->fan_window))
+    if (gtk_widget_get_visible (slider->fan_window))
         gtk_widget_queue_draw (slider->fan_window);
 
 skip:
@@ -1496,10 +1496,10 @@ phat_fan_slider_leave_notify (GtkWidget* widget,
         slider->state = STATE_NORMAL;
     }
 
-    if (GTK_WIDGET_VISIBLE (slider->hint_window0))
+    if (gtk_widget_get_visible (slider->hint_window0))
         gtk_widget_hide (slider->hint_window0);
 
-    if (GTK_WIDGET_VISIBLE (slider->hint_window1))
+    if (gtk_widget_get_visible (slider->hint_window1))
         gtk_widget_hide (slider->hint_window1);
 
 
@@ -1680,7 +1680,7 @@ phat_fan_slider_update_value (PhatFanSlider* slider,
 
     if (slider->orientation == GTK_ORIENTATION_VERTICAL)
     {
-        if (GTK_WIDGET_DRAWABLE (slider->fan_window)
+        if (gtk_widget_is_drawable (slider->fan_window)
             && (x_root != slider->xclick_root))
         {
             length = phat_fan_slider_get_fan_length (slider);
@@ -1695,7 +1695,7 @@ phat_fan_slider_update_value (PhatFanSlider* slider,
     }
     else
     {
-        if (GTK_WIDGET_DRAWABLE (slider->fan_window)
+        if (gtk_widget_is_drawable (slider->fan_window)
             && (y_root != slider->yclick_root))
         {
             length = phat_fan_slider_get_fan_length (slider);
@@ -1762,12 +1762,12 @@ phat_fan_slider_update_fan (PhatFanSlider* slider,
             slider->cur_fan.height = fan_max_height;
             slider->direction = 1;
 
-            if (!GTK_WIDGET_VISIBLE (slider->fan_window))
+            if (!gtk_widget_get_visible (slider->fan_window))
                 gtk_window_present (GTK_WINDOW (slider->fan_window));
 
-            if (GTK_WIDGET_VISIBLE (slider->hint_window0))
+            if (gtk_widget_get_visible (slider->hint_window0))
                 gtk_widget_hide (slider->hint_window0);
-            if (GTK_WIDGET_VISIBLE (slider->hint_window1))
+            if (gtk_widget_get_visible (slider->hint_window1))
                 gtk_widget_hide (slider->hint_window1);
         }
         else if (x < 0)
@@ -1779,15 +1779,15 @@ phat_fan_slider_update_fan (PhatFanSlider* slider,
             slider->cur_fan.height = fan_max_height;
             slider->direction = 0;
 
-            if (!GTK_WIDGET_VISIBLE (slider->fan_window))
+            if (!gtk_widget_get_visible (slider->fan_window))
                 gtk_window_present (GTK_WINDOW (slider->fan_window));
 
-            if (GTK_WIDGET_VISIBLE (slider->hint_window0))
+            if (gtk_widget_get_visible (slider->hint_window0))
                 gtk_widget_hide (slider->hint_window0);
-            if (GTK_WIDGET_VISIBLE (slider->hint_window1))
+            if (gtk_widget_get_visible (slider->hint_window1))
                 gtk_widget_hide (slider->hint_window1);
         }
-        else if (GTK_WIDGET_VISIBLE (slider->fan_window))
+        else if (gtk_widget_get_visible (slider->fan_window))
         {
             gtk_widget_hide (slider->fan_window);
         }
@@ -1803,12 +1803,12 @@ phat_fan_slider_update_fan (PhatFanSlider* slider,
             slider->cur_fan.height = height;
             slider->direction = 1;
 
-            if (!GTK_WIDGET_VISIBLE (slider->fan_window))
+            if (!gtk_widget_get_visible (slider->fan_window))
                 gtk_window_present (GTK_WINDOW (slider->fan_window));
 
-            if (GTK_WIDGET_VISIBLE (slider->hint_window0))
+            if (gtk_widget_get_visible (slider->hint_window0))
                 gtk_widget_hide (slider->hint_window0);
-            if (GTK_WIDGET_VISIBLE (slider->hint_window1))
+            if (gtk_widget_get_visible (slider->hint_window1))
                 gtk_widget_hide (slider->hint_window1);
         }
         else if (y < 0)
@@ -1820,15 +1820,15 @@ phat_fan_slider_update_fan (PhatFanSlider* slider,
             slider->cur_fan.height = height;
             slider->direction = 0;
 
-            if (!GTK_WIDGET_VISIBLE (slider->fan_window))
+            if (!gtk_widget_get_visible (slider->fan_window))
                 gtk_window_present (GTK_WINDOW (slider->fan_window));
 
-            if (GTK_WIDGET_VISIBLE (slider->hint_window0))
+            if (gtk_widget_get_visible (slider->hint_window0))
                 gtk_widget_hide (slider->hint_window0);
-            if (GTK_WIDGET_VISIBLE (slider->hint_window1))
+            if (gtk_widget_get_visible (slider->hint_window1))
                 gtk_widget_hide (slider->hint_window1);
         }
-        else if (GTK_WIDGET_VISIBLE (slider->fan_window))
+        else if (gtk_widget_get_visible (slider->fan_window))
         {
             gtk_widget_hide (slider->fan_window);
         }
@@ -2036,7 +2036,7 @@ phat_fan_slider_adjustment_changed (GtkAdjustment* adjustment,
 
     gtk_widget_queue_draw (GTK_WIDGET (slider));
 
-    if (GTK_WIDGET_REALIZED (widget))
+    if (gtk_widget_get_realized (widget))
         gdk_window_process_updates (widget->window, FALSE);
 
     g_signal_emit (G_OBJECT (slider),
@@ -2058,7 +2058,7 @@ phat_fan_slider_adjustment_value_changed (GtkAdjustment* adjustment,
 
     gtk_widget_queue_draw (widget);
 
-    if (GTK_WIDGET_REALIZED (widget))
+    if (gtk_widget_get_realized (widget))
         gdk_window_process_updates (widget->window, FALSE);
 
     g_signal_emit (G_OBJECT (slider),
