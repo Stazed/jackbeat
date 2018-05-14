@@ -485,8 +485,9 @@ gui_prefs_osc_changed (GtkWidget *widget, gui_t *gui) // Glade callback
 }
 
 void
-gui_prefs_run (gui_t *gui, guint action, GtkWidget *widget)
+gui_prefs_run (GtkWidget * w, gpointer data)
 {
+    gui_t *gui = data;
     prefs_running = 1;
     gui_prefs_t *prefs = gui->prefs;
 

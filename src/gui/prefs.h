@@ -29,7 +29,7 @@ typedef struct gui_prefs_t gui_prefs_t;
 
 void gui_prefs_init(gui_t *gui);
 void gui_prefs_cleanup(gui_t *gui);
-void gui_prefs_run(gui_t *gui, guint action, GtkWidget *widget);
+void gui_prefs_run(GtkWidget * w, gpointer data);
 int gui_prefs_is_running(gui_t *gui);
 void gui_prefs_update_audio_status(gui_t *gui);
 

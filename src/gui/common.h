@@ -125,7 +125,7 @@ struct gui_t {
     GtkWidget * closeFileMi;
     GtkWidget * quitFileMi;
     
-        /* Edit menu */
+    /* Edit menu */
     GtkWidget * editMenu;
     GtkWidget * editEditMenu;
     GtkWidget * addTrackEditMi;
@@ -133,7 +133,8 @@ struct gui_t {
     GtkWidget * renameTrackEditMi;
     GtkWidget * muteTrackEditMi;
     GtkWidget * toggleTrackSoloEditMi;
-    GtkWidget * volumeTrackEditMi;      // submenu
+    GtkWidget * volumeTrackEditMenu;      // submenu
+    GtkWidget * trackVolumeEditMenu;
     GtkWidget * volUp2dbVolumeMi;
     GtkWidget * volDown2dbVolumeMi;
     GtkWidget * volSeparator1Mi;
