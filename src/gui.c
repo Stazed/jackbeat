@@ -438,13 +438,13 @@ gui_menubar (gui_t * gui)
     
     /* File menu */
     gui->fileFileMenu = gtk_menu_item_new_with_mnemonic("_File");
-    gui->newFileMi = gtk_menu_item_new_with_label("New");
-    gui->openFileMi = gtk_menu_item_new_with_label("Open");
-    gui->saveFileMi = gtk_menu_item_new_with_label("Save");
-    gui->saveAsFileMi = gtk_menu_item_new_with_label("Save as");
+    gui->newFileMi = gtk_image_menu_item_new_from_stock(GTK_STOCK_NEW, gui->accel_group);
+    gui->openFileMi = gtk_image_menu_item_new_from_stock(GTK_STOCK_OPEN, gui->accel_group);
+    gui->saveFileMi = gtk_image_menu_item_new_from_stock(GTK_STOCK_SAVE, gui->accel_group);
+    gui->saveAsFileMi = gtk_image_menu_item_new_from_stock(GTK_STOCK_SAVE_AS, gui->accel_group);
     gui->exportFileMi = gtk_menu_item_new_with_label("Export waveform");
-    gui->closeFileMi = gtk_menu_item_new_with_label("Close");
-    gui->quitFileMi = gtk_menu_item_new_with_label("Quit");
+    gui->closeFileMi = gtk_image_menu_item_new_from_stock(GTK_STOCK_CLOSE, gui->accel_group);
+    gui->quitFileMi = gtk_image_menu_item_new_from_stock(GTK_STOCK_QUIT, gui->accel_group);
     
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(gui->fileFileMenu), gui->fileMenu);
     
@@ -509,7 +509,7 @@ gui_menubar (gui_t * gui)
     gui->transposeEditMi = gtk_menu_item_new_with_label("Transpose volumes");
     gui->clearSoloEditMi = gtk_menu_item_new_with_label("Clear solo");
     gui->separatorPrefsEditMi = gtk_separator_menu_item_new(); 
-    gui->preferencsEditMi = gtk_menu_item_new_with_label("Preferences");
+    gui->preferencsEditMi = gtk_image_menu_item_new_from_stock(GTK_STOCK_PREFERENCES, NULL);
     
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(gui->editEditMenu), gui->editMenu);
     
@@ -620,8 +620,8 @@ gui_menubar (gui_t * gui)
     /* Playback menu */
     gui->playbackMenu = gtk_menu_new();
     gui->playbackPlaybackMenu = gtk_menu_item_new_with_mnemonic("_Playback");
-    gui->playPausePlaybackMi = gtk_menu_item_new_with_label("Play/Pause");
-    gui->rewindPlaybackMi = gtk_menu_item_new_with_label("Rewind");
+    gui->playPausePlaybackMi = gtk_image_menu_item_new_from_stock(GTK_STOCK_MEDIA_PLAY, NULL);
+    gui->rewindPlaybackMi = gtk_image_menu_item_new_from_stock(GTK_STOCK_MEDIA_REWIND, NULL);
     
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(gui->playbackPlaybackMenu), gui->playbackMenu);
     
@@ -640,7 +640,7 @@ gui_menubar (gui_t * gui)
     /* Help menu */
     gui->helpMenu = gtk_menu_new();
     gui->helpHelpMenu  = gtk_menu_item_new_with_mnemonic("_Help");
-    gui->aboutHelpMi  = gtk_menu_item_new_with_label("About Jackbeat");
+    gui->aboutHelpMi  = gtk_image_menu_item_new_from_stock(GTK_STOCK_ABOUT, NULL);
     
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(gui->helpHelpMenu), gui->helpMenu);
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->helpMenu), gui->aboutHelpMi);
