@@ -1469,7 +1469,7 @@ gui_on_size_delta_request (event_t *event)
     gui_t *gui = (gui_t *) event->self;
     if (!gui->window_sized)
     {
-        DEBUG ("window is visible: %d", GTK_WIDGET_VISIBLE (gui->window));
+        DEBUG ("window is visible: %d", gtk_widget_get_visible (gui->window));
         if (gui->is_initial)
         {
             gtk_window_resize (GTK_WINDOW (gui->window), 780, 550);

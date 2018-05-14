@@ -461,7 +461,7 @@ grid_area_create (grid_t *grid)
                       G_CALLBACK (grid_button_press_event), grid);
     g_signal_connect (G_OBJECT (grid->area), "motion-notify-event",
                       G_CALLBACK (grid_motion_notify_event), grid);
-    GTK_WIDGET_SET_FLAGS (grid->area, GTK_CAN_FOCUS);
+    gtk_widget_set_can_focus(grid->area, GTK_CAN_FOCUS);
     g_signal_connect (G_OBJECT (grid->area), "key_press_event",
                       G_CALLBACK (grid_key_action_event), grid);
     g_signal_connect (G_OBJECT (grid->area), "key_release_event",
@@ -671,7 +671,7 @@ grid_display (grid_t *grid, int x, int y, int width, int height, int direct, int
                 {
                     gdk_draw_drawable (
                                        grid->area->window,
-                                       grid->area->style->fg_gc[GTK_WIDGET_STATE (grid->area)],
+                                       grid->area->style->fg_gc[gtk_widget_get_state (grid->area)],
                                        grid->pixmap,
                                        header.x + grid_get_window_xpos (grid),
                                        header.y, header.x, header.y, header.width, header.height);
@@ -686,7 +686,7 @@ grid_display (grid_t *grid, int x, int y, int width, int height, int direct, int
                 {
                     gdk_draw_drawable (
                                        grid->area->window,
-                                       grid->area->style->fg_gc[GTK_WIDGET_STATE (grid->area)],
+                                       grid->area->style->fg_gc[gtk_widget_get_state (grid->area)],
                                        grid->pixmap,
                                        src.x, pattern.y + grid_get_window_ypos (grid),
                                        pattern.x, pattern.y, pattern.width, pattern.height);

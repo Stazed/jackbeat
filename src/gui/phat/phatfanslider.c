@@ -460,8 +460,9 @@ phat_fan_slider_class_init (PhatFanSliderClass* klass)
 static void
 phat_fan_slider_init (PhatFanSlider* slider)
 {
-    GTK_WIDGET_SET_FLAGS (slider, GTK_NO_WINDOW | GTK_CAN_FOCUS);
-
+    gtk_widget_set_can_focus(GTK_WIDGET(slider), GTK_CAN_FOCUS);
+    gtk_widget_set_has_window(GTK_WIDGET(slider), GTK_NO_WINDOW);
+    
     debug ("init\n");
 
     slider->adjustment = NULL;
@@ -612,7 +613,7 @@ phat_fan_slider_realize (GtkWidget* widget)
     g_return_if_fail (widget != NULL);
     g_return_if_fail (PHAT_IS_FAN_SLIDER (widget));
 
-    GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
+    gtk_widget_set_realized(widget, GTK_REALIZED);
 
     slider = (PhatFanSlider*) widget;
 
@@ -820,7 +821,7 @@ phat_fan_slider_size_allocate (GtkWidget*     widget,
                                      / (2 * FAN_RISE / FAN_RUN));
     }
 
-    if (GTK_WIDGET_REALIZED (widget))
+    if (gtk_widget_get_realized (widget))
     {
         gdk_window_move_resize (slider->event_window,
                                 x, y, w, h);
@@ -991,7 +992,7 @@ phat_fan_slider_expose (GtkWidget*      widget,
         }
     }
 
-    if (!GTK_WIDGET_SENSITIVE (widget))
+    if (!gtk_widget_get_sensitive (widget))
     {
         phat_fan_slider_rounded_rectangle (cr, x, y, w, h, 20.0, FALSE);
 
@@ -1066,7 +1067,7 @@ phat_fan_slider_expose (GtkWidget*      widget,
         //widget->style->base_gc[GTK_STATE_SELECTED],
     }
 
-    if (GTK_WIDGET_HAS_FOCUS (widget))
+    if (gtk_widget_has_focus (widget))
     {
         int focus_width, focus_pad;
         int pad;
@@ -1083,12 +1084,12 @@ phat_fan_slider_expose (GtkWidget*      widget,
         w += 2 * pad;
         h += 2 * pad;
 
-        gtk_paint_focus (widget->style, widget->window, GTK_WIDGET_STATE (widget),
+        gtk_paint_focus (widget->style, widget->window, gtk_widget_get_state (widget),
                          NULL, widget, NULL,
                          x, y, w, h);
     }
 
-    if (GTK_WIDGET_VISIBLE (slider->fan_window))
+    if (gtk_widget_get_visible (slider->fan_window))
         gtk_widget_queue_draw (slider->fan_window);
 
     return FALSE;
@@ -1514,7 +1515,7 @@ phat_fan_slider_draw_fan (PhatFanSlider* slider)
     int offset;
     int sign;
 
-    if (!GTK_WIDGET_DRAWABLE (slider->fan_window))
+    if (!gtk_widget_is_drawable (slider->fan_window))
         return;
 
     GtkWidget* widget = GTK_WIDGET (slider);

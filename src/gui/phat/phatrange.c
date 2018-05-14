@@ -205,7 +205,7 @@ phat_range_get_property (GObject      *object,
 static void
 phat_range_init (PhatRange *range)
 {
-    GTK_WIDGET_SET_FLAGS (range, GTK_NO_WINDOW);
+    gtk_widget_set_has_window (GTK_WIDGET(range), GTK_NO_WINDOW);
 
     range->adjustment = NULL;
     range->value_mapper = NULL;
@@ -461,7 +461,7 @@ phat_range_realize (GtkWidget *widget)
 
     range = PHAT_RANGE (widget);
 
-    GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
+    gtk_widget_set_realized (widget, GTK_REALIZED);
 
     widget->window = gtk_widget_get_parent_window (widget);
     /* make use of parent window optional ? */
@@ -540,7 +540,7 @@ phat_range_queue_redraw (PhatRange *range_ptr)
     gtk_widget_queue_draw (GTK_WIDGET (range_ptr));
 
     /* This is so we don't lag the widget being scrolled. */
-    if (GTK_WIDGET_REALIZED (range_ptr))
+    if (gtk_widget_get_realized (GTK_WIDGET (range_ptr)))
         gdk_window_process_updates (GTK_WIDGET (range_ptr)->window, FALSE);
 
     g_signal_emit (range_ptr, signals[VALUE_CHANGED], 0);
