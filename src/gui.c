@@ -48,6 +48,7 @@ static void gui_menu_rewind_clicked (GtkWidget * w, gpointer data);
 G_MODULE_EXPORT gboolean gui_track_name_focus_lost (GtkWidget * widget, GdkEventFocus *event, gui_t * gui); // Glade callback
 static void gui_add_track (GtkWidget * w, gpointer data);
 static void gui_remove_track (GtkWidget * w, gpointer data);
+static void gui_adjust_track_volume (gui_t * gui, int action);
 static void gui_shift_track_volume (GtkWidget * w);
 gboolean deliver_signal (GIOChannel *source, GIOCondition cond, gpointer d);
 void pipe_signals (int signal);
@@ -1413,6 +1414,12 @@ gui_shift_track_volume (GtkWidget * w)
     gui_t * gui = g_object_get_data(G_OBJECT(w), "gui");
     int action = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(w), "volume_adjust"));
     
+    gui_adjust_track_volume(gui, action);
+}
+
+static void
+gui_adjust_track_volume (gui_t * gui, int action)
+{
     int active_track = gui_sequence_editor_get_active_track (gui->sequence_editor);
     double add = 0;
     switch (action)
@@ -1530,7 +1537,7 @@ gui_hijack_key_press (GtkWindow *win, GdkEventKey *event, gui_t *gui)
             }
             if (action)
             {
-                //gui_shift_track_volume (gui, action, NULL);   // FIXME
+                gui_adjust_track_volume (gui, action);
                 handled = 1;
             }
         }
