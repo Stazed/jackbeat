@@ -437,7 +437,7 @@ gui_menubar (gui_t * gui)
     gui->fileMenu = gtk_menu_new();
     
     /* File menu */
-    gui->fileFileMenu = gtk_menu_item_new_with_label("File");
+    gui->fileFileMenu = gtk_menu_item_new_with_mnemonic("_File");
     gui->newFileMi = gtk_menu_item_new_with_label("New");
     gui->openFileMi = gtk_menu_item_new_with_label("Open");
     gui->saveFileMi = gtk_menu_item_new_with_label("Save");
@@ -466,7 +466,7 @@ gui_menubar (gui_t * gui)
     
     /* Edit menu */
     gui->editMenu = gtk_menu_new();
-    gui->editEditMenu = gtk_menu_item_new_with_label("Edit");
+    gui->editEditMenu = gtk_menu_item_new_with_mnemonic("_Edit");
     gui->addTrackEditMi = gtk_menu_item_new_with_label("Add track");
     gui->loadSampleEditMi = gtk_menu_item_new_with_label("Load sample");
     gui->renameTrackEditMi = gtk_menu_item_new_with_label("Rename track");
@@ -553,7 +553,7 @@ gui_menubar (gui_t * gui)
     
     /* Playback menu */
     gui->playbackMenu = gtk_menu_new();
-    gui->playbackPlaybackMenu = gtk_menu_item_new_with_label("Playback");
+    gui->playbackPlaybackMenu = gtk_menu_item_new_with_mnemonic("_Playback");
     gui->playPausePlaybackMi = gtk_menu_item_new_with_label("Play/Pause");
     gui->rewindPlaybackMi = gtk_menu_item_new_with_label("Rewind");
     
@@ -567,7 +567,7 @@ gui_menubar (gui_t * gui)
     
     /* Help menu */
     gui->helpMenu = gtk_menu_new();
-    gui->helpHelpMenu  = gtk_menu_item_new_with_label("Help");
+    gui->helpHelpMenu  = gtk_menu_item_new_with_mnemonic("_Help");
     gui->aboutHelpMi  = gtk_menu_item_new_with_label("About Jackbeat");
     
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(gui->helpHelpMenu), gui->helpMenu);
