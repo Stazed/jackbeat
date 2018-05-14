@@ -392,7 +392,7 @@ void
 gui_progress_callback (char * status, double fraction, void * data)
 {
     gui_t *gui = (gui_t *) data;
-    if (!GTK_WIDGET_VISIBLE (gui->progress_window))
+    if (!gtk_widget_get_visible(gui->progress_window))
         gtk_widget_show (gui->progress_window);
     gtk_progress_bar_set_text (GTK_PROGRESS_BAR (gui->progress_bar), status);
     if (fraction > 1)
