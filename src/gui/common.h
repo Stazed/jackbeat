@@ -164,6 +164,7 @@ struct gui_t {
     
     GtkWidget * menubar;
     GtkWidget * menubar_quit_item;
+    GtkAccelGroup *accel_group;
     gui_prefs_t * prefs;
     //grid_t *              grid;
     GtkWidget * sample_display;

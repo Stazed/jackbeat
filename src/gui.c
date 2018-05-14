@@ -447,19 +447,40 @@ gui_menubar (gui_t * gui)
     gui->quitFileMi = gtk_menu_item_new_with_label("Quit");
     
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(gui->fileFileMenu), gui->fileMenu);
+    
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->fileMenu), gui->newFileMi);
+    gtk_widget_add_accelerator(gui->newFileMi, "activate", gui->accel_group, 
+        GDK_n, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE); 
     g_signal_connect(G_OBJECT(gui->newFileMi), "activate", G_CALLBACK (gui_new_instance), gui);
+    
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->fileMenu), gui->openFileMi);
+    gtk_widget_add_accelerator(gui->openFileMi, "activate", gui->accel_group, 
+        GDK_o, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE); 
     g_signal_connect(G_OBJECT(gui->openFileMi), "activate", G_CALLBACK (gui_file_load_sequence), gui);
+    
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->fileMenu), gui->saveFileMi);
+    gtk_widget_add_accelerator(gui->saveFileMi, "activate", gui->accel_group, 
+        GDK_s, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE); 
     g_signal_connect(G_OBJECT(gui->saveFileMi), "activate", G_CALLBACK (gui_file_save_sequence), gui);
+    
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->fileMenu), gui->saveAsFileMi);
+    gtk_widget_add_accelerator(gui->saveAsFileMi, "activate", gui->accel_group, 
+        GDK_s, GDK_CONTROL_MASK|GDK_SHIFT_MASK, GTK_ACCEL_VISIBLE); 
     g_signal_connect(G_OBJECT(gui->saveAsFileMi), "activate", G_CALLBACK (gui_file_save_as_sequence), gui);
+    
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->fileMenu), gui->exportFileMi);
+    gtk_widget_add_accelerator(gui->exportFileMi, "activate", gui->accel_group, 
+        GDK_e, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE); 
     g_signal_connect(G_OBJECT(gui->exportFileMi), "activate", G_CALLBACK (gui_file_export_sequence), gui);
+    
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->fileMenu), gui->closeFileMi);
+    gtk_widget_add_accelerator(gui->closeFileMi, "activate", gui->accel_group, 
+        GDK_w, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE); 
     g_signal_connect(G_OBJECT(gui->closeFileMi), "activate", G_CALLBACK (gui_close_from_menu), gui);
+    
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->fileMenu), gui->quitFileMi);
+    gtk_widget_add_accelerator(gui->quitFileMi, "activate", gui->accel_group, 
+        GDK_q, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE); 
     g_signal_connect(G_OBJECT(gui->quitFileMi), "activate", G_CALLBACK (gui_exit), gui);
     
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->menubar), gui->fileFileMenu);
@@ -1475,6 +1496,9 @@ gui_init (gui_t * gui)
     gui->window = gui_builder_get_widget (gui->builder, "main_window");
     gui_update_window_title (gui);
     gui->main_vbox = gui_builder_get_widget (gui->builder, "main_vbox");
+    
+    gui->accel_group = gtk_accel_group_new();
+    gtk_window_add_accel_group(GTK_WINDOW(gui->window), gui->accel_group);
     
     gui->menubar = gui_menubar(gui);
     
