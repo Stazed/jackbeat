@@ -339,7 +339,7 @@ sample_display_realize (GtkWidget *widget)
     g_return_if_fail (widget != NULL);
     g_return_if_fail (IS_SAMPLE_DISPLAY (widget));
 
-    gtk_widget_set_realized (widget, GTK_REALIZED);
+    gtk_widget_set_realized (widget, 1);
     s = SAMPLE_DISPLAY (widget);
 
     attributes.x = widget->allocation.x;

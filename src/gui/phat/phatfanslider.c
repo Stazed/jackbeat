@@ -461,8 +461,8 @@ phat_fan_slider_class_init (PhatFanSliderClass* klass)
 static void
 phat_fan_slider_init (PhatFanSlider* slider)
 {
-    gtk_widget_set_can_focus(GTK_WIDGET(slider), GTK_CAN_FOCUS);
-    gtk_widget_set_has_window(GTK_WIDGET(slider), GTK_NO_WINDOW);
+    gtk_widget_set_can_focus(GTK_WIDGET(slider), 1);
+    gtk_widget_set_has_window(GTK_WIDGET(slider), 0);
     
     debug ("init\n");
 
@@ -614,7 +614,7 @@ phat_fan_slider_realize (GtkWidget* widget)
     g_return_if_fail (widget != NULL);
     g_return_if_fail (PHAT_IS_FAN_SLIDER (widget));
 
-    gtk_widget_set_realized(widget, GTK_REALIZED);
+    gtk_widget_set_realized(widget, 1);
 
     slider = (PhatFanSlider*) widget;
 

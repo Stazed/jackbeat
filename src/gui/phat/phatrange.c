@@ -205,7 +205,7 @@ phat_range_get_property (GObject      *object,
 static void
 phat_range_init (PhatRange *range)
 {
-    gtk_widget_set_has_window (GTK_WIDGET(range), GTK_NO_WINDOW);
+    gtk_widget_set_has_window (GTK_WIDGET(range), 0);
 
     range->adjustment = NULL;
     range->value_mapper = NULL;
@@ -461,7 +461,7 @@ phat_range_realize (GtkWidget *widget)
 
     range = PHAT_RANGE (widget);
 
-    gtk_widget_set_realized (widget, GTK_REALIZED);
+    gtk_widget_set_realized (widget, 1);
 
     widget->window = gtk_widget_get_parent_window (widget);
     /* make use of parent window optional ? */

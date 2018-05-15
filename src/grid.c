@@ -461,7 +461,7 @@ grid_area_create (grid_t *grid)
                       G_CALLBACK (grid_button_press_event), grid);
     g_signal_connect (G_OBJECT (grid->area), "motion-notify-event",
                       G_CALLBACK (grid_motion_notify_event), grid);
-    gtk_widget_set_can_focus(grid->area, GTK_CAN_FOCUS);
+    gtk_widget_set_can_focus(grid->area, 1);
     g_signal_connect (G_OBJECT (grid->area), "key_press_event",
                       G_CALLBACK (grid_key_action_event), grid);
     g_signal_connect (G_OBJECT (grid->area), "key_release_event",
