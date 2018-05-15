@@ -300,7 +300,7 @@ phat_fan_slider_set_adjustment (PhatFanSlider* slider,
 
     slider->adjustment = adjustment;
     g_object_ref (adjustment);
-    gtk_object_sink (GTK_OBJECT (adjustment));
+    g_object_ref_sink (GTK_OBJECT (adjustment));
 
     phat_fan_slider_adjustment_changed (slider->adjustment, slider);
 
@@ -392,7 +392,8 @@ phat_fan_slider_class_init (PhatFanSliderClass* klass)
 
     debug ("class init\n");
 
-    parent_class = gtk_type_class (gtk_widget_get_type ());
+//    parent_class = g_type_class_peek (gtk_widget_get_type ());
+    parent_class = g_type_class_ref (gtk_widget_get_type ());
 
     object_class->destroy = phat_fan_slider_destroy;
 

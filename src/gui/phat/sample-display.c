@@ -72,7 +72,7 @@ sample_display_idle_draw (SampleDisplay *s)
 {
     if (!s->idle_handler)
     {
-        s->idle_handler = gtk_idle_add ((GtkFunction) sample_display_idle_draw_function,
+        s->idle_handler =  g_idle_add ((GSourceFunc) sample_display_idle_draw_function,
                                         (gpointer) s);
         g_assert (s->idle_handler != 0);
     }
@@ -162,7 +162,8 @@ sample_display_set_data (SampleDisplay *s,
     {
         s->win_start = 0;
         s->win_length = len;
-        gtk_signal_emit (GTK_OBJECT (s), sample_display_signals[SIG_WINDOW_CHANGED], s->win_start, s->win_start + s->win_length);
+        g_signal_emit (s, sample_display_signals[SIG_WINDOW_CHANGED], 0);   // FIXME check detail
+//        gtk_signal_emit (GTK_OBJECT (s), sample_display_signals[SIG_WINDOW_CHANGED], s->win_start, s->win_start + s->win_length);
 
         s->sel_start = -1;
         s->old_ss = s->old_se = -1;
@@ -213,7 +214,8 @@ sample_display_set_loop (SampleDisplay *s,
     s->loop_end = end;
 
     gtk_widget_queue_draw (GTK_WIDGET (s));
-    gtk_signal_emit (GTK_OBJECT (s), sample_display_signals[SIG_LOOP_CHANGED], start, end);
+    g_signal_emit (GTK_OBJECT (s), sample_display_signals[SIG_LOOP_CHANGED], 0);    // FIXME check detail
+//    gtk_signal_emit (GTK_OBJECT (s), sample_display_signals[SIG_LOOP_CHANGED], start, end);
 }
 
 void
@@ -235,7 +237,8 @@ sample_display_set_selection (SampleDisplay *s,
     s->sel_end = end;
 
     sample_display_idle_draw (s);
-    gtk_signal_emit (GTK_OBJECT (s), sample_display_signals[SIG_SELECTION_CHANGED], start, end);
+    g_signal_emit (GTK_OBJECT (s), sample_display_signals[SIG_SELECTION_CHANGED], 0);       // FIXME check detail
+//    gtk_signal_emit (GTK_OBJECT (s), sample_display_signals[SIG_SELECTION_CHANGED], start, end);
 }
 
 void
@@ -288,7 +291,8 @@ sample_display_set_window (SampleDisplay *s,
 
     s->win_start = start;
     s->win_length = end - start;
-    gtk_signal_emit (GTK_OBJECT (s), sample_display_signals[SIG_WINDOW_CHANGED], start, end);
+    g_signal_emit (GTK_OBJECT (s), sample_display_signals[SIG_WINDOW_CHANGED], 0);    // FIXME check detail
+//    gtk_signal_emit (GTK_OBJECT (s), sample_display_signals[SIG_WINDOW_CHANGED], start, end);
 
     gtk_widget_queue_draw (GTK_WIDGET (s));
 }
@@ -719,8 +723,9 @@ sample_display_idle_draw_function (SampleDisplay *s)
         sample_display_draw_update (GTK_WIDGET (s), &area, FALSE);
     }
 
-    gtk_idle_remove (s->idle_handler);
-    s->idle_handler = 0;
+    g_idle_remove_by_data ( (gpointer) s);
+//    gtk_idle_remove (s->idle_handler);
+    s->idle_handler = 0;    // FIXME check this - we removed s by data above, so s should be gone.
     return TRUE;
 }
 
@@ -834,7 +839,8 @@ sample_display_handle_motion (SampleDisplay *s,
         s->sel_start = ss;
         s->sel_end = se;
         sample_display_idle_draw (s);
-        gtk_signal_emit (GTK_OBJECT (s), sample_display_signals[SIG_SELECTION_CHANGED], ss, se);
+        g_signal_emit (GTK_OBJECT (s), sample_display_signals[SIG_SELECTION_CHANGED], 0);    // FIXME check detail
+//        gtk_signal_emit (GTK_OBJECT (s), sample_display_signals[SIG_SELECTION_CHANGED], ss, se);
     }
 
     if (s->loop_start != ls || s->loop_end != le)
@@ -842,7 +848,8 @@ sample_display_handle_motion (SampleDisplay *s,
         s->loop_start = ls;
         s->loop_end = le;
         sample_display_idle_draw (s);
-        gtk_signal_emit (GTK_OBJECT (s), sample_display_signals[SIG_LOOP_CHANGED], ls, le);
+        g_signal_emit (GTK_OBJECT (s), sample_display_signals[SIG_LOOP_CHANGED], 0);    // FIXME check detail
+//        gtk_signal_emit (GTK_OBJECT (s), sample_display_signals[SIG_LOOP_CHANGED], ls, le);
     }
 }
 
@@ -1020,6 +1027,15 @@ sample_display_class_init (SampleDisplayClass *class)
     widget_class->button_release_event = sample_display_button_release;
     widget_class->motion_notify_event = sample_display_motion_notify;
 
+    sample_display_signals[SIG_SELECTION_CHANGED] = g_signal_new ("selection_changed",
+                                                                  G_TYPE_FROM_CLASS (object_class),
+                                                                  G_SIGNAL_RUN_FIRST,
+                                                                  G_STRUCT_OFFSET (SampleDisplayClass, selection_changed),
+                                                                  NULL, NULL,
+                                                                  g_cclosure_marshal_VOID__INT,     // FIXME MAYBE
+                                                                  G_TYPE_NONE, 1,
+                                                                  G_TYPE_INT);
+#if 0
     sample_display_signals[SIG_SELECTION_CHANGED] = gtk_signal_new ("selection_changed",
                                                                     GTK_RUN_FIRST,
                                                                     G_TYPE_FROM_CLASS (object_class),
@@ -1028,6 +1044,16 @@ sample_display_class_init (SampleDisplayClass *class)
                                                                     GTK_TYPE_NONE, 2,
                                                                     GTK_TYPE_INT,
                                                                     GTK_TYPE_INT);
+#endif
+    sample_display_signals[SIG_LOOP_CHANGED] = g_signal_new ("loop_changed",
+                                                             G_TYPE_FROM_CLASS (object_class),
+                                                             G_SIGNAL_RUN_FIRST,
+                                                             G_STRUCT_OFFSET (SampleDisplayClass, loop_changed),
+                                                             NULL, NULL,
+                                                             g_cclosure_marshal_VOID__INT,     // FIXME MAYBE
+                                                             G_TYPE_NONE, 1,
+                                                             G_TYPE_INT);
+#if 0
     sample_display_signals[SIG_LOOP_CHANGED] = gtk_signal_new ("loop_changed",
                                                                GTK_RUN_FIRST,
                                                                G_TYPE_FROM_CLASS (object_class),
@@ -1036,6 +1062,16 @@ sample_display_class_init (SampleDisplayClass *class)
                                                                GTK_TYPE_NONE, 2,
                                                                GTK_TYPE_INT,
                                                                GTK_TYPE_INT);
+#endif
+    sample_display_signals[SIG_WINDOW_CHANGED] = g_signal_new ("window_changed",
+                                                               G_TYPE_FROM_CLASS (object_class),
+                                                               G_SIGNAL_RUN_FIRST,
+                                                               G_STRUCT_OFFSET (SampleDisplayClass, window_changed),
+                                                               NULL, NULL,
+                                                               g_cclosure_marshal_VOID__INT,     // FIXME MAYBE
+                                                               G_TYPE_NONE, 1,
+                                                               G_TYPE_INT);
+#if 0
     sample_display_signals[SIG_WINDOW_CHANGED] = gtk_signal_new ("window_changed",
                                                                  GTK_RUN_FIRST,
                                                                  G_TYPE_FROM_CLASS (object_class),
@@ -1044,7 +1080,7 @@ sample_display_class_init (SampleDisplayClass *class)
                                                                  GTK_TYPE_NONE, 2,
                                                                  GTK_TYPE_INT,
                                                                  GTK_TYPE_INT);
-
+#endif
     //gtk_object_class_add_signals(object_class, sample_display_signals, LAST_SIGNAL);
 
     class->selection_changed = NULL;
@@ -1071,7 +1107,20 @@ guint
 sample_display_get_type (void)
 {
     static guint sample_display_type = 0;
-
+#if 0
+    // FIXME this gotta remove and use another method
+    if (!sample_display_type)
+    {
+        GTypeInfo sample_display_info ={
+            sizeof (SampleDisplayClass),
+            (GBaseInitFunc) sample_display_init,
+            NULL,
+            (GClassInitFunc) sample_display_class_init,
+            NULL,
+            NULL,
+            0, 0
+        };
+#endif
     if (!sample_display_type)
     {
         GtkTypeInfo sample_display_info ={

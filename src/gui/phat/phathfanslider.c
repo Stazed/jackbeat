@@ -94,7 +94,8 @@ phat_hfan_slider_class_init (PhatHFanSliderClass* klass)
 {
     GtkObjectClass* object_class = (GtkObjectClass*) klass;
 
-    parent_class = gtk_type_class (PHAT_TYPE_FAN_SLIDER);
+//    parent_class = g_type_class_peek (PHAT_TYPE_FAN_SLIDER);
+    parent_class = g_type_class_ref (PHAT_TYPE_FAN_SLIDER);
 
     object_class->destroy = phat_hfan_slider_destroy;
 }
