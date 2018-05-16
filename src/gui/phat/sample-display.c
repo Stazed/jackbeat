@@ -1131,7 +1131,7 @@ sample_display_get_type (void)
 GtkWidget*
 sample_display_new (gboolean edit)
 {
-    SampleDisplay *s = SAMPLE_DISPLAY (gtk_type_new (sample_display_get_type ()));
+    SampleDisplay *s = SAMPLE_DISPLAY (g_object_new (sample_display_get_type (), NULL));
 
     s->edit = edit;
     s->datacopy = 0;
