@@ -93,7 +93,7 @@ struct _SampleDisplayClass {
     void (*window_changed)(SampleDisplay *s, int start, int end);
 };
 
-guint sample_display_get_type(void);
+GType sample_display_get_type(void);
 GtkWidget* sample_display_new(gboolean edit);
 
 #ifndef G_DISABLE_DEPRECATED

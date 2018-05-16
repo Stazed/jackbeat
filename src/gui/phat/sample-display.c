@@ -1103,37 +1103,26 @@ sample_display_init (SampleDisplay *s)
     s->idle_handler = 0;
 }
 
-guint
+GType
 sample_display_get_type (void)
 {
-    static guint sample_display_type = 0;
-#if 0
-    // FIXME this gotta remove and use another method
+    static GType sample_display_type = 0;
+
     if (!sample_display_type)
     {
         GTypeInfo sample_display_info ={
             sizeof (SampleDisplayClass),
-            (GBaseInitFunc) sample_display_init,
-            NULL,
+            NULL,   /* base_init */
+            NULL,   /* base_finalize */
             (GClassInitFunc) sample_display_class_init,
-            NULL,
-            NULL,
-            0, 0
-        };
-#endif
-    if (!sample_display_type)
-    {
-        GtkTypeInfo sample_display_info ={
-            "SampleDisplay",
+            NULL,   /* class_finalize */
+            NULL,   /* class_data */
             sizeof (SampleDisplay),
-            sizeof (SampleDisplayClass),
-            (GtkClassInitFunc) sample_display_class_init,
-            (GtkObjectInitFunc) sample_display_init,
-            NULL,
-            NULL,
+            0,
+            (GInstanceInitFunc) sample_display_init
         };
-
-        sample_display_type = gtk_type_unique (gtk_widget_get_type (), &sample_display_info);
+        
+        sample_display_type = g_type_register_static(gtk_widget_get_type (), "SampleDisplay", &sample_display_info, 0);
     }
 
     return sample_display_type;
