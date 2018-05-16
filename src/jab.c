@@ -293,7 +293,7 @@ jab_retrieve_sequence (jab_t *jab, stream_t *stream, char *sequence_name, int *e
         sprintf (track, "%s/track[1]", root);
         int i = 0;
         sample_t *sample;
-        char spath[512];
+        char spath[513];
         jab->progress_step = 0;
         if (_jab_xml_node_exists (jab->xml_des, track) && (i < tracks_num))
         {

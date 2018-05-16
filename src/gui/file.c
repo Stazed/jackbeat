@@ -275,7 +275,7 @@ void
 gui_file_export_sequence (GtkWidget * w, gpointer data)
 {
     gui_t * gui = data;
-    char filename[512];
+    char filename[513];
     char *tmp;
 
     if (strlen (gui->last_export_wdir))
@@ -369,7 +369,7 @@ void
 gui_file_save_as_sequence (GtkWidget * w, gpointer data)
 {
     gui_t * gui = data;
-    char filename[512];
+    char filename[513];
     if (gui->filename_is_set)
         strcpy (filename, gui->filename);
     else
