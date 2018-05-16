@@ -298,7 +298,7 @@ gui_transpose_volumes_dialog (GtkWidget *widget, gpointer data)
 
     gtk_box_pack_start (GTK_BOX (vbox), button, TRUE, TRUE, 8);
 
-    gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), hbox, TRUE, TRUE,
+    gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area(GTK_DIALOG (dialog))), hbox, TRUE, TRUE,
                         0);
     gtk_widget_show_all (dialog);
 
@@ -1277,7 +1277,7 @@ gui_properties_size_request (GtkWidget *widget, GtkRequisition *req, gui_t *gui)
     return; // FIXME: Unused for now...
     DEBUG ("height: %d", req->height);
     guint padding;
-    gtk_box_query_child_packing (GTK_BOX (widget->parent), widget, NULL, NULL, &padding, NULL);
+    gtk_box_query_child_packing (GTK_BOX (gtk_widget_get_parent(widget)), widget, NULL, NULL, &padding, NULL);
     int delta = req->height + padding * 2 - gui->window_grown_by;
     if (delta > 0)
     {
@@ -1515,9 +1515,9 @@ gui_hijack_key_press (GtkWindow *win, GdkEventKey *event, gui_t *gui)
        there is no modifier. This essentially allows to enter into GtkEntry 
        the letters that are menu accelerators. */
     int modifiers = GDK_CONTROL_MASK | GDK_MOD1_MASK;
-    if (win->focus_widget && !(event->state & modifiers))
+    if (gtk_window_get_focus(win) && !(event->state & modifiers))
     {
-        int handled = gtk_widget_event (win->focus_widget, (GdkEvent *) event);
+        int handled = gtk_widget_event (gtk_window_get_focus(win), (GdkEvent *) event);
         if (!handled)
         {
             // The following is redundant with some menu accelerators, but needed
@@ -1922,7 +1922,7 @@ gui_ask_track_name (gui_t *gui, char *current_name, int error, int allow_cancel)
     gtk_entry_set_activates_default (GTK_ENTRY (entry), TRUE);
     gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_ACCEPT);
     gtk_box_pack_start (GTK_BOX (vbox), entry, TRUE, TRUE, 15);
-    gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), hbox, TRUE, TRUE,
+    gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog))), hbox, TRUE, TRUE,
                         0);
     gtk_widget_show_all (dialog);
     if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT)

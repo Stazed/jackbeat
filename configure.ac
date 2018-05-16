@@ -11,6 +11,7 @@ GLOBAL_LDFLAGS=""
 
 #GLOBAL_CFLAGS+=" -DGTK_DISABLE_SINGLE_INCLUDES"
 #GLOBAL_CFLAGS+=" -DGTK_DISABLE_DEPRECATED"
+#GLOBAL_CFLAGS+=" -DGSEAL_ENABLE"
 
 case "$host_os" in
     darwin*) 
@@ -84,7 +85,7 @@ then
   AC_MSG_WARN([Can't find libpulse, PulseAudio will not be supported])
 fi
 
-PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.12, [have_pkg_gtk=true], true)
+PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.24, [have_pkg_gtk=true], true)
 
 if test x$have_pkg_gtk = xtrue
 then

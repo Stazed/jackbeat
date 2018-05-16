@@ -381,7 +381,7 @@ gui_sequence_editor_allocate_child (gui_sequence_editor_t *self, GtkWidget *chil
     allocation.height = height;
 
     if ((x != child->allocation.x) || (y != child->allocation.y))
-        gtk_layout_move (GTK_LAYOUT (child->parent), child, x, y);
+        gtk_layout_move (GTK_LAYOUT (gtk_widget_get_parent(child)), child, x, y);
 
     gtk_widget_size_allocate (child, &allocation);
 }
