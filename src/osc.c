@@ -312,8 +312,10 @@ osc_del_method (osc_t *osc, osc_method_t *method)
         {
             char *path = osc_get_method_path (method);
             lo_server_thread_del_method (osc->server, path, method->def->typespec);
-            memcpy (osc->methods + i, osc->methods + i + 1,
+            
+            memmove (osc->methods + i, osc->methods + i + 1,
                     sizeof (osc_method_t *) * (osc->methods_num - i - 1));
+            
             if (--osc->methods_num == 0)
             {
                 free (osc->methods);
