@@ -311,8 +311,8 @@ phat_range_set_increments (PhatRange *range,
 {
     g_return_if_fail (PHAT_IS_RANGE (range));
 
-    range->adjustment->step_increment = step;
-    range->adjustment->page_increment = page;
+    gtk_adjustment_set_step_increment(range->adjustment, step);
+    gtk_adjustment_set_page_increment(range->adjustment, page);
 
     gtk_adjustment_changed (range->adjustment);
 }

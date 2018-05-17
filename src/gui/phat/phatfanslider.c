@@ -153,18 +153,18 @@ phat_fan_slider_set_value (PhatFanSlider* slider, double value)
     g_return_if_fail (PHAT_IS_FAN_SLIDER (slider));
 
     value = CLAMP (value,
-                   slider->adjustment->lower,
-                   slider->adjustment->upper);
+                   gtk_adjustment_get_lower(slider->adjustment),
+                   gtk_adjustment_get_upper(slider->adjustment));
 
     gtk_adjustment_set_value (slider->adjustment, value);
 
     if (slider->is_log)
     {
-        gtk_adjustment_set_value ((GtkAdjustment *) slider->adjustment_prv, log (value - slider->adjustment->lower) / log (slider->adjustment->upper - slider->adjustment->lower));
+        gtk_adjustment_set_value ((GtkAdjustment *) slider->adjustment_prv, log (value - gtk_adjustment_get_lower(slider->adjustment)) / log (gtk_adjustment_get_upper(slider->adjustment) - gtk_adjustment_get_lower(slider->adjustment)));
     }
     else
     {
-        gtk_adjustment_set_value ((GtkAdjustment *) slider->adjustment_prv, (value - slider->adjustment->lower) / (slider->adjustment->upper - slider->adjustment->lower));
+        gtk_adjustment_set_value ((GtkAdjustment *) slider->adjustment_prv, (value - gtk_adjustment_get_lower(slider->adjustment)) / (gtk_adjustment_get_upper(slider->adjustment) - gtk_adjustment_get_lower(slider->adjustment)));
     }
 }
 
@@ -200,15 +200,15 @@ phat_fan_slider_get_value (PhatFanSlider* slider)
 
     if (slider->is_log)
     {
-        gtk_adjustment_set_value ((GtkAdjustment *) slider->adjustment, exp ((slider->adjustment_prv->value) *
-                                                                             (log (slider->adjustment->upper - slider->adjustment->lower))) + slider->adjustment->lower);
+        gtk_adjustment_set_value ((GtkAdjustment *) slider->adjustment, exp ((gtk_adjustment_get_value(slider->adjustment_prv)) *
+                                                                             (log (gtk_adjustment_get_upper(slider->adjustment) - gtk_adjustment_get_lower (slider->adjustment)))) + gtk_adjustment_get_lower (slider->adjustment));
         //printf("setting val %f lower %f upper %f \n", slider->adjustment_prv->value, slider->adjustment->lower, slider->adjustment->upper);
     }
     else
     {
-        gtk_adjustment_set_value ((GtkAdjustment *) slider->adjustment, (slider->adjustment_prv->value * (slider->adjustment->upper - slider->adjustment->lower) + slider->adjustment->lower));
+        gtk_adjustment_set_value ((GtkAdjustment *) slider->adjustment, (gtk_adjustment_get_value(slider->adjustment_prv) * (gtk_adjustment_get_upper(slider->adjustment) - gtk_adjustment_get_lower (slider->adjustment)) + gtk_adjustment_get_lower (slider->adjustment)));
     }
-    return slider->adjustment->value;
+    return gtk_adjustment_get_value(slider->adjustment);
 }
 
 /**

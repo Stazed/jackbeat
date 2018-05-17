@@ -321,7 +321,7 @@ sample_display_size_allocate (GtkWidget *widget,
     {
         s = SAMPLE_DISPLAY (widget);
 
-        gdk_window_move_resize (widget->window,
+        gdk_window_move_resize (gtk_widget_get_window(widget),
                                 allocation->x, allocation->y,
                                 allocation->width, allocation->height);
 
@@ -356,7 +356,7 @@ sample_display_realize (GtkWidget *widget)
     attributes.colormap = gtk_widget_get_colormap (widget);
 
     attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
-    widget->window = gdk_window_new (widget->parent->window, &attributes, attributes_mask);
+    gtk_widget_set_window(widget, gdk_window_new (widget->parent->window, &attributes, attributes_mask));
 
     widget->style = gtk_style_attach (widget->style, widget->window);
 
