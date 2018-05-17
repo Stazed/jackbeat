@@ -284,7 +284,7 @@ gui_sequence_editor_control_update_bg (gui_sequence_editor_t *self, int active_t
         }
     }
     GtkWidget *layout = self->controls_layout;
-    GdkWindow *window = GTK_LAYOUT (layout)->bin_window;
+    GdkWindow *window = gtk_layout_get_bin_window (GTK_LAYOUT (layout));
     if (update && window)
     {
         gui_sequence_editor_control_update_bg_item (window, &self->bg_inactive, 0, width, track_height);
@@ -297,12 +297,12 @@ gui_sequence_editor_control_update_bg (gui_sequence_editor_t *self, int active_t
             GdkPixmap *item = (i == active_track)
                     ? self->bg_active : self->bg_inactive;
 
-            gtk_paint_flat_box (layout->style, GDK_DRAWABLE (self->bg),
+            gtk_paint_flat_box (gtk_widget_get_style(layout), GDK_DRAWABLE (self->bg),
                                 GTK_STATE_NORMAL, GTK_SHADOW_NONE, NULL, NULL, NULL,
                                 0, 0, width, self->top_padding);
             gdk_draw_drawable (
                                self->bg,
-                               layout->style->fg_gc[ gtk_widget_get_state (layout)],
+                               gtk_widget_get_style(layout)->fg_gc[ gtk_widget_get_state (layout)],
                                item,
                                0, 0,
                                0, i * track_height + self->top_padding, width, track_height);
@@ -527,11 +527,11 @@ static gboolean
 gui_sequence_editor_control_expose_event (GtkWidget *widget, GdkEventExpose *event,
                                           gui_sequence_editor_t *self)
 {
-    if (self->bg && GTK_LAYOUT (widget)->bin_window)
+    if (self->bg && gtk_layout_get_bin_window(GTK_LAYOUT (widget)))
     {
         gdk_draw_drawable (
-                           GTK_LAYOUT (widget)->bin_window,
-                           widget->style->fg_gc[gtk_widget_get_state (widget)],
+                           gtk_layout_get_bin_window(GTK_LAYOUT (widget)),
+                           gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state (widget)],
                            self->bg,
                            event->area.x, event->area.y,
                            event->area.x, event->area.y,
