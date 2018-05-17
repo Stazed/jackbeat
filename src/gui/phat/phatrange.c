@@ -337,12 +337,12 @@ phat_range_set_range (PhatRange *range,
     g_return_if_fail (PHAT_IS_RANGE (range));
     g_return_if_fail (min < max);
 
-    range->adjustment->lower = min;
-    range->adjustment->upper = max;
+    gtk_adjustment_set_lower(range->adjustment, min);
+    gtk_adjustment_set_upper(range->adjustment, max);
 
-    value = CLAMP (range->adjustment->value,
-                   range->adjustment->lower,
-                   (range->adjustment->upper - range->adjustment->page_size));
+    value = CLAMP (gtk_adjustment_get_value(range->adjustment),
+                   gtk_adjustment_get_lower(range->adjustment),
+                   (gtk_adjustment_get_upper(range->adjustment) - gtk_adjustment_get_page_size(range->adjustment)));
 
     gtk_adjustment_set_value (range->adjustment, value);
     gtk_adjustment_changed (range->adjustment);
@@ -365,8 +365,8 @@ phat_range_set_value (PhatRange *range,
 {
     g_return_if_fail (PHAT_IS_RANGE (range));
 
-    value = CLAMP (value, range->adjustment->lower,
-                   (range->adjustment->upper));
+    value = CLAMP (value, gtk_adjustment_get_lower(range->adjustment),
+                   (gtk_adjustment_get_upper(range->adjustment)));
 
     gtk_adjustment_set_value (range->adjustment, value);
 }
@@ -384,7 +384,7 @@ phat_range_get_value (PhatRange *range)
 {
     g_return_val_if_fail (PHAT_IS_RANGE (range), 0.0);
 
-    return range->adjustment->value;
+    return gtk_adjustment_get_value(range->adjustment);
 }
 
 gdouble
@@ -414,10 +414,11 @@ phat_range_set_internal_value (PhatRange *range_ptr, gdouble value)
                                           / range_ptr->adjustment->step_increment), )
     );
      */
-    range_ptr->adjustment->value = util_round (
-                                               (range_ptr->adjustment->lower + value * (range_ptr->adjustment->upper - range_ptr->adjustment->lower))
-                                               / range_ptr->adjustment->step_increment)
-            * range_ptr->adjustment->step_increment;
+    gtk_adjustment_set_value(range_ptr->adjustment, util_round (
+                                                (gtk_adjustment_get_lower(range_ptr->adjustment) + value * 
+                                                (gtk_adjustment_get_upper(range_ptr->adjustment) - gtk_adjustment_get_lower(range_ptr->adjustment)))
+                                                / gtk_adjustment_get_step_increment(range_ptr->adjustment))
+                                                * gtk_adjustment_get_step_increment(range_ptr->adjustment));
 
     phat_range_update_internal_value (range_ptr);
 
@@ -463,15 +464,18 @@ phat_range_realize (GtkWidget *widget)
 
     gtk_widget_set_realized (widget, 1);
 
-    widget->window = gtk_widget_get_parent_window (widget);
+    gtk_widget_set_window(widget, gtk_widget_get_parent_window (widget));
     /* make use of parent window optional ? */
-    g_object_ref (widget->window);
+    g_object_ref (gtk_widget_get_window(widget));
+    
+    GtkAllocation widget_allocation;
+    gtk_widget_get_allocation(GTK_WIDGET(widget), &widget_allocation); 
 
     attributes.window_type = GDK_WINDOW_CHILD;
-    attributes.x = widget->allocation.x;
-    attributes.y = widget->allocation.y;
-    attributes.width = widget->allocation.width;
-    attributes.height = widget->allocation.height;
+    attributes.x = widget_allocation.x;
+    attributes.y = widget_allocation.y;
+    attributes.width = widget_allocation.width;
+    attributes.height = widget_allocation.height;
     attributes.wclass = GDK_INPUT_ONLY;
     attributes.event_mask = gtk_widget_get_events (widget);
     attributes.event_mask |= (GDK_BUTTON_PRESS_MASK |
@@ -487,7 +491,7 @@ phat_range_realize (GtkWidget *widget)
                                           &attributes, attributes_mask);
     gdk_window_set_user_data (range->event_window, range);
 
-    widget->style = gtk_style_attach (widget->style, widget->window);
+    gtk_widget_set_style(widget, gtk_style_attach (gtk_widget_get_style(widget), gtk_widget_get_window(widget)));
 }
 
 static void
@@ -541,7 +545,7 @@ phat_range_queue_redraw (PhatRange *range_ptr)
 
     /* This is so we don't lag the widget being scrolled. */
     if (gtk_widget_get_realized (GTK_WIDGET (range_ptr)))
-        gdk_window_process_updates (GTK_WIDGET (range_ptr)->window, FALSE);
+        gdk_window_process_updates (gtk_widget_get_window(GTK_WIDGET (range_ptr)), FALSE);
 
     g_signal_emit (range_ptr, signals[VALUE_CHANGED], 0);
 }
@@ -564,15 +568,17 @@ phat_range_size_allocate (GtkWidget     *widget,
     PhatRange *range;
 
     range = PHAT_RANGE (widget);
-
-    widget->allocation = *allocation;
+    gtk_widget_set_allocation(widget, allocation);
+    
+    GtkAllocation widget_allocation;
+    gtk_widget_get_allocation(GTK_WIDGET(widget), &widget_allocation); 
 
     if (gtk_widget_get_realized (GTK_WIDGET(range)))
         gdk_window_move_resize (range->event_window,
-                                widget->allocation.x,
-                                widget->allocation.y,
-                                widget->allocation.width,
-                                widget->allocation.height);
+                                widget_allocation.x,
+                                widget_allocation.y,
+                                widget_allocation.width,
+                                widget_allocation.height);
 }
 
 /* Updates internal value from adjustment */
@@ -580,7 +586,10 @@ static
 void
 phat_range_update_internal_value (PhatRange *range_ptr)
 {
-    range_ptr->internal_value = (range_ptr->adjustment->value - range_ptr->adjustment->lower) / (range_ptr->adjustment->upper - range_ptr->adjustment->lower);
+    range_ptr->internal_value = (gtk_adjustment_get_value(range_ptr->adjustment) - 
+            gtk_adjustment_get_lower(range_ptr->adjustment)) /
+            (gtk_adjustment_get_upper(range_ptr->adjustment) -
+            gtk_adjustment_get_lower(range_ptr->adjustment));
 }
 
 /* Update internals from adjustment */
@@ -588,8 +597,14 @@ static
 void
 phat_range_update_internals (PhatRange *range_ptr)
 {
-    range_ptr->internal_page = range_ptr->adjustment->page_increment / (range_ptr->adjustment->upper - range_ptr->adjustment->lower);
-    range_ptr->internal_step = range_ptr->adjustment->step_increment / (range_ptr->adjustment->upper - range_ptr->adjustment->lower);
+    range_ptr->internal_page = gtk_adjustment_get_page_increment(range_ptr->adjustment) /
+            (gtk_adjustment_get_upper(range_ptr->adjustment) - 
+            gtk_adjustment_get_lower(range_ptr->adjustment));
+    
+    range_ptr->internal_step = gtk_adjustment_get_step_increment(range_ptr->adjustment) /
+            (gtk_adjustment_get_upper(range_ptr->adjustment) -
+            gtk_adjustment_get_lower(range_ptr->adjustment));
+    
     range_ptr->internal_bigstep = range_ptr->internal_step * 3; /* from phatknob, should be configurable in future */
     phat_range_update_internal_value (range_ptr);
 }

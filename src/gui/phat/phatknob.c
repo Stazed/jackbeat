@@ -323,11 +323,14 @@ phat_knob_realize (GtkWidget *widget)
         (*GTK_WIDGET_CLASS (phat_knob_parent_class)->realize)(widget);
 
     knob = PHAT_KNOB (widget);
+    
+    GtkAllocation widget_allocation;
+    gtk_widget_get_allocation(GTK_WIDGET(widget), &widget_allocation); 
 
     /* FIXME keeps khagan from drawing knob */
-    if (widget->allocation.height > 1)
+    if (widget_allocation.height > 1)
     {
-        knob->size = widget->allocation.height;
+        knob->size = widget_allocation.height;
     }
 
     /* init first pixbuf */
@@ -434,10 +437,13 @@ phat_knob_expose (GtkWidget *widget, GdkEventExpose *event)
 
     knob = PHAT_KNOB (widget);
     range = PHAT_RANGE (widget);
+    
+    GtkAllocation widget_allocation;
+    gtk_widget_get_allocation(GTK_WIDGET(widget), &widget_allocation); 
 
     dx = (int) (51 * phat_range_get_internal_value (range)) * knob->size;
-    gdk_pixbuf_render_to_drawable_alpha ( knob->pixbuf, widget->window,
-                                         dx, 0, widget->allocation.x, widget->allocation.y,
+    gdk_pixbuf_render_to_drawable_alpha ( knob->pixbuf, gtk_widget_get_window(widget),
+                                         dx, 0, widget_allocation.x, widget_allocation.y,
                                          knob->size, knob->size, GDK_PIXBUF_ALPHA_FULL, 0, 0, 0, 0 );
     /*
         draw_knob (widget->window, widget->style->bg_gc[GTK_STATE_NORMAL], 
@@ -544,13 +550,16 @@ phat_knob_motion_notify (GtkWidget *widget, GdkEventMotion *event)
     g_return_val_if_fail (event != NULL, FALSE);
 
     knob = PHAT_KNOB (widget);
+    
+    GtkAllocation widget_allocation;
+    gtk_widget_get_allocation(GTK_WIDGET(widget), &widget_allocation); 
 
     x = event->x;
     y = event->y;
 
 
-    if (event->is_hint || (event->window != widget->window))
-        gdk_window_get_pointer (widget->window, &x, &y, &mods);
+    if (event->is_hint || (event->window != gtk_widget_get_window(widget)))
+        gdk_window_get_pointer (gtk_widget_get_window(widget), &x, &y, &mods);
 
     switch (knob->state)
     {
@@ -561,12 +570,12 @@ phat_knob_motion_notify (GtkWidget *widget, GdkEventMotion *event)
         case STATE_DRAGGING:
             if (mods & GDK_BUTTON1_MASK)
             {
-                phat_knob_update_mouse (knob, x - widget->allocation.x, y - widget->allocation.y , TRUE);
+                phat_knob_update_mouse (knob, x - widget_allocation.x, y - widget_allocation.y , TRUE);
                 return TRUE;
             }
             else if (mods & GDK_BUTTON3_MASK)
             {
-                phat_knob_update_mouse (knob, x - widget->allocation.x, y - widget->allocation.y ,  FALSE);
+                phat_knob_update_mouse (knob, x - widget_allocation.x, y - widget_allocation.y ,  FALSE);
                 return TRUE;
             }
             break;

@@ -51,9 +51,9 @@ phat_vfan_slider_new (GtkAdjustment* adjustment)
 {
     PhatVFanSlider* slider;
 
-    g_assert (adjustment->lower < adjustment->upper);
-    g_assert ((adjustment->value >= adjustment->lower)
-              && (adjustment->value <= adjustment->upper));
+    g_assert (gtk_adjustment_get_lower(adjustment) < gtk_adjustment_get_upper(adjustment));
+    g_assert ((gtk_adjustment_get_value(adjustment) >= gtk_adjustment_get_lower(adjustment))
+              && (gtk_adjustment_get_value(adjustment) <= gtk_adjustment_get_upper(adjustment)));
 
     slider = g_object_new (PHAT_TYPE_VFAN_SLIDER, NULL);
 
