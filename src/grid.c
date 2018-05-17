@@ -614,10 +614,13 @@ static int
 grid_to_window_rect (grid_t *grid, GdkRectangle *src, GdkRectangle *dest)
 {
     GdkRectangle visible;
+    GtkAllocation grid_area_allocation;
+    gtk_widget_get_allocation(GTK_WIDGET(grid->area), &grid_area_allocation); 
+    
     visible.x = grid_get_window_xpos (grid);
     visible.y = grid_get_window_ypos (grid);
-    visible.width = grid->area->allocation.width;
-    visible.height = grid->area->allocation.height;
+    visible.width = grid_area_allocation.width;
+    visible.height = grid_area_allocation.height;
     int is_visible = gdk_rectangle_intersect (src, &visible, dest);
     dest->x -= visible.x;
     dest->y -= visible.y;
@@ -661,17 +664,19 @@ grid_display (grid_t *grid, int x, int y, int width, int height, int direct, int
             if (direct)
             {
                 GdkRectangle visible, header, pattern;
+                GtkAllocation grid_area_allocation;
+                gtk_widget_get_allocation(GTK_WIDGET(grid->area), &grid_area_allocation); 
 
                 visible.x = 0;
                 visible.y = 0;
-                visible.width = grid->area->allocation.width;
+                visible.width = grid_area_allocation.width;
                 visible.height = grid->header_height;
 
                 if (gdk_rectangle_intersect (&visible, &dest, &header))
                 {
                     gdk_draw_drawable (
-                                       grid->area->window,
-                                       grid->area->style->fg_gc[gtk_widget_get_state (grid->area)],
+                                       gtk_widget_get_window(grid->area),
+                                       gtk_widget_get_style(grid->area)->fg_gc[gtk_widget_get_state (grid->area)],
                                        grid->pixmap,
                                        header.x + grid_get_window_xpos (grid),
                                        header.y, header.x, header.y, header.width, header.height);
@@ -679,14 +684,14 @@ grid_display (grid_t *grid, int x, int y, int width, int height, int direct, int
 
                 visible.x = 0;
                 visible.y = grid->header_height;
-                visible.width = grid->area->allocation.width;
-                visible.height = grid->area->allocation.height - grid->header_height;
+                visible.width = grid_area_allocation.width;
+                visible.height = grid_area_allocation.height - grid->header_height;
 
                 if (gdk_rectangle_intersect (&visible, &dest, &pattern))
                 {
                     gdk_draw_drawable (
-                                       grid->area->window,
-                                       grid->area->style->fg_gc[gtk_widget_get_state (grid->area)],
+                                       gtk_widget_get_window(grid->area),
+                                       gtk_widget_get_style(grid->area)->fg_gc[gtk_widget_get_state (grid->area)],
                                        grid->pixmap,
                                        src.x, pattern.y + grid_get_window_ypos (grid),
                                        pattern.x, pattern.y, pattern.width, pattern.height);
@@ -704,6 +709,9 @@ grid_display (grid_t *grid, int x, int y, int width, int height, int direct, int
 static void
 grid_update_adjustments (grid_t *grid)
 {
+    GtkAllocation grid_area_allocation;
+    gtk_widget_get_allocation(GTK_WIDGET(grid->area), &grid_area_allocation); 
+    
     if (grid->hadj)
     {
         DEBUG ("hadj: type=%s, upper=%d, step=%d, page/size=%d", G_OBJECT_TYPE_NAME (grid->hadj),
@@ -713,8 +721,8 @@ grid_update_adjustments (grid_t *grid)
                       "lower", (gdouble) 0,
                       "upper", (gdouble) grid->pixmap_width,
                       "step-increment", (gdouble) grid->cell_width + grid->col_spacing,
-                      "page-increment", (gdouble) grid->area->allocation.width,
-                      "page-size", (gdouble) grid->area->allocation.width,
+                      "page-increment", (gdouble) grid_area_allocation.width,
+                      "page-size", (gdouble) grid_area_allocation.width,
                       NULL);
 
         gtk_adjustment_changed (grid->hadj);
@@ -726,8 +734,8 @@ grid_update_adjustments (grid_t *grid)
                       "lower", (gdouble) 0,
                       "upper", (gdouble) grid->pixmap_height - grid->header_height,
                       "step-increment", (gdouble) grid->cell_height + grid->row_spacing,
-                      "page-increment", (gdouble) grid->area->allocation.height - grid->header_height,
-                      "page-size", (gdouble) grid->area->allocation.height - grid->header_height,
+                      "page-increment", (gdouble) grid_area_allocation.height - grid->header_height,
+                      "page-size", (gdouble) grid_area_allocation.height - grid->header_height,
                       NULL);
 
         gtk_adjustment_changed (grid->vadj);
@@ -794,8 +802,12 @@ grid_bring_into_view (grid_t *grid, int col, int row)
     int bottom = y + grid->cell_height + grid->row_spacing;
     int winx   = grid_get_window_xpos (grid);
     int winy   = grid_get_window_ypos (grid);
-    int height = grid->area->allocation.height - grid->header_height;
-    int width  = grid->area->allocation.width;
+    
+    GtkAllocation grid_area_allocation;
+    gtk_widget_get_allocation(GTK_WIDGET(grid->area), &grid_area_allocation); 
+    
+    int height = grid_area_allocation.height - grid->header_height;
+    int width  = grid_area_allocation.width;
 
     if (left < winx)
     {
@@ -1023,10 +1035,13 @@ static gboolean
 grid_configure_event (GtkWidget *widget, GdkEventConfigure *event, grid_t *grid)
 {
     if (grid->pixmap) g_object_unref (grid->pixmap);
+    
+    GtkAllocation widget_allocation;
+    gtk_widget_get_allocation(GTK_WIDGET(widget), &widget_allocation); 
 
     int minimum_width = grid_get_minimum_width (grid);
-    grid->pixmap_width = (minimum_width > widget->allocation.width)
-            ?  minimum_width : widget->allocation.width;
+    grid->pixmap_width = (minimum_width > widget_allocation.width)
+            ?  minimum_width : widget_allocation.width;
 
     float hratio = (float) grid->pixmap_width / minimum_width;
     if (grid->min_cell_width * hratio > grid->max_cell_width)
@@ -1043,13 +1058,13 @@ grid_configure_event (GtkWidget *widget, GdkEventConfigure *event, grid_t *grid)
                          / grid->col_num;
       grid->cell_width = grid->cell_width > grid->max_cell_width ? grid->max_cell_width : grid->cell_width;
      */
-    DEBUG ("configure width - minimum/allocated/cell: %d/%d/%d", minimum_width, widget->allocation.width, grid->cell_width);
+    DEBUG ("configure width - minimum/allocated/cell: %d/%d/%d", minimum_width, widget_allocation.width, grid->cell_width);
 
     int minimum_height = grid_get_minimum_height (grid);
     //grid->header_height += widget->allocation.height - minimum_height;
     //minimum_height = grid_get_minimum_height (grid);
-    grid->pixmap_height =  (minimum_height > widget->allocation.height)
-            ? minimum_height : widget->allocation.height;
+    grid->pixmap_height =  (minimum_height > widget_allocation.height)
+            ? minimum_height : widget_allocation.height;
 
     grid->cell_height = (grid->pixmap_height - (grid->row_num - 1) * grid->row_spacing - grid->y_padding * 2
                          - grid->header_height)
@@ -1058,7 +1073,7 @@ grid_configure_event (GtkWidget *widget, GdkEventConfigure *event, grid_t *grid)
     DEBUG ("configure height - minimum/allocated/cell: %d/%d/%d", minimum_height, widget->allocation.height, grid->cell_height);
 
     DEBUG ("Creating pixmap of size %d x %d", grid->pixmap_width, grid->pixmap_height);
-    grid->pixmap = gdk_pixmap_new (widget->window, grid->pixmap_width, grid->pixmap_height, -1);
+    grid->pixmap = gdk_pixmap_new (gtk_widget_get_window(widget), grid->pixmap_width, grid->pixmap_height, -1);
 
     grid_update_adjustments (grid);
 

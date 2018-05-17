@@ -224,7 +224,7 @@ slider_update_pixmap (slider_t *slider, slider_state_t state)
     {
         gdk_draw_drawable (
                            slider->pixmaps[state],
-                           slider->layout->style->fg_gc[gtk_widget_get_state (slider->layout)],
+                           gtk_widget_get_style(slider->layout)->fg_gc[gtk_widget_get_state (slider->layout)],
                            slider->gradients[state],
                            0, 0,
                            0, 0, slider->allocs[state]->width, slider->allocs[state]->height);
@@ -277,7 +277,7 @@ slider_button_event (GtkWidget *widget, GdkEventButton *event, slider_t *slider)
             slider->state = SLIDER_UNFOLDED;
             slider_update_pixmap (slider, slider->state);
             slider_queue_draw (slider);
-            gdk_window_set_cursor (slider->layout->window, slider->empty_cursor);
+            gdk_window_set_cursor (gtk_widget_get_window(slider->layout), slider->empty_cursor);
             slider->start_x_root = event->x_root;
             slider->start_y_root = event->y_root;
             slider->start_position = slider_compute_position (slider, SLIDER_UNFOLDED);
@@ -295,7 +295,7 @@ slider_button_event (GtkWidget *widget, GdkEventButton *event, slider_t *slider)
             int i = 0;
             while (slider->overlaps[i])
                 gtk_widget_show (slider->overlaps[i++]);
-            gdk_window_set_cursor (slider->layout->window, NULL);
+            gdk_window_set_cursor (gtk_widget_get_window(slider->layout), NULL);
             GdkDisplay *display = gdk_display_get_default ();
             GdkScreen *screen = gdk_display_get_default_screen (display);
             gdk_display_warp_pointer (display, screen, slider->start_x_root, slider->start_y_root);
@@ -337,7 +337,7 @@ slider_wheel_scroll_event (GtkWidget *widget, GdkEventScroll *event, slider_t *s
         GtkAllocation *alloc = slider->allocs[SLIDER_FOLDED];
         int x, y;
         // event coordinates are not reliable on osx here
-        gdk_window_get_pointer (widget->window, &x, &y, NULL);
+        gdk_window_get_pointer (gtk_widget_get_window(widget), &x, &y, NULL);
         if ((x >= alloc->x) && (x < alloc->width + alloc->x) &&
             (y >= alloc->y) && (y < alloc->height + alloc->y))
         {
@@ -385,11 +385,11 @@ slider_allocate (slider_t *slider, slider_state_t state, GtkAllocation * alloc)
 
         memcpy (slider->allocs[state], alloc, sizeof (GtkAllocation));
 
-        if (GTK_LAYOUT (slider->layout)->bin_window)
+        if (gtk_layout_get_bin_window(GTK_LAYOUT (slider->layout)))
         {
-            slider->pixmaps[state] = gdk_pixmap_new (GTK_LAYOUT (slider->layout)->bin_window,
+            slider->pixmaps[state] = gdk_pixmap_new (gtk_layout_get_bin_window(GTK_LAYOUT (slider->layout)),
                                                      alloc->width, alloc->height, -1);
-            slider->gradients[state] = gdk_pixmap_new (GTK_LAYOUT (slider->layout)->bin_window,
+            slider->gradients[state] = gdk_pixmap_new (gtk_layout_get_bin_window(GTK_LAYOUT (slider->layout)),
                                                        alloc->width, alloc->height, -1);
 
             slider_update_gradient (slider, state);
@@ -416,7 +416,7 @@ slider_expose (GtkWidget *layout, GdkEventExpose *event, slider_t *slider)
     GtkAllocation *alloc = slider->allocs[slider->state];
     GdkPixmap *pixmap = slider->pixmaps[slider->state];
 
-    if (pixmap && GTK_LAYOUT (layout)->bin_window)
+    if (pixmap && gtk_layout_get_bin_window(GTK_LAYOUT (layout)))
     {
         GtkAllocation target;
         if (gdk_rectangle_intersect (&event->area, alloc, &target))
@@ -425,13 +425,13 @@ slider_expose (GtkWidget *layout, GdkEventExpose *event, slider_t *slider)
             int srcy = target.y - alloc->y;
 
             gdk_draw_drawable (
-                               GTK_LAYOUT (layout)->bin_window,
-                               layout->style->fg_gc[gtk_widget_get_state (layout)],
+                               gtk_layout_get_bin_window(GTK_LAYOUT (layout)),
+                               gtk_widget_get_style(layout)->fg_gc[gtk_widget_get_state (layout)],
                                pixmap,
                                srcx, srcy,
                                target.x, target.y, target.width, target.height);
-            gtk_paint_shadow (layout->style,
-                              GTK_LAYOUT (layout)->bin_window,
+            gtk_paint_shadow (gtk_widget_get_style(layout),
+                              gtk_layout_get_bin_window(GTK_LAYOUT (layout)),
                               GTK_STATE_NORMAL,
                               GTK_SHADOW_IN,
                               &event->area, layout, NULL,

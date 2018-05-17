@@ -142,7 +142,7 @@ toggle_update_pixmap (toggle_t *toggle)
     {
         gdk_draw_drawable (
                            toggle->pixmap,
-                           toggle->layout->style->fg_gc[gtk_widget_get_state (toggle->layout)],
+                           gtk_widget_get_style(toggle->layout)->fg_gc[gtk_widget_get_state (toggle->layout)],
                            toggle->gradients[toggle->active],
                            0, 0,
                            0, 0, toggle->alloc->width, toggle->alloc->height);
@@ -150,7 +150,7 @@ toggle_update_pixmap (toggle_t *toggle)
         PangoLayout *layout = toggle_create_pango_layout (toggle, toggle->hover);
         int lwidth, lheight;
         pango_layout_get_pixel_size (layout, &lwidth, &lheight);
-        gdk_draw_layout (toggle->pixmap, toggle->layout->style->fg_gc[gtk_widget_get_state (toggle->layout)],
+        gdk_draw_layout (toggle->pixmap, gtk_widget_get_style(toggle->layout)->fg_gc[gtk_widget_get_state (toggle->layout)],
                          (toggle->alloc->width - lwidth) / 2,
                          (toggle->alloc->height - lheight) / 2, layout);
         g_object_unref (layout);
@@ -242,13 +242,13 @@ toggle_allocate (toggle_t *toggle, GtkAllocation * alloc)
 
         memcpy (toggle->alloc, alloc, sizeof (GtkAllocation));
 
-        if (GTK_LAYOUT (toggle->layout)->bin_window)
+        if (gtk_layout_get_bin_window (GTK_LAYOUT (toggle->layout)))
         {
-            toggle->pixmap = gdk_pixmap_new (GTK_LAYOUT (toggle->layout)->bin_window,
+            toggle->pixmap = gdk_pixmap_new (gtk_layout_get_bin_window (GTK_LAYOUT (toggle->layout)),
                                              alloc->width, alloc->height, -1);
-            toggle->gradients[0] = gdk_pixmap_new (GTK_LAYOUT (toggle->layout)->bin_window,
+            toggle->gradients[0] = gdk_pixmap_new (gtk_layout_get_bin_window (GTK_LAYOUT (toggle->layout)),
                                                    alloc->width, alloc->height, -1);
-            toggle->gradients[1] = gdk_pixmap_new (GTK_LAYOUT (toggle->layout)->bin_window,
+            toggle->gradients[1] = gdk_pixmap_new (gtk_layout_get_bin_window (GTK_LAYOUT (toggle->layout)),
                                                    alloc->width, alloc->height, -1);
 
             toggle_update_gradient (toggle, 0);
@@ -269,7 +269,7 @@ toggle_expose (GtkWidget *layout, GdkEventExpose *event, toggle_t *toggle)
 {
     GtkAllocation *alloc = toggle->alloc;
 
-    if (toggle->pixmap && GTK_LAYOUT (layout)->bin_window)
+    if (toggle->pixmap && gtk_layout_get_bin_window (GTK_LAYOUT (layout)))
     {
         GtkAllocation target;
         if (gdk_rectangle_intersect (&event->area, alloc, &target))
@@ -278,8 +278,8 @@ toggle_expose (GtkWidget *layout, GdkEventExpose *event, toggle_t *toggle)
             int srcy = target.y - alloc->y;
 
             gdk_draw_drawable (
-                               GTK_LAYOUT (layout)->bin_window,
-                               layout->style->fg_gc[gtk_widget_get_state (layout)],
+                               gtk_layout_get_bin_window (GTK_LAYOUT (layout)),
+                               gtk_widget_get_style(layout)->fg_gc[gtk_widget_get_state (layout)],
                                toggle->pixmap,
                                srcx, srcy,
                                target.x, target.y, target.width, target.height);

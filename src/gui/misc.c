@@ -127,18 +127,18 @@ gui_misc_normalize_dialog_spacing (GtkWidget *widget)
         gtk_table_set_col_spacings (GTK_TABLE (widget), 8);
         gtk_table_set_row_spacings (GTK_TABLE (widget), 4);
     }
-    else if (GTK_IS_ALIGNMENT (widget) && GTK_IS_FRAME (widget->parent))
+    else if (GTK_IS_ALIGNMENT (widget) && GTK_IS_FRAME (gtk_widget_get_parent(widget)))
     {
         gtk_alignment_set_padding (GTK_ALIGNMENT (widget), 4, 0, 16, 0);
     }
-    else if (GTK_IS_FRAME (widget) && GTK_IS_BOX (widget->parent))
+    else if (GTK_IS_FRAME (widget) && GTK_IS_BOX (gtk_widget_get_parent(widget)))
     {
         gboolean expand, fill;
         guint padding;
         GtkPackType pack_type;
-        gtk_box_query_child_packing (GTK_BOX (widget->parent), widget, &expand,
+        gtk_box_query_child_packing (GTK_BOX (gtk_widget_get_parent(widget)), widget, &expand,
                                      &fill, &padding, &pack_type);
-        gtk_box_set_child_packing (GTK_BOX (widget->parent), widget, expand,
+        gtk_box_set_child_packing (GTK_BOX (gtk_widget_get_parent(widget)), widget, expand,
                                    fill, 4, pack_type);
     }
 

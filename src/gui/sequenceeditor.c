@@ -135,9 +135,12 @@ gui_sequence_editor_move_track_down (GtkWidget * menu_item, gui_sequence_editor_
 static void
 gui_sequence_editor_set_active_track (gui_sequence_editor_t *self, int track, int redraw)
 {
+    GtkAllocation allocation; 
+    gtk_widget_get_allocation(GTK_WIDGET(self->controls_layout), &allocation); 
+    
     int track_height = self->last_control_height + TRACK_VPADDING;
     gui_sequence_editor_control_update_bg (self, track,
-                                           self->controls_layout->allocation.width,
+                                           allocation.width,
                                            track_height);
     if (track != self->active_track)
     {
@@ -379,8 +382,11 @@ gui_sequence_editor_allocate_child (gui_sequence_editor_t *self, GtkWidget *chil
     allocation.y = y;
     allocation.width = width;
     allocation.height = height;
+    
+    GtkAllocation child_allocation;
+    gtk_widget_get_allocation(GTK_WIDGET(child), &child_allocation); 
 
-    if ((x != child->allocation.x) || (y != child->allocation.y))
+    if ((x != child_allocation.x) || (y != child_allocation.y))
         gtk_layout_move (GTK_LAYOUT (gtk_widget_get_parent(child)), child, x, y);
 
     gtk_widget_size_allocate (child, &allocation);

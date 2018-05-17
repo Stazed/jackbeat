@@ -184,10 +184,10 @@ gui_prefs_get_named_tab_index (gui_t *gui, char *name)
 {
     int index = -1;
     GtkWidget *child = gui_builder_get_widget (gui->builder, name);
-    int i, ii = gtk_notebook_get_n_pages (GTK_NOTEBOOK (child->parent));
+    int i, ii = gtk_notebook_get_n_pages (GTK_NOTEBOOK (gtk_widget_get_parent(child)));
     for (i = 0; i < ii; i++)
     {
-        if (child == gtk_notebook_get_nth_page (GTK_NOTEBOOK (child->parent), i))
+        if (child == gtk_notebook_get_nth_page (GTK_NOTEBOOK (gtk_widget_get_parent(child)), i))
         {
             index = i;
             break;
@@ -283,9 +283,9 @@ gui_prefs_osc_save (gui_t *gui)
     int success = 1;
     gui_prefs_t *prefs = gui->prefs;
     int port = gtk_spin_button_get_value (GTK_SPIN_BUTTON (prefs->osc_server_port));
-    gui_wait_cursor (prefs->dialog->window, 1);
+    gui_wait_cursor (gtk_widget_get_window(prefs->dialog), 1);
     port = osc_set_port (gui->osc, port);
-    gui_wait_cursor (prefs->dialog->window, 0);
+    gui_wait_cursor (gtk_widget_get_window(prefs->dialog), 0);
     if (!port)
     {
         gtk_notebook_set_current_page (GTK_NOTEBOOK (prefs->notebook), prefs->osc_tab);
@@ -385,9 +385,9 @@ gui_prefs_audio_do_connect (gui_t *gui, int save)
     int rate_index = gtk_combo_box_get_active (GTK_COMBO_BOX (prefs->audio_sample_rate));
     int rate = sample_rates[rate_index];
 
-    gui_wait_cursor (prefs->dialog->window, 1);
+    gui_wait_cursor (gtk_widget_get_window(prefs->dialog), 1);
     success = stream_device_open (gui->stream, device_name, rate, client_name, auto_start);
-    gui_wait_cursor (prefs->dialog->window, 0);
+    gui_wait_cursor (gtk_widget_get_window(prefs->dialog), 0);
     if (success)
     {
         if (save)
