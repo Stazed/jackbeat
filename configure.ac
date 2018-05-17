@@ -9,10 +9,6 @@ AC_PROG_RANLIB
 GLOBAL_CFLAGS="-O3"
 GLOBAL_LDFLAGS=""
 
-#GLOBAL_CFLAGS+=" -DGTK_DISABLE_SINGLE_INCLUDES"
-#GLOBAL_CFLAGS+=" -DGTK_DISABLE_DEPRECATED"
-#GLOBAL_CFLAGS+=" -DGSEAL_ENABLE"
-
 case "$host_os" in
     darwin*) 
         GLOBAL_LDFLAGS="$GLOBAL_LDFLAGS -bind_at_load"
@@ -165,11 +161,15 @@ AM_CONDITIONAL(MEMDEBUG, test x$memdebug = xtrue)
 
 AC_ARG_ENABLE([devmode], AS_HELP_STRING([--enable-devmode],
             [enable developer mode]),
-            [AC_DEFINE(DEVMODE,1,[Developer mode])])
+            [AC_DEFINE(DEVMODE,1,[Developer mode]) GLOBAL_CFLAGS="-g -O0 -Wall -rdynamic"])
 
 AC_ARG_ENABLE([macbundle], AS_HELP_STRING([--enable-macbundle],
             [enable mac bundle packaging]),
             [AC_DEFINE(MACBUNDLE,1,[Mac bundle mode])])
+
+#GLOBAL_CFLAGS+=" -DGTK_DISABLE_SINGLE_INCLUDES"
+#GLOBAL_CFLAGS+=" -DGTK_DISABLE_DEPRECATED"
+#GLOBAL_CFLAGS+=" -DGSEAL_ENABLE"
 
 AC_SUBST(MEMDEBUG_SOURCES)
 AC_SUBST(GLOBAL_CFLAGS)
