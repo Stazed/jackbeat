@@ -316,7 +316,8 @@ sample_display_size_allocate (GtkWidget *widget,
     g_return_if_fail (IS_SAMPLE_DISPLAY (widget));
     g_return_if_fail (allocation != NULL);
 
-    widget->allocation = *allocation;
+    gtk_widget_set_allocation(widget, allocation);
+    
     if (gtk_widget_get_realized (widget))
     {
         s = SAMPLE_DISPLAY (widget);
@@ -341,11 +342,14 @@ sample_display_realize (GtkWidget *widget)
 
     gtk_widget_set_realized (widget, 1);
     s = SAMPLE_DISPLAY (widget);
+    
+    GtkAllocation widget_allocation;
+    gtk_widget_get_allocation(GTK_WIDGET(widget), &widget_allocation); 
 
-    attributes.x = widget->allocation.x;
-    attributes.y = widget->allocation.y;
-    attributes.width = widget->allocation.width;
-    attributes.height = widget->allocation.height;
+    attributes.x = widget_allocation.x;
+    attributes.y = widget_allocation.y;
+    attributes.width = widget_allocation.width;
+    attributes.height = widget_allocation.height;
     attributes.wclass = GDK_INPUT_OUTPUT;
     attributes.window_type = GDK_WINDOW_CHILD;
     attributes.event_mask = gtk_widget_get_events (widget)
@@ -356,27 +360,27 @@ sample_display_realize (GtkWidget *widget)
     attributes.colormap = gtk_widget_get_colormap (widget);
 
     attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
-    gtk_widget_set_window(widget, gdk_window_new (widget->parent->window, &attributes, attributes_mask));
+    gtk_widget_set_window(widget, gdk_window_new (gtk_widget_get_window(gtk_widget_get_parent(widget)), &attributes, attributes_mask));
 
-    widget->style = gtk_style_attach (widget->style, widget->window);
+    gtk_widget_set_style(widget, gtk_style_attach (gtk_widget_get_style(widget), gtk_widget_get_window(widget)));
 
-    s->bg_gc = gdk_gc_new (widget->window);
-    s->fg_gc = gdk_gc_new (widget->window);
-    s->zeroline_gc = gdk_gc_new (widget->window);
+    s->bg_gc = gdk_gc_new (gtk_widget_get_window(widget));
+    s->fg_gc = gdk_gc_new (gtk_widget_get_window(widget));
+    s->zeroline_gc = gdk_gc_new (gtk_widget_get_window(widget));
     gdk_gc_set_foreground (s->bg_gc, &SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (widget))->colors[SAMPLE_DISPLAYCOL_BG]);
     gdk_gc_set_foreground (s->fg_gc, &SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (widget))->colors[SAMPLE_DISPLAYCOL_FG]);
     gdk_gc_set_foreground (s->zeroline_gc, &SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (widget))->colors[SAMPLE_DISPLAYCOL_ZERO]);
-    s->mixerpos_gc = gdk_gc_new (widget->window);
+    s->mixerpos_gc = gdk_gc_new (gtk_widget_get_window(widget));
     gdk_gc_set_foreground (s->mixerpos_gc, &SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (widget))->colors[SAMPLE_DISPLAYCOL_MIXERPOS]);
     if (s->edit)
     {
-        s->loop_gc = gdk_gc_new (widget->window);
+        s->loop_gc = gdk_gc_new (gtk_widget_get_window(widget));
         gdk_gc_set_foreground (s->loop_gc, &SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (widget))->colors[SAMPLE_DISPLAYCOL_LOOP]);
     }
 
     sample_display_init_display (s, attributes.width, attributes.height);
 
-    gdk_window_set_user_data (widget->window, widget);
+    gdk_window_set_user_data (gtk_widget_get_window(widget), widget);
 }
 
 static void
@@ -568,10 +572,10 @@ sample_display_draw_main (GtkWidget *widget,
 
     if (!IS_INITIALIZED (s))
     {
-        gdk_draw_rectangle (widget->window,
+        gdk_draw_rectangle (gtk_widget_get_window(widget),
                             s->bg_gc,
                             TRUE, area->x, area->y, area->width, area->height);
-        gdk_draw_line (widget->window,
+        gdk_draw_line (gtk_widget_get_window(widget),
                        s->fg_gc,
                        area->x, s->height / 2,
                        area->x + area->width - 1, s->height / 2);
@@ -586,12 +590,12 @@ sample_display_draw_main (GtkWidget *widget,
             /* draw the part to the left of the selection */
             x = sample_display_startoffset_to_xpos (s, s->sel_start);
             x = MIN (x_max, MAX (x_min, x));
-            sample_display_draw_data (widget->window, s, 0, x_min, x - x_min);
+            sample_display_draw_data (gtk_widget_get_window(widget), s, 0, x_min, x - x_min);
 
             /* draw the selection */
             x2 = sample_display_endoffset_to_xpos (s, s->sel_end);
             x2 = MIN (x_max, MAX (x_min, x2));
-            sample_display_draw_data (widget->window, s, 1, x, x2 - x);
+            sample_display_draw_data (gtk_widget_get_window(widget), s, 1, x, x2 - x);
         }
         else
         {
@@ -600,17 +604,17 @@ sample_display_draw_main (GtkWidget *widget,
         }
 
         /* draw the part to the right of the selection */
-        sample_display_draw_data (widget->window, s, 0, x2, x_max - x2);
+        sample_display_draw_data (gtk_widget_get_window(widget), s, 0, x2, x_max - x2);
 
         if (s->loop_start != -1)
         {
-            sample_display_do_marker_line (widget->window, s, 0, s->loop_start, x_min, x_max, s->loop_gc);
-            sample_display_do_marker_line (widget->window, s, 1, s->loop_end, x_min, x_max, s->loop_gc);
+            sample_display_do_marker_line (gtk_widget_get_window(widget), s, 0, s->loop_start, x_min, x_max, s->loop_gc);
+            sample_display_do_marker_line (gtk_widget_get_window(widget), s, 1, s->loop_end, x_min, x_max, s->loop_gc);
         }
 
         if (s->mixerpos != -1)
         {
-            sample_display_do_marker_line (widget->window, s, 0, s->mixerpos, x_min, x_max, s->mixerpos_gc);
+            sample_display_do_marker_line (gtk_widget_get_window(widget), s, 0, s->mixerpos, x_min, x_max, s->mixerpos_gc);
             s->old_mixerpos = s->mixerpos;
         }
     }
