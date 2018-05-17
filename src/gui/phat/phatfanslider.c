@@ -230,12 +230,12 @@ phat_fan_slider_set_range (PhatFanSlider* slider,
     g_return_if_fail (PHAT_IS_FAN_SLIDER (slider));
     g_return_if_fail (lower <= upper);
 
-    slider->adjustment->lower = lower;
-    slider->adjustment->upper = upper;
+    gtk_adjustment_set_lower(slider->adjustment, lower);
+    gtk_adjustment_set_upper(slider->adjustment, upper);
 
-    value = CLAMP (slider->adjustment->value,
-                   slider->adjustment->lower,
-                   slider->adjustment->upper);
+    value = CLAMP (gtk_adjustment_get_value(slider->adjustment),
+                   gtk_adjustment_get_lower(slider->adjustment),
+                   gtk_adjustment_get_upper(slider->adjustment));
     //XXX not sure about these
     gtk_adjustment_changed (slider->adjustment);
     gtk_adjustment_set_value (slider->adjustment, value);
@@ -259,9 +259,9 @@ phat_fan_slider_get_range (PhatFanSlider* slider,
     g_return_if_fail (PHAT_IS_FAN_SLIDER (slider));
 
     if (lower)
-        *lower = slider->adjustment->lower;
+        *lower = gtk_adjustment_get_lower(slider->adjustment);
     if (upper)
-        *upper = slider->adjustment->upper;
+        *upper = gtk_adjustment_get_upper(slider->adjustment);
 }
 
 /**
@@ -304,7 +304,7 @@ phat_fan_slider_set_adjustment (PhatFanSlider* slider,
 
     phat_fan_slider_adjustment_changed (slider->adjustment, slider);
 
-    phat_fan_slider_set_value (PHAT_FAN_SLIDER (slider), adjustment->value);
+    phat_fan_slider_set_value (PHAT_FAN_SLIDER (slider), gtk_adjustment_get_value(adjustment));
 }
 
 /**
@@ -1189,16 +1189,16 @@ phat_fan_slider_key_press (GtkWidget* widget,
         switch (event->keyval)
         {
             case GDK_Up:
-                inc = adj->step_increment;
+                inc = gtk_adjustment_get_step_increment(adj);
                 break;
             case GDK_Down:
-                inc = -adj->step_increment;
+                inc = -gtk_adjustment_get_step_increment(adj);
                 break;
             case GDK_Page_Up:
-                inc = adj->page_increment;
+                inc = gtk_adjustment_get_page_increment(adj);
                 break;
             case GDK_Page_Down:
-                inc = -adj->page_increment;
+                inc = -gtk_adjustment_get_page_increment(adj);
                 break;
             default:
                 return FALSE;
@@ -1209,16 +1209,16 @@ phat_fan_slider_key_press (GtkWidget* widget,
         switch (event->keyval)
         {
             case GDK_Right:
-                inc = adj->step_increment;
+                inc = gtk_adjustment_get_step_increment(adj);
                 break;
             case GDK_Left:
-                inc = -adj->step_increment;
+                inc = -gtk_adjustment_get_step_increment(adj);
                 break;
             case GDK_Page_Up:
-                inc = adj->page_increment;
+                inc = gtk_adjustment_get_page_increment(adj);
                 break;
             case GDK_Page_Down:
-                inc = -adj->page_increment;
+                inc = -gtk_adjustment_get_page_increment(adj);
                 break;
             default:
                 return FALSE;
@@ -1228,7 +1228,7 @@ phat_fan_slider_key_press (GtkWidget* widget,
     if (slider->inverted)
         inc = -inc;
 
-    gtk_adjustment_set_value (adj, adj->value + inc);
+    gtk_adjustment_set_value (adj, gtk_adjustment_get_value(adj) + inc);
 
     return TRUE;
 }
@@ -1258,14 +1258,14 @@ phat_fan_slider_scroll (GtkWidget* widget,
              || event->direction == GDK_SCROLL_LEFT) && slider->inverted))
     {
         gtk_adjustment_set_value (slider->adjustment_prv,
-                                  (slider->adjustment_prv->value
-                                   + slider->adjustment_prv->page_increment));
+                                  (gtk_adjustment_get_value(slider->adjustment_prv)
+                                   + gtk_adjustment_get_page_increment(slider->adjustment_prv)));
     }
     else
     {
         gtk_adjustment_set_value (slider->adjustment_prv,
-                                  (slider->adjustment_prv->value
-                                   - slider->adjustment_prv->page_increment));
+                                  (gtk_adjustment_get_value(slider->adjustment_prv)
+                                   - gtk_adjustment_get_page_increment(slider->adjustment_prv)));
     }
 
     return TRUE;
