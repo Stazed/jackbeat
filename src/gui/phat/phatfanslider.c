@@ -1188,16 +1188,16 @@ phat_fan_slider_key_press (GtkWidget* widget,
     {
         switch (event->keyval)
         {
-            case GDK_Up:
+            case GDK_KEY_Up:
                 inc = gtk_adjustment_get_step_increment(adj);
                 break;
-            case GDK_Down:
+            case GDK_KEY_Down:
                 inc = -gtk_adjustment_get_step_increment(adj);
                 break;
-            case GDK_Page_Up:
+            case GDK_KEY_Page_Up:
                 inc = gtk_adjustment_get_page_increment(adj);
                 break;
-            case GDK_Page_Down:
+            case GDK_KEY_Page_Down:
                 inc = -gtk_adjustment_get_page_increment(adj);
                 break;
             default:
@@ -1208,16 +1208,16 @@ phat_fan_slider_key_press (GtkWidget* widget,
     {
         switch (event->keyval)
         {
-            case GDK_Right:
+            case GDK_KEY_Right:
                 inc = gtk_adjustment_get_step_increment(adj);
                 break;
-            case GDK_Left:
+            case GDK_KEY_Left:
                 inc = -gtk_adjustment_get_step_increment(adj);
                 break;
-            case GDK_Page_Up:
+            case GDK_KEY_Page_Up:
                 inc = gtk_adjustment_get_page_increment(adj);
                 break;
-            case GDK_Page_Down:
+            case GDK_KEY_Page_Down:
                 inc = -gtk_adjustment_get_page_increment(adj);
                 break;
             default:

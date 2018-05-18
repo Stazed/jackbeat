@@ -1242,24 +1242,24 @@ grid_key_action_event (GtkWidget * widget, GdkEventKey *event, grid_t * grid)
     {
         switch (event->keyval)
         {
-            case GDK_Up:    row--;
+            case GDK_KEY_Up:    row--;
                 break;
-            case GDK_Right: col++;
+            case GDK_KEY_Right: col++;
                 break;
-            case GDK_Down:  row++;
+            case GDK_KEY_Down:  row++;
                 break;
-            case GDK_Left:  col--;
+            case GDK_KEY_Left:  col--;
                 break;
-            case GDK_Home:  col = 0;
+            case GDK_KEY_Home:  col = 0;
                 break;
-            case GDK_End:   col = grid->col_num - 1;
+            case GDK_KEY_End:   col = grid->col_num - 1;
                 break;
-            case GDK_N:
-            case GDK_n:
+            case GDK_KEY_N:
+            case GDK_KEY_n:
                 mask = 1;
-            case GDK_B:
-            case GDK_b:
-            case GDK_Return:
+            case GDK_KEY_B:
+            case GDK_KEY_b:
+            case GDK_KEY_Return:
                 toggle = 1;
                 break;
                 //FIXME: what about GDK_Delete as an eraser?
@@ -1271,8 +1271,8 @@ grid_key_action_event (GtkWidget * widget, GdkEventKey *event, grid_t * grid)
     {
         switch (event->keyval)
         {
-            case GDK_Shift_L:
-            case GDK_Shift_R:
+            case GDK_KEY_Shift_L:
+            case GDK_KEY_Shift_R:
                 mask = 0;
                 break;
             default:

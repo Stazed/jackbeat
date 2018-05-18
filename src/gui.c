@@ -451,37 +451,37 @@ gui_menubar (gui_t * gui)
     
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->fileMenu), gui->newFileMi);
     gtk_widget_add_accelerator(gui->newFileMi, "activate", gui->accel_group, 
-        GDK_n, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE); 
+        GDK_KEY_n, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE); 
     g_signal_connect(G_OBJECT(gui->newFileMi), "activate", G_CALLBACK (gui_new_instance), gui);
     
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->fileMenu), gui->openFileMi);
     gtk_widget_add_accelerator(gui->openFileMi, "activate", gui->accel_group, 
-        GDK_o, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE); 
+        GDK_KEY_o, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE); 
     g_signal_connect(G_OBJECT(gui->openFileMi), "activate", G_CALLBACK (gui_file_load_sequence), gui);
     
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->fileMenu), gui->saveFileMi);
     gtk_widget_add_accelerator(gui->saveFileMi, "activate", gui->accel_group, 
-        GDK_s, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE); 
+        GDK_KEY_s, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE); 
     g_signal_connect(G_OBJECT(gui->saveFileMi), "activate", G_CALLBACK (gui_file_save_sequence), gui);
     
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->fileMenu), gui->saveAsFileMi);
     gtk_widget_add_accelerator(gui->saveAsFileMi, "activate", gui->accel_group, 
-        GDK_s, GDK_CONTROL_MASK|GDK_SHIFT_MASK, GTK_ACCEL_VISIBLE); 
+        GDK_KEY_s, GDK_CONTROL_MASK|GDK_SHIFT_MASK, GTK_ACCEL_VISIBLE); 
     g_signal_connect(G_OBJECT(gui->saveAsFileMi), "activate", G_CALLBACK (gui_file_save_as_sequence), gui);
     
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->fileMenu), gui->exportFileMi);
     gtk_widget_add_accelerator(gui->exportFileMi, "activate", gui->accel_group, 
-        GDK_e, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE); 
+        GDK_KEY_e, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE); 
     g_signal_connect(G_OBJECT(gui->exportFileMi), "activate", G_CALLBACK (gui_file_export_sequence), gui);
     
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->fileMenu), gui->closeFileMi);
     gtk_widget_add_accelerator(gui->closeFileMi, "activate", gui->accel_group, 
-        GDK_w, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE); 
+        GDK_KEY_w, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE); 
     g_signal_connect(G_OBJECT(gui->closeFileMi), "activate", G_CALLBACK (gui_close_from_menu), gui);
     
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->fileMenu), gui->quitFileMi);
     gtk_widget_add_accelerator(gui->quitFileMi, "activate", gui->accel_group, 
-        GDK_q, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE); 
+        GDK_KEY_q, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE); 
     g_signal_connect(G_OBJECT(gui->quitFileMi), "activate", G_CALLBACK (gui_exit), gui);
     
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->menubar), gui->fileFileMenu);
@@ -516,27 +516,27 @@ gui_menubar (gui_t * gui)
     
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->editMenu), gui->addTrackEditMi);
     gtk_widget_add_accelerator(gui->addTrackEditMi, "activate", gui->accel_group, 
-        GDK_n, GDK_CONTROL_MASK|GDK_SHIFT_MASK, GTK_ACCEL_VISIBLE); 
+        GDK_KEY_n, GDK_CONTROL_MASK|GDK_SHIFT_MASK, GTK_ACCEL_VISIBLE); 
     g_signal_connect(G_OBJECT(gui->addTrackEditMi), "activate", G_CALLBACK (gui_add_track), gui);
     
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->editMenu), gui->loadSampleEditMi);
     gtk_widget_add_accelerator(gui->loadSampleEditMi, "activate", gui->accel_group, 
-        GDK_l, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE); 
+        GDK_KEY_l, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE); 
     g_signal_connect(G_OBJECT(gui->loadSampleEditMi), "activate", G_CALLBACK (gui_load_sample), gui);
 
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->editMenu), gui->renameTrackEditMi);
     gtk_widget_add_accelerator(gui->renameTrackEditMi, "activate", gui->accel_group, 
-        GDK_F2, 0, GTK_ACCEL_VISIBLE); 
+        GDK_KEY_F2, 0, GTK_ACCEL_VISIBLE); 
     g_signal_connect(G_OBJECT(gui->renameTrackEditMi), "activate", G_CALLBACK (gui_rename_track), gui);
 
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->editMenu), gui->muteTrackEditMi);
     gtk_widget_add_accelerator(gui->muteTrackEditMi, "activate", gui->accel_group, 
-        GDK_m, 0, GTK_ACCEL_VISIBLE); 
+        GDK_KEY_m, 0, GTK_ACCEL_VISIBLE); 
     g_signal_connect(G_OBJECT(gui->muteTrackEditMi), "activate", G_CALLBACK (gui_mute_track), gui);
 
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->editMenu), gui->toggleTrackSoloEditMi);
     gtk_widget_add_accelerator(gui->toggleTrackSoloEditMi, "activate", gui->accel_group, 
-        GDK_s, 0, GTK_ACCEL_VISIBLE); 
+        GDK_KEY_s, 0, GTK_ACCEL_VISIBLE); 
     g_signal_connect(G_OBJECT(gui->toggleTrackSoloEditMi), "activate", G_CALLBACK (gui_solo_track), gui);
     
     /* Track Volume sub menu */
@@ -544,14 +544,14 @@ gui_menubar (gui_t * gui)
 
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->volumeTrackEditMenu), gui->volUp2dbVolumeMi);
     gtk_widget_add_accelerator(gui->volUp2dbVolumeMi, "activate", gui->accel_group, 
-        GDK_p, 0, GTK_ACCEL_VISIBLE); 
+        GDK_KEY_p, 0, GTK_ACCEL_VISIBLE); 
     g_object_set_data(G_OBJECT(gui->volUp2dbVolumeMi), "volume_adjust", GINT_TO_POINTER(GUI_SHIFT_UP));
     g_object_set_data(G_OBJECT(gui->volUp2dbVolumeMi), "gui", gui);
     g_signal_connect(G_OBJECT(gui->volUp2dbVolumeMi), "activate", G_CALLBACK (gui_shift_track_volume), 0);    // GUI_SHIFT_UP
     
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->volumeTrackEditMenu), gui->volDown2dbVolumeMi);
     gtk_widget_add_accelerator(gui->volDown2dbVolumeMi, "activate", gui->accel_group, 
-        GDK_l, 0, GTK_ACCEL_VISIBLE); 
+        GDK_KEY_l, 0, GTK_ACCEL_VISIBLE); 
     g_object_set_data(G_OBJECT(gui->volDown2dbVolumeMi), "volume_adjust", GINT_TO_POINTER(GUI_SHIFT_DOWN));
     g_object_set_data(G_OBJECT(gui->volDown2dbVolumeMi), "gui", gui);
     g_signal_connect(G_OBJECT(gui->volDown2dbVolumeMi), "activate", G_CALLBACK (gui_shift_track_volume), 0);  // GUI_SHIFT_DOWN
@@ -560,14 +560,14 @@ gui_menubar (gui_t * gui)
     
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->volumeTrackEditMenu), gui->volUp3dbVolumeMi);
     gtk_widget_add_accelerator(gui->volUp3dbVolumeMi, "activate", gui->accel_group, 
-        GDK_p, GDK_SHIFT_MASK, GTK_ACCEL_VISIBLE); 
+        GDK_KEY_p, GDK_SHIFT_MASK, GTK_ACCEL_VISIBLE); 
     g_object_set_data(G_OBJECT(gui->volUp3dbVolumeMi), "volume_adjust", GINT_TO_POINTER(GUI_SHIFT_UP_BIG));
     g_object_set_data(G_OBJECT(gui->volUp3dbVolumeMi), "gui", gui);
     g_signal_connect(G_OBJECT(gui->volUp3dbVolumeMi), "activate", G_CALLBACK (gui_shift_track_volume), 0);    // GUI_SHIFT_UP_BIG
     
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->volumeTrackEditMenu), gui->volDown3dbVolumeMi);
     gtk_widget_add_accelerator(gui->volDown3dbVolumeMi, "activate", gui->accel_group, 
-        GDK_l, GDK_SHIFT_MASK, GTK_ACCEL_VISIBLE); 
+        GDK_KEY_l, GDK_SHIFT_MASK, GTK_ACCEL_VISIBLE); 
     g_object_set_data(G_OBJECT(gui->volDown3dbVolumeMi), "volume_adjust", GINT_TO_POINTER(GUI_SHIFT_DOWN_BIG));
     g_object_set_data(G_OBJECT(gui->volDown3dbVolumeMi), "gui", gui);
     g_signal_connect(G_OBJECT(gui->volDown3dbVolumeMi), "activate", G_CALLBACK (gui_shift_track_volume), 0);  // GUI_SHIFT_DOWN_BIG
@@ -576,7 +576,7 @@ gui_menubar (gui_t * gui)
     
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->volumeTrackEditMenu), gui->volResetVolumeMi);
     gtk_widget_add_accelerator(gui->volResetVolumeMi, "activate", gui->accel_group, 
-        GDK_0, 0, GTK_ACCEL_VISIBLE); 
+        GDK_KEY_0, 0, GTK_ACCEL_VISIBLE); 
     g_object_set_data(G_OBJECT(gui->volResetVolumeMi), "volume_adjust", GINT_TO_POINTER(GUI_SHIFT_RESET));
     g_object_set_data(G_OBJECT(gui->volResetVolumeMi), "gui", gui);
     g_signal_connect(G_OBJECT(gui->volResetVolumeMi), "activate", G_CALLBACK (gui_shift_track_volume), 0);    // GUI_SHIFT_RESET
@@ -586,29 +586,29 @@ gui_menubar (gui_t * gui)
     
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->editMenu), gui->removeTrackEditMi);
     gtk_widget_add_accelerator(gui->removeTrackEditMi, "activate", gui->accel_group, 
-        GDK_Delete, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE); 
+        GDK_KEY_Delete, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE); 
     g_signal_connect(G_OBJECT(gui->removeTrackEditMi), "activate", G_CALLBACK (gui_remove_track), gui);
 
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->editMenu), gui->separatorEditMi);
 
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->editMenu), gui->clearEditMi);
     gtk_widget_add_accelerator(gui->clearEditMi, "activate", gui->accel_group, 
-        GDK_k, GDK_CONTROL_MASK|GDK_SHIFT_MASK, GTK_ACCEL_VISIBLE); 
+        GDK_KEY_k, GDK_CONTROL_MASK|GDK_SHIFT_MASK, GTK_ACCEL_VISIBLE); 
     g_signal_connect(G_OBJECT(gui->clearEditMi), "activate", G_CALLBACK (gui_clear_sequence), gui);
 
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->editMenu), gui->doubleEditMi);
     gtk_widget_add_accelerator(gui->doubleEditMi, "activate", gui->accel_group, 
-        GDK_d, GDK_CONTROL_MASK|GDK_SHIFT_MASK, GTK_ACCEL_VISIBLE); 
+        GDK_KEY_d, GDK_CONTROL_MASK|GDK_SHIFT_MASK, GTK_ACCEL_VISIBLE); 
     g_signal_connect(G_OBJECT(gui->doubleEditMi), "activate", G_CALLBACK (gui_duplicate_sequence), gui);
 
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->editMenu), gui->transposeEditMi);
     gtk_widget_add_accelerator(gui->transposeEditMi, "activate", gui->accel_group, 
-        GDK_t, GDK_CONTROL_MASK|GDK_SHIFT_MASK, GTK_ACCEL_VISIBLE); 
+        GDK_KEY_t, GDK_CONTROL_MASK|GDK_SHIFT_MASK, GTK_ACCEL_VISIBLE); 
     g_signal_connect(G_OBJECT(gui->transposeEditMi), "activate", G_CALLBACK (gui_transpose_volumes_dialog), gui);
 
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->editMenu), gui->clearSoloEditMi);
     gtk_widget_add_accelerator(gui->clearSoloEditMi, "activate", gui->accel_group, 
-        GDK_x, 0, GTK_ACCEL_VISIBLE); 
+        GDK_KEY_x, 0, GTK_ACCEL_VISIBLE); 
     g_signal_connect(G_OBJECT(gui->clearSoloEditMi), "activate", G_CALLBACK (gui_clear_solo), gui);
 
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->editMenu), gui->separatorPrefsEditMi);
@@ -628,12 +628,12 @@ gui_menubar (gui_t * gui)
     
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->playbackMenu), gui->playPausePlaybackMi);
     gtk_widget_add_accelerator(gui->playPausePlaybackMi, "activate", gui->accel_group, 
-        GDK_space, 0, GTK_ACCEL_VISIBLE); 
+        GDK_KEY_space, 0, GTK_ACCEL_VISIBLE); 
     g_signal_connect(G_OBJECT(gui->playPausePlaybackMi), "activate", G_CALLBACK (gui_menu_play_clicked), gui);
 
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->playbackMenu), gui->rewindPlaybackMi);
     gtk_widget_add_accelerator(gui->rewindPlaybackMi, "activate", gui->accel_group, 
-        GDK_z, 0, GTK_ACCEL_VISIBLE); 
+        GDK_KEY_z, 0, GTK_ACCEL_VISIBLE); 
     g_signal_connect(G_OBJECT(gui->rewindPlaybackMi), "activate", G_CALLBACK (gui_menu_rewind_clicked), gui);
     
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->menubar), gui->playbackPlaybackMenu);
@@ -1526,12 +1526,12 @@ gui_hijack_key_press (GtkWindow *win, GdkEventKey *event, gui_t *gui)
             int action = 0;
             switch (event->keyval)
             {
-                case GDK_p:
-                case GDK_P:
+                case GDK_KEY_p:
+                case GDK_KEY_P:
                     action = shift ? GUI_SHIFT_UP_BIG : GUI_SHIFT_UP;
                     break;
-                case GDK_l:
-                case GDK_L:
+                case GDK_KEY_l:
+                case GDK_KEY_L:
                     action = shift ? GUI_SHIFT_DOWN_BIG : GUI_SHIFT_DOWN;
                     break;
             }
