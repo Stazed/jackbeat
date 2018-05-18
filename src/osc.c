@@ -27,6 +27,7 @@
 #include <string.h>
 #include <glib.h>
 #include <lo/lo.h>
+#include <config.h>
 #include "core/event.h"
 #include "core/array.h"
 #include "osc.h"
@@ -188,7 +189,9 @@ osc_create_server (int port)
     {
         lo_server_thread_add_method (server, NULL, NULL, osc_generic_handler, NULL);
         lo_server_thread_start (server);
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("New server on port %d", lo_server_thread_get_port (server));
+#endif
     }
     else
     {
@@ -239,7 +242,9 @@ int
 osc_generic_handler (const char *path, const char *types, lo_arg **argv,
                      int argc, void *data, void *user_data)
 {
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Received message with path: %s", path);
+#endif
     return 1;
 }
 
@@ -281,7 +286,9 @@ osc_create_method (osc_t *osc, char *prefix, osc_method_def_t *def,
     osc->methods[osc->methods_num - 1] = method;
 
     char *path = osc_get_method_path (method);
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("path: %s (%d method(s))", path, osc->methods_num);
+#endif
     free (path);
     return method;
 }
@@ -325,7 +332,9 @@ osc_del_method (osc_t *osc, osc_method_t *method)
             {
                 osc->methods = realloc (osc->methods, osc->methods_num * sizeof (osc_method_t *));
             }
+#ifdef PRINT_EXTRA_DEBUG
             DEBUG ("path: %s (%d methods)", path, osc->methods_num);
+#endif
             free (path);
             free (method->prefix);
             free (method);
@@ -579,7 +588,9 @@ osc_on_sequence_destroy (event_t *event)
     sequence_t *sequence = (sequence_t *) event->source;
 
     char *name = sequence_get_name (sequence);
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Detaching sequence %s", name);
+#endif
     free (name);
     int i;
     for (i = 0; i < osc->methods_num; i++)
@@ -687,7 +698,9 @@ osc_set_sequence_input_prefix (osc_t *osc, sequence_t *sequence, const char *pre
             char *path = osc_get_method_path (method);
             lo_server_thread_add_method (osc->server, path, method->def->typespec,
                                          method->wrapper, method);
+#ifdef PRINT_EXTRA_DEBUG
             DEBUG ("Renamed %s to %s", old_path, path);
+#endif
             free (path);
             free (old_path);
         }

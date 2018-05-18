@@ -195,8 +195,9 @@ main (int argc, char *argv[])
 #endif
 
     util_init_paths ();
-
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Initializing event manager");
+#endif
     event_init ();
     event_enable_queue (NULL);
     event_register (NULL, "desktop-open-action");
@@ -211,30 +212,39 @@ main (int argc, char *argv[])
     }
 #endif
 
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Loading RC settings");
+#endif
     rc_t rc;
     rc_read (&rc);
-
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Parsing arguments");
+#endif
     arg_t *arg = arg_parse (argc, argv);
-
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Creating threads pool");
+#endif
     pool_t *pool = pool_new (4);
-
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Creating song");
+#endif
     song_t *song = song_new (pool);
-
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Bringing OSC up");
+#endif
     osc_t *osc = osc_new (song);
-
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Creating audio stream");
+#endif
     char *client_name = arg->client_name ? arg->client_name : rc.client_name;
     stream_t *stream = stream_new ();
     stream_auto_connect (stream, rc.auto_connect);
     if (!arg->null_stream)
         stream_device_open (stream, rc.audio_output, rc.audio_sample_rate, client_name, rc.jack_auto_start);
 
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Creating GUI");
+#endif
     gui_new (&rc, arg, song, osc, stream);
 
     stream_destroy (stream);

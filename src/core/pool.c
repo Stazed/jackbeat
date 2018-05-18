@@ -28,6 +28,7 @@
 #include "pool.h"
 #include "msg.h"
 #include "compat.h"
+#include <config.h>
 
 #define DEBUG(M, ...) { printf("POO  %s(): ", __func__); printf(M, ## __VA_ARGS__); printf("\n"); fflush(stdout); }
 
@@ -181,8 +182,11 @@ _pool_add_process (pool_t *pool, pool_process_callback_t callback, void *data, c
         msg_send (thread->msg, &new_processes, MSG_ACK);
 
         free (old_processes);
-
+        
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("process %d of thread %d added by %s", n, pool->current_thread, caller);
+#endif
+        
         if (++pool->current_thread >= pool->nthreads)
             pool->current_thread = 0;
     }

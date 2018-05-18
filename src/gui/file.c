@@ -98,7 +98,9 @@ gui_file_load_sample (gui_t *gui, int track)
         if ((dir_stream = opendir (dirname (filename))))
         {
             closedir (dir_stream);
+#ifdef PRINT_EXTRA_DEBUG
             DEBUG ("Setting sample_wdir to : %s", dir);
+#endif
             strcpy (gui->rc->sample_wdir, dir);
         }
         else
@@ -311,7 +313,9 @@ gui_file_export_sequence (GtkWidget * w, gpointer data)
 
     strcat (filename, ".wav");
 
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Proposed name: %s", filename);
+#endif
 
     //gui->file_selection = gui_file_create_selector (gui, "Export sequence as", filename, 1);
 
@@ -326,8 +330,11 @@ gui_file_export_sequence (GtkWidget * w, gpointer data)
 
         if (gui_file_get_export_settings (gui, &framerate, &sustain_type))
         {
+
+#ifdef PRINT_EXTRA_DEBUG
             DEBUG ("Chosen name: %s", chosen_name);
             DEBUG ("Parameters: framerate: %d, sustain: %d", framerate, sustain_type);
+#endif
             gui->last_export_sustain_type = sustain_type;
             char *s = strdup (chosen_name);
             sprintf (gui->last_export_wdir, "%s/", dirname (s));
@@ -402,7 +409,9 @@ gui_file_save_sequence (GtkWidget * w, gpointer data)
     gui_t * gui = data;
     if (gui->filename_is_set)
     {
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("Ok, we already have a filename. Let's try and save...");
+#endif
         gui_file_do_save_sequence (gui, gui->filename);
     }
     else
@@ -429,7 +438,10 @@ void
 guimenutest  (GtkContainer *container, GtkWidget    *widget, gpointer      user_data)
 {
     gui_t *gui = (gui_t *) user_data;
+    
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("menu add");
+#endif
 }
 
 GtkWidget *

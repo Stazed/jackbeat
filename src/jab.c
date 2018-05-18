@@ -89,8 +89,9 @@ jab_open (char *path, int mode, progress_callback_t progress_callback,
         DEBUG("ERROR: getcwd: %d", errno);
         return NULL;
     }
-
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Current working directory : %s", wd);
+#endif
     switch (mode)
     {
         case JAB_READ:
@@ -146,7 +147,9 @@ jab_open (char *path, int mode, progress_callback_t progress_callback,
                         if (!jab)
                         {
                             util_wipe_tmpdir (tmpdir);
+#ifdef PRINT_EXTRA_DEBUG
                             DEBUG ("Done")
+#endif
                         }
                         free (tmpdir);
                     }
@@ -162,7 +165,9 @@ jab_open (char *path, int mode, progress_callback_t progress_callback,
             jab->sequences = NULL;
             strcpy (jab->path, path);
             jab->mode = JAB_WRITE;
+#ifdef PRINT_EXTRA_DEBUG
             DEBUG ("Opening jab file in write mode : %s", path)
+#endif
             jab->progress_callback = progress_callback;
             jab->progress_data = progress_data;
             break;
@@ -173,8 +178,9 @@ jab_open (char *path, int mode, progress_callback_t progress_callback,
 xmlXPathObjectPtr
 _jab_xml_get_nodeset (xmlDocPtr doc, xmlChar *xpath)
 {
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Looking for %s", xpath)
-
+#endif
     xmlXPathContextPtr context;
     xmlXPathObjectPtr result;
 
@@ -367,7 +373,9 @@ jab_retrieve_sequence (jab_t *jab, stream_t *stream, char *sequence_name, int *e
                     if (strlen (bs[j]) > 0)
                     {
                         int assigned =  sscanf (bs[j], "%d+%d", &x, &y);
+#ifdef PRINT_EXTRA_DEBUG
                         DEBUG ("bs[%d] = %s (assigned:%d, beat:%d, mask:%d)", j, bs[j], assigned, x, y)
+#endif
                         if (assigned == 1)
                         {
                             sequence_set_beat (sequence, t++, i, x);
@@ -550,7 +558,9 @@ jab_close (jab_t *jab)
                                 jab->progress_callback ("Packing with tar", 0.9,
                                                         jab->progress_data);
                                 success = util_exec ("tar", "-C", tmpdir, "-cf", jab->path, "jab", NULL);
+#ifdef PRINT_EXTRA_DEBUG
                                 DEBUG ("Done")
+#endif
                             }
                         }
                     }
@@ -559,14 +569,18 @@ jab_close (jab_t *jab)
 
             util_wipe_tmpdir (tmpdir);
             free (tmpdir);
+#ifdef PRINT_EXTRA_DEBUG
             DEBUG ("Done")
+#endif
             if (success) jab->progress_callback ("Done", 1, jab->progress_data);
         }
     }
     else if (jab->mode == JAB_READ)
     {
         util_wipe_tmpdir (jab->tmpdir);
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("Done")
+#endif
         success = 1;
     }
 

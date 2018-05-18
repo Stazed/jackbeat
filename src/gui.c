@@ -151,7 +151,9 @@ gui_update_window_title (gui_t * gui)
 void
 _gui_set_modified (gui_t * gui, int status, const char *func)
 {
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("from: %s", func);
+#endif
     gui->sequence_is_modified = status;
     gui_update_window_title (gui);
 }
@@ -162,7 +164,11 @@ gui_on_transport_changed (event_t *event)
     gui_t *gui = (gui_t *) event->self;
     sequence_t *sequence = (sequence_t *) event->source;
     sequence_get_transport (sequence, &gui->rc->transport_aware, &gui->rc->transport_query);
+
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("transport: aware=%d, query=%d", gui->rc->transport_aware, gui->rc->transport_query);
+#endif
+
     if (gui->rewind)
         gtk_widget_set_sensitive (gui->rewind, (gboolean) gui->rc->transport_query);
 }
@@ -757,7 +763,9 @@ gui_refresh (gui_t * gui)
 {
     if (!gui->refreshing)
     {
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("Refreshing GUI");
+#endif
         gui->refreshing = 1;
         gui_update_window_title (gui);
         gtk_spin_button_set_value (GTK_SPIN_BUTTON (gui->tracks_num),
@@ -932,7 +940,9 @@ gui_duplicate_sequence (GtkWidget * w, gpointer data)
     gui_t * gui = data;
     if (!gui->refreshing)
     {
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("Pattern resized");
+#endif
         gint tracks_num = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (gui->tracks_num));
         gint beats_num = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (gui->beats_num));
         gint measure_len = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (gui->measure_len));
@@ -976,7 +986,9 @@ gui_sequence_resized (GtkWidget * widget, gui_t * gui) // Glade callback
 {
     if (!gui->refreshing)
     {
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("Pattern resized");
+#endif
         g_idle_add (gui_sequence_do_resize, (gpointer) gui);
     }
 }
@@ -1001,7 +1013,9 @@ gui_on_bpm_changed (event_t *event)
 static void
 gui_show_disconnect_warning (gui_t *gui, int transient)
 {
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Showing disconnection warning");
+#endif
     static GtkWidget *dialog = NULL;
     if (!dialog)
     {
@@ -1023,8 +1037,9 @@ gui_show_disconnect_warning (gui_t *gui, int transient)
         {
             gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_CENTER);
         }
-
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("Run dialog");
+#endif
         gtk_widget_show (dialog);
         int confirm = (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_OK);
         gtk_widget_hide (dialog);
@@ -1128,7 +1143,9 @@ gui_pitch_changed (GtkRange *range, gui_t *gui)
 
         double pitch = gui_compute_pitch (octave, semitone, finetune);
         int track = gui_sequence_editor_get_active_track (gui->sequence_editor);
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("knobs computed pitch: %lf", pitch);
+#endif
         sequence_set_pitch (gui->sequence, track, pitch);
     }
 }
@@ -1319,7 +1336,9 @@ gui_toggle_track_properties (GtkWidget *widget, gui_t *gui) // Glade callback
 G_MODULE_EXPORT void
 gui_load_sample_dialog (GtkWidget * widget, gui_t * gui) // Glade callback
 {
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Using sample_wdir : %s", gui->rc->sample_wdir);
+#endif
     int active_track = gui_sequence_editor_get_active_track (gui->sequence_editor);
     gui_file_load_sample (gui, active_track);
 }
@@ -1469,7 +1488,9 @@ gui_on_size_delta_request (event_t *event)
     gui_t *gui = (gui_t *) event->self;
     if (!gui->window_sized)
     {
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("window is visible: %d", gtk_widget_get_visible (gui->window));
+#endif
         if (gui->is_initial)
         {
             gtk_window_resize (GTK_WINDOW (gui->window), 780, 550);
@@ -1549,7 +1570,9 @@ gui_hijack_key_press (GtkWindow *win, GdkEventKey *event, gui_t *gui)
 static void
 gui_init (gui_t * gui)
 {
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Initializing GUI");
+#endif
 
     gui->window = gui_builder_get_widget (gui->builder, "main_window");
     gui_update_window_title (gui);
@@ -1652,7 +1675,9 @@ gui_stream_connection_changed (event_t *event)
 {
     gui_t *gui = (gui_t *) event->self;
     gui_prefs_update_audio_status (gui);
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("connect changed");
+#endif
 }
 
 static void
@@ -1668,7 +1693,9 @@ gui_new_child (rc_t *rc, arg_t *arg, gui_t *parent, song_t *song,
 {
     gui_t *gui;
     gui = calloc (1, sizeof (gui_t));
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Creating new GUI (PID: %d)", getpid ());
+#endif
     gui->sequence_is_modified = 0;
     gui->rewind = NULL;
     gui->refreshing = 0;
@@ -1790,8 +1817,9 @@ gui_new_child (rc_t *rc, arg_t *arg, gui_t *parent, song_t *song,
 #endif
     
     gui_init (gui);
-
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Starting GUI");
+#endif
     gui_last_focus = gui;
     gui_enable_timeout (gui);
     gtk_widget_show (gui->window);

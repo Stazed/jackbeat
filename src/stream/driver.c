@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
+#include <config.h>
 #include "driver.h"
 #include "core/msg.h"
 #include "core/array.h"
@@ -360,7 +361,11 @@ thread_start (void * arg)
 {
     stream_driver_t *self = (stream_driver_t *) arg;
     BIND_DATA (self, data);
+    
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Thread entered");
+#endif
+    
     while (!data->thread_terminate)
         self->interface->thread_process (self);
 

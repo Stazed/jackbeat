@@ -198,13 +198,17 @@ rc_add_to_history (history_t history, int *num, char *item)
 void
 rc_add_sample (rc_t *rc, char *filename)
 {
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("adding sample to history at index %d: %s", rc->sample_history_num, filename);
+#endif
     rc_add_to_history (rc->sample_history, &(rc->sample_history_num), filename);
 }
 
 void
 rc_add_sequence (rc_t *rc, char *filename)
 {
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("adding sequence to history at index %d: %s", rc->sequence_history_num, filename);
+#endif
     rc_add_to_history (rc->sequence_history, &(rc->sequence_history_num), filename);
 }

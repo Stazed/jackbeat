@@ -354,8 +354,10 @@ grid_set_cell_size (grid_t *grid, int min_width, int max_width, int min_height, 
     if ((grid->min_cell_width != min_width) || (grid->max_cell_width != max_width) ||
         (grid->min_cell_height != min_height) || (grid->max_cell_height != max_height))
     {
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("Setting cell size : width (min/max): %d/%d, height (min/max): %d/%d",
                min_width, max_width, min_height, max_height);
+#endif
         grid->min_cell_width = min_width;
         grid->max_cell_width = max_width;
         grid->min_cell_height = min_height;
@@ -380,7 +382,9 @@ grid_set_spacing (grid_t *grid, int min_col_spacing, int row_spacing)
     if ((grid->min_col_spacing != min_col_spacing) || (grid->row_spacing != row_spacing)
         || (grid->min_group_spacing != min_group_spacing))
     {
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("Setting min spacing: col: %d, row: %d", col_spacing, row_spacing);
+#endif
         grid->min_col_spacing   = min_col_spacing;
         grid->min_group_spacing = min_group_spacing;
         grid->row_spacing       = row_spacing;
@@ -590,7 +594,9 @@ grid_get_window_ypos (grid_t *grid)
     if (grid->vadj)
     {
         g_object_get (G_OBJECT (grid->vadj), "value", &pos, NULL);
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("ypos: %f", pos);
+#endif
         return pos;
     }
     return 0;
@@ -630,8 +636,10 @@ grid_to_window_rect (grid_t *grid, GdkRectangle *src, GdkRectangle *dest)
 static void
 grid_display (grid_t *grid, int x, int y, int width, int height, int direct, int is_dest)
 {
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("x=%d, y=%d, width=%d, height=%d, direct=%d, is_dest=%d",
            x, y, width, height, direct, is_dest);
+#endif
     int is_visible = 0;
     if (grid->pixmap && grid->area)
     {
@@ -655,10 +663,12 @@ grid_display (grid_t *grid, int x, int y, int width, int height, int direct, int
             is_visible = grid_to_window_rect (grid, &src, &dest);
         }
 
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("visible=%d, src=(%d, %d, %d, %d), dest=(%d, %d, %d, %d)",
                is_visible,
                src.x, src.y, src.width, src.height,
                dest.x, dest.y, dest.width, dest.height);
+#endif
         if (is_visible)
         {
             if (direct)
@@ -714,9 +724,11 @@ grid_update_adjustments (grid_t *grid)
     
     if (grid->hadj)
     {
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("hadj: type=%s, upper=%d, step=%d, page/size=%d", G_OBJECT_TYPE_NAME (grid->hadj),
                grid->pixmap_width,
                grid->cell_width, grid->area->allocation.width);
+#endif
         g_object_set (G_OBJECT (grid->hadj),
                       "lower", (gdouble) 0,
                       "upper", (gdouble) grid->pixmap_width,
@@ -745,8 +757,9 @@ grid_update_adjustments (grid_t *grid)
 static void
 grid_scroll_event (GtkAdjustment *adj, grid_t * grid)
 {
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("scrolling");
-
+#endif
     grid_display (grid, 0, 0, grid->pixmap_width, grid->pixmap_height, 0, 0);
 }
 
@@ -897,7 +910,9 @@ grid_set_default_theme (grid_t *grid)
 static void
 grid_create_graphic_contexts (grid_t *grid)
 {
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Creating graphic contexts");
+#endif
     grid->gc = malloc (sizeof (grid_gc_t));
 
     dk_make_gradient (grid->gc->values, grid->pixmap, &grid->theme->level_min,
@@ -990,19 +1005,22 @@ grid_draw_all (grid_t *grid)
 {
     if (grid->pixmap)
     {
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("row spacing: %d", grid->row_spacing);
-
         DEBUG ("Drawing background");
+#endif
         gdk_draw_rectangle (grid->pixmap, grid->gc->background, TRUE, 0, 0,
                             grid->pixmap_width, grid->pixmap_height);
-
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("Drawing cells");
+#endif
         int row, col;
         for (row = 0; row < grid->row_num; row++)
             for (col = 0; col < grid->col_num; col++)
                 grid_draw_cell (grid, col, row, 0, 0);
-
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("Drawing ruler");
+#endif
         grid_draw_ruler (grid);
 
         if (GTK_IS_WIDGET (grid->area))
@@ -1058,8 +1076,9 @@ grid_configure_event (GtkWidget *widget, GdkEventConfigure *event, grid_t *grid)
                          / grid->col_num;
       grid->cell_width = grid->cell_width > grid->max_cell_width ? grid->max_cell_width : grid->cell_width;
      */
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("configure width - minimum/allocated/cell: %d/%d/%d", minimum_width, widget_allocation.width, grid->cell_width);
-
+#endif
     int minimum_height = grid_get_minimum_height (grid);
     //grid->header_height += widget->allocation.height - minimum_height;
     //minimum_height = grid_get_minimum_height (grid);
@@ -1070,9 +1089,12 @@ grid_configure_event (GtkWidget *widget, GdkEventConfigure *event, grid_t *grid)
                          - grid->header_height)
             / grid->row_num;
     grid->cell_height = grid->cell_height > grid->max_cell_height ? grid->max_cell_height : grid->cell_height;
+    
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("configure height - minimum/allocated/cell: %d/%d/%d", minimum_height, widget->allocation.height, grid->cell_height);
-
     DEBUG ("Creating pixmap of size %d x %d", grid->pixmap_width, grid->pixmap_height);
+#endif
+    
     grid->pixmap = gdk_pixmap_new (gtk_widget_get_window(widget), grid->pixmap_width, grid->pixmap_height, -1);
 
     grid_update_adjustments (grid);
@@ -1118,7 +1140,9 @@ grid_size_request_event (GtkWidget *widget, GtkRequisition *requisition, grid_t 
 {
     requisition->width  = grid->hadj ? 0 : grid_get_minimum_width (grid);
     requisition->height = grid->vadj ? grid->header_height : grid_get_minimum_height (grid);
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("size request called - width/height: %d/%d", requisition->width, requisition->height);
+#endif
 }
 
 static void

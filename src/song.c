@@ -153,7 +153,9 @@ song_on_sample_destroy (event_t *event)
 {
     song_t * song = (song_t *) event->self;
     sample_t * sample = (sample_t *) event->source;
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Unregistering sample: %s", sample->name);
+#endif
     ARRAY_REMOVE (sample_t, song->samples, song->samples_num, sample)
 }
 
@@ -163,7 +165,9 @@ song_on_sequence_destroy (event_t *event)
     song_t * song = (song_t *) event->self;
     sequence_t * sequence = (sequence_t *) event->source;
     char *name = sequence_get_name (sequence);
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Unregistering sequence: %s", name);
+#endif
     free (name);
     assert (song->sequences);
     ARRAY_REMOVE (sequence_t, song->sequences, song->sequences_num, sequence)

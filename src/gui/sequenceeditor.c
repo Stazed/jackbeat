@@ -326,7 +326,11 @@ gui_sequence_editor_draw_control (gui_sequence_editor_t *self, int track)
     ctl->menu = gui_sequence_editor_make_menu (self, track);
     ctl->name = gtk_label_new (NULL);
     char *name = sequence_get_track_name (self->sequence, track);
+    
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Drawing track %s", name);
+#endif
+    
     char *markup;
     markup = g_markup_printf_escaped ("<span weight=\"bold\" foreground=\"white\" size=\"smaller\">%s</span>", name);
     gtk_label_set_markup (GTK_LABEL (ctl->name), markup);
@@ -451,7 +455,10 @@ gui_sequence_editor_control_size_request_event (GtkWidget *widget, GtkRequisitio
     int ntracks = sequence_get_tracks_num (self->sequence);
     requisition->width = hpad + name_width + hpad + (toggle_width + hpad) * 2 + volume_width + hpad;
     requisition->height = (height + vpad) * ntracks + top_pad;
+    
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("width: %d, height: %d", requisition->width, requisition->height);
+#endif
     /*
     if (ntracks > 0)
       requisition->height -= pad;
@@ -821,9 +828,11 @@ static void
 gui_sequence_editor_update (gui_sequence_editor_t *self)
 {
     int i, j;
-
+    
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Drawing sequence");
-
+#endif
+    
     self->updating = 1;
     /* Fetching dimensions */
     int ntracks = sequence_get_tracks_num (self->sequence);
@@ -847,7 +856,10 @@ gui_sequence_editor_update (gui_sequence_editor_t *self)
     GtkAdjustment *vadj = gtk_range_get_adjustment (GTK_RANGE (self->vscrollbar));
 
     /* Setting up grid */
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Setting up grid");
+#endif
+    
     grid_resize (self->grid, nbeats, ntracks);
     grid_set_column_group_size (self->grid, measure_len);
     grid_set_scroll_adjustments (self->grid, hadj, vadj);
@@ -865,7 +877,9 @@ gui_sequence_editor_update (gui_sequence_editor_t *self)
     GtkWidget *vbox = gtk_vbox_new (FALSE, 0);
 
     /* Drawing track controls */
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Drawing track controls");
+#endif
 
     self->controls_layout = gtk_layout_new (NULL, NULL);
     g_signal_connect (G_OBJECT (self->controls_layout), "size-request",
@@ -892,8 +906,9 @@ gui_sequence_editor_update (gui_sequence_editor_t *self)
     /* Finalizing */
 
     gtk_widget_show_all (viewport);
-
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Finished drawing sequence");
+#endif
     self->updating = 0;
 }
 
@@ -922,7 +937,11 @@ gui_sequence_editor_on_volume_changed (event_t *event)
     sequence_position_t *pos = (sequence_position_t *) event->data;
     gui_sequence_editor_control_t *ctl = self->controls + pos->track;
     double volume = sequence_get_volume_db (self->sequence, pos->track);
+    
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("new volume: %f dB", volume);
+#endif
+    
     GtkAdjustment *adj = slider_get_adjustment (ctl->volume);
     if (slider_get_state (ctl->volume) != SLIDER_UNFOLDED
         && gtk_adjustment_get_value (adj) != volume)

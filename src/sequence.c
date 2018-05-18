@@ -425,7 +425,9 @@ sequence_receive_messages (sequence_t * sequence)
                 sscanf (msg.text, "tracks=%p", &tl);
                 while (*tl != -1)
                     sequence->tracks[*(tl++)].lock = 1;
+#ifdef PRINT_EXTRA_DEBUG
                 DEBUG ("Tracks locks data received and stored");
+#endif
                 break;
             case SEQUENCE_MSG_UNLOCK_TRACKS:
                 sscanf (msg.text, "tracks=%p", &tl);
@@ -486,7 +488,9 @@ sequence_receive_messages (sequence_t * sequence)
                 sscanf (msg.text, "bpm=%f", &f);
                 if ((f > 0) && (f <= 1000))
                 {
+#ifdef PRINT_EXTRA_DEBUG
                     DEBUG ("Setting bpm to %f", f);
+#endif
                     sequence->bpm = f;
                     msg_event_fire (sequence->msg, "bpm-changed", NULL, 0, NULL);
                 }
@@ -1084,7 +1088,9 @@ sequence_new (stream_t *stream, char *name, int *error)
     sequence_init (sequence);
     sequence->stream = stream;
     sequence->pool = NULL;
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("name : %s", name);
+#endif
     strcpy (sequence->name, name);
 
     sequence->msg = msg_new (4096, sizeof (sequence_msg_t));
@@ -1097,7 +1103,9 @@ sequence_new (stream_t *stream, char *name, int *error)
         //FIXME: new stream layer might cause arbitrary sample rate changes, 
         //shouldn't be cached:
         sequence->framerate = stream_get_sample_rate (sequence->stream);
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("Stream framerate : %ld", sequence->framerate);
+#endif
     }
     else
     {
@@ -1106,9 +1114,9 @@ sequence_new (stream_t *stream, char *name, int *error)
         *error = ERR_SEQUENCE_JACK_CONNECT; // FIXME s/jack connect/stream add process/
         return NULL;
     }
-
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("sizeof(float): %d", (int)sizeof (float));
-
+#endif
     return sequence;
 }
 
@@ -1199,11 +1207,15 @@ sequence_resize (sequence_t * sequence, int tracks_num, int beats_num,
         for (i = tracks_num, j = 0; i < sequence->tracks_num; i++)
             tl[j++] = i;
         tl[j] = -1;
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("Requiring tracks locks");
+#endif
         msg.type = SEQUENCE_MSG_LOCK_TRACKS;
         sprintf (msg.text, "tracks=%p", tl);
         msg_send (sequence->msg, &msg, MSG_ACK);
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("Tracks locks ack'ed. Freeing temporary data.");
+#endif
         free (tl);
     }
 
@@ -1222,7 +1234,9 @@ sequence_resize (sequence_t * sequence, int tracks_num, int beats_num,
     /* Register stream ports and allocate new tracks data if tracks_num increases */
     for (i = sequence->tracks_num; i < tracks_num; i++)
     {
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("Initializing track %d", i);
+#endif
         t = new_tracks + i;
         sequence_track_init (t);
         t->channels = calloc (t->channels_num, sizeof (stream_port_t *));
@@ -1296,8 +1310,9 @@ sequence_resize (sequence_t * sequence, int tracks_num, int beats_num,
     /* Packs all that and sends it to the audio thread */
     sprintf (msg.text, "tracks=%p tracks_num=%d beats_num=%d measure_len=%d",
              new_tracks, tracks_num, beats_num, measure_len);
-
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Sending resize message : %s", msg.text);
+#endif
     sequence_track_t *old_tracks = sequence->tracks;
     int old_tracks_num = sequence->tracks_num;
 
@@ -1307,7 +1322,9 @@ sequence_resize (sequence_t * sequence, int tracks_num, int beats_num,
     /* Cleans up old data */
     if (old_tracks)
     {
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("Cleaning up old tracks data at %p", old_tracks);
+#endif
         for (i = 0; i < old_tracks_num; i++)
         {
             free ((old_tracks + i)->beats);
@@ -1452,7 +1469,9 @@ sequence_get_bpm (sequence_t * sequence)
 void
 sequence_set_bpm (sequence_t * sequence, float bpm)
 {
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Setting bpm to : %f", bpm);
+#endif
     sequence_msg_t msg;
     msg.type = SEQUENCE_MSG_SET_BPM;
     sprintf (msg.text, "bpm=%f", bpm);
@@ -1603,7 +1622,9 @@ sequence_set_sample (sequence_t * sequence, int track, sample_t * sample)
         {
             if (t->sr_converter == NULL)
             {
+#ifdef PRINT_EXTRA_DEBUG
                 DEBUG ("Creating SR converter for %d channels", t->channels_num);
+#endif
                 t->sr_converter = src_new (SRC_SINC_FASTEST, t->channels_num,
                                            &sr_converter_error);
                 if (t->sr_converter == NULL)
@@ -1712,7 +1733,9 @@ sequence_get_sample_usage (sequence_t * sequence, sample_t * sample)
         }
         if ((sequence->tracks + i)->sample == sample) r++;
     }
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Usage for sample \"%s\" is : %d", sample->name, r);
+#endif
     sequence_unlock (sequence);
     return r;
 }
@@ -1857,8 +1880,10 @@ sequence_set_pitch (sequence_t *sequence, int track, double pitch)
     {
         if (sequence->tracks[track].pitch != pitch)
         {
+#ifdef PRINT_EXTRA_DEBUG
             DEBUG ("Setting pitch on track %d to : %f (was: %f)", track, pitch,
                    sequence->tracks[track].pitch);
+#endif
             sequence_msg_t msg;
             sequence->tracks[track].pitch = pitch;
             if (sequence->tracks[track].sample != NULL)
@@ -1891,7 +1916,9 @@ sequence_get_pitch (sequence_t *sequence, int track)
 void
 sequence_set_volume (sequence_t *sequence, int track, double volume)
 {
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Setting volume on track %d to : %f", track, volume);
+#endif
     sequence_lock (sequence);
     if (sequence_check_pos (sequence, track, 0))
     {
@@ -1906,7 +1933,9 @@ sequence_set_volume (sequence_t *sequence, int track, double volume)
 void
 sequence_multiply_volume (sequence_t *sequence, int track, double ratio)
 {
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Multiplying volume on track %d by : %f", track, ratio);
+#endif
     sequence_lock (sequence);
     if (sequence_check_pos (sequence, track, 0))
     {
@@ -1946,7 +1975,9 @@ sequence_get_volume_db (sequence_t *sequence, int track)
 void
 sequence_set_smoothing (sequence_t *sequence, int track, int status)
 {
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Setting smoothing on track %d to : %d", track, status);
+#endif
     sequence_lock (sequence);
     if (sequence_check_pos (sequence, track, 0))
     {
@@ -1972,7 +2003,9 @@ sequence_set_resampler_type (sequence_t * sequence, int type)
     sequence_lock (sequence);
     if (type != -1 && sequence->sr_converter_default_type != type)
     {
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("Setting resampler type to : %d", type);
+#endif
         sequence_msg_t msg;
         int restart = 0;
         if (sequence->status == SEQUENCE_ENABLED)
@@ -1993,14 +2026,18 @@ sequence_set_resampler_type (sequence_t * sequence, int type)
                 int sr_converter_error;
                 if (t->sr_converter != NULL)
                 {
+#ifdef PRINT_EXTRA_DEBUG
                     DEBUG ("Destroying SR converter on track %d", i);
+#endif
                     src_delete (t->sr_converter);
                     t->sr_converter = NULL;
                 }
                 if (type == SEQUENCE_SINC)
                 {
+#ifdef PRINT_EXTRA_DEBUG
                     DEBUG ("Creating SR converter of type %d with %d channel(s) on track %d",
                            SRC_SINC_FASTEST, t->channels_num, i);
+#endif
                     t->sr_converter = src_new (SRC_SINC_FASTEST, t->channels_num, &sr_converter_error);
                 }
             }
@@ -2038,9 +2075,9 @@ sequence_export (sequence_t *sequence, char *filename, int framerate, int sustai
     sequence_msg_t msg;
     sequence_t *sequence_tmp;
     sequence_track_t *track;
-
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Exporting sequence to file: %s", filename);
-
+#endif
     SEQUENCE_UNLOCK_CALL (progress_callback ("Preparing to export...", 0, progress_data));
 
     bufsize = sequence->buffer_size;
@@ -2161,9 +2198,9 @@ sequence_export (sequence_t *sequence, char *filename, int framerate, int sustai
             }
             track->active_beat = -1;
         }
-
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("level peak is: %f", peak);
-
+#endif
     // Writing to file
     for (pos = 0; pos < sequence_nframes; pos += bufsize)
     {
@@ -2189,9 +2226,9 @@ sequence_export (sequence_t *sequence, char *filename, int framerate, int sustai
             sf_writef_float (fd, output, nframes_played);
             process_pos += nframes_played * 2;
         }
-
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Processed %ld frames on an estimated total of %ld", process_pos, process_total_nframes);
-
+#endif
     sf_close (fd);
 
     // Freeing temporary buffers

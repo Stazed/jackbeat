@@ -167,9 +167,9 @@ AC_ARG_ENABLE([macbundle], AS_HELP_STRING([--enable-macbundle],
             [enable mac bundle packaging]),
             [AC_DEFINE(MACBUNDLE,1,[Mac bundle mode])])
 
-dnl AC_ARG_ENABLE([printdebug], AS_HELP_STRING([--enable-printdebug],
-dnl            [enable printing of debugging]),
-dnl            [AC_DEFINE(PRINTDEBUG,1,[Print debugging information])])
+AC_ARG_ENABLE([printdebug], AS_HELP_STRING([--enable-printdebug],
+            [enable printing of debugging]),
+            [AC_DEFINE(PRINT_EXTRA_DEBUG,1,[Define to 1 to print extra debugging information])])
 
 #GLOBAL_CFLAGS+=" -DGTK_DISABLE_SINGLE_INCLUDES"
 #GLOBAL_CFLAGS+=" -DGTK_DISABLE_DEPRECATED"

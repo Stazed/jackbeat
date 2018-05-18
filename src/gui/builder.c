@@ -90,7 +90,9 @@ gui_builder_new (char *filename, void *userdata, ...)
     gtk_builder_add_from_file (builder, filename, &err);
     if (err == NULL)
     {
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("Read UI definition from %s", filename);
+#endif
     }
     else
     {
@@ -115,11 +117,11 @@ gui_builder_new (char *filename, void *userdata, ...)
 void
 gui_builder_destroy (gui_builder_t *self)
 {
-    int i;
     /* Widgets are automatically destroyed when their parent container is
     destroyed, and the default action taken when closing a window is to
     destroy it. The below destroy was causing invalid read per valgrind
     and a: IA__gtk_widget_destroy: assertion 'GTK_IS_WIDGET (widget)' failed */
+//    int i;
 //    for (i = 0; i < self->nroots; i++)
 //        gtk_widget_destroy (self->roots[i]);
 

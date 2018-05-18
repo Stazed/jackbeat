@@ -285,7 +285,9 @@ util_execvp (char *command, char *argv[])
     int i           = 0;
     while (1)
     {
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("argv[%d]: %s", i, fullargv[i]);
+#endif
         i++;
         fullargv    = realloc (fullargv, sizeof (char *) * (i + 1));
         fullargv[i] = argv[i - 1];
@@ -321,9 +323,9 @@ util_exec (char *command, ...)
     char *  arg;
     char ** argv    = NULL;
     int     nargs   = 0;
-
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Running command: %s", command);
-
+#endif
     va_start (ap, command);
     while (1)
     {
@@ -332,7 +334,9 @@ util_exec (char *command, ...)
         argv[nargs++] = arg;
         if (!arg)
             break;
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("Argument %d: %s", nargs - 1, arg);
+#endif
     }
     va_end (ap);
 
@@ -397,7 +401,9 @@ util_mktmpdir ()
     strcat (tmp, basename);
     if (util_mkdir (util_path (tmp), 0700))
     {
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("Created tmp dir: %s", tmp);
+#endif
         return tmp;
     }
     DEBUG ("ERROR: Failed to create tmp dir: %s", tmp);
@@ -429,13 +435,17 @@ util_wipe_content (char *path, char *security_pattern)
                         success = util_wipe_content (fullpath, security_pattern);
                         if (success)
                         {
+#ifdef PRINT_EXTRA_DEBUG
                             DEBUG ("rmdir %s", fullpath);
+#endif
                             success = (rmdir (fullpath) == 0);
                         }
                     }
                     else
                     {
+#ifdef PRINT_EXTRA_DEBUG
                         DEBUG ("unlink %s", fullpath);
+#endif
                         success = (unlink (fullpath) == 0);
                     }
                 }
@@ -460,7 +470,9 @@ util_wipe_tmpdir (char *path)
         success = util_wipe_content (path, security_pattern);
         if (success)
         {
+#ifdef PRINT_EXTRA_DEBUG
             DEBUG ("rmdir %s", path);
+#endif
             success = (rmdir (path) == 0);
         }
     }
@@ -471,7 +483,9 @@ util_wipe_tmpdir (char *path)
     }
     if (success)
     {
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("Successfully removed tmp dir: %s", path);
+#endif
     }
     else
     {

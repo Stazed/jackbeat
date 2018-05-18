@@ -55,8 +55,9 @@ sample_list_known_extensions ()
 
     n = 0;
     char **list = NULL;
-
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Supported extensions: ");
+#endif
     for (i = 0; i < ii; i++)
     {
         info.format = i;
@@ -140,12 +141,12 @@ sample_new (char *filename, progress_callback_t progress_callback,
         strcpy (sample->name, basename (y));
         free (y);
         sample_strip_filename_extension (sample->name);
-
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("Sample name : %s", sample->name);
         DEBUG ("Channels : %d", sample->channels_num);
         DEBUG ("Frame rate: %d", sample->framerate);
         DEBUG ("Total number of frames : %ld", (long int) sample->frames);
-
+#endif
         sample->data = calloc (sample->channels_num * sample->frames, sizeof (float));
 
         sprintf (status, "Importing %s", basename (filename));
@@ -158,11 +159,15 @@ sample_new (char *filename, progress_callback_t progress_callback,
             space = (shift + SAMPLE_BLOCK_SIZE > sample->frames)
                     ? sample->frames - shift
                     : SAMPLE_BLOCK_SIZE;
+#ifdef PRINT_EXTRA_DEBUG
             DEBUG ("About to read %d frames", (int) space);
+#endif
             read = sf_readf_float (fd, sample->data + shift *
                                    sample->channels_num, space);
             shift += read;
+#ifdef PRINT_EXTRA_DEBUG
             DEBUG ("Read %d frames", (int) read);
+#endif
             progress_callback (status, (double) shift / sample->frames,
                                progress_data);
         }
@@ -177,9 +182,9 @@ sample_new (char *filename, progress_callback_t progress_callback,
             level = fabsf (sample->data[i]);
             if (level > sample->peak) sample->peak = level;
         }
-
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("Sample peak: %f", sample->peak);
-
+#endif
         sf_close (fd);
 
         return sample;
@@ -224,11 +229,11 @@ sample_write (sample_t *sample, char *path,
     info.samplerate = sample->framerate;
     info.channels = sample->channels_num;
     info.format = (sample->orig_format) ? sample->orig_format : 0x010002;
-
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Saving sample \"%s\" to \"%s\" [frames: %d, channels: %d, rate: %d]",
            sample->name, path, (int) (sample->frames), sample->channels_num,
            sample->framerate)
-
+#endif
     if (!(fd = sf_open (path, SFM_WRITE, &info))) return 0;
 
     sf_count_t wr_frames = SAMPLE_BLOCK_SIZE;
@@ -237,7 +242,9 @@ sample_write (sample_t *sample, char *path,
     for (i = 0; i < ii; i++)
     {
         if (i == ii - 1) wr_frames = sample->frames % SAMPLE_BLOCK_SIZE;
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("  Writing %d frames", (int) wr_frames)
+#endif
         sf_writef_float (fd, sample->data + i * SAMPLE_BLOCK_SIZE *
                          sample->channels_num, wr_frames);
         progress_callback (status, ((double) i + 1) / ii, progress_data);
@@ -268,12 +275,16 @@ sample_ref (sample_t *sample)
 void
 sample_unref (sample_t *sample)
 {
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("sample '%s' is referenced %d time(s)", sample->name, sample->ref_num);
+#endif
     if (sample->ref_num-- <= 1)
     {
         event_fire (sample, "destroy", NULL, NULL);
         event_remove_source (sample);
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("freeing memory");
+#endif
         free (sample->data);
         free (sample);
     }

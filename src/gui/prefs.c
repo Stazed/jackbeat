@@ -193,8 +193,9 @@ gui_prefs_get_named_tab_index (gui_t *gui, char *name)
             break;
         }
     }
-
+#ifdef PRINT_EXTRA_DEBUG
     DEBUG ("%s at %d", name, index);
+#endif
     return index;
 }
 
@@ -499,7 +500,11 @@ gui_prefs_run (GtkWidget * w, gpointer data)
     {
         gtk_widget_set_sensitive (prefs->apply_button, gui->prefs->changes ? TRUE : FALSE);
         gint response = gtk_dialog_run (GTK_DIALOG (prefs->dialog));
+        
+#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("response: %d", response);
+#endif
+        
         if ((response == GTK_RESPONSE_OK) || (response == GTK_RESPONSE_APPLY))
         {
             int success = 1;
