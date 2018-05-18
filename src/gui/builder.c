@@ -116,8 +116,12 @@ void
 gui_builder_destroy (gui_builder_t *self)
 {
     int i;
-    for (i = 0; i < self->nroots; i++)
-        gtk_widget_destroy (self->roots[i]);
+    /* Widgets are automatically destroyed when their parent container is
+    destroyed, and the default action taken when closing a window is to
+    destroy it. The below destroy was causing invalid read per valgrind
+    and a: IA__gtk_widget_destroy: assertion 'GTK_IS_WIDGET (widget)' failed */
+//    for (i = 0; i < self->nroots; i++)
+//        gtk_widget_destroy (self->roots[i]);
 
     free (self->roots);
     free (self);
