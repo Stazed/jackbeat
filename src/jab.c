@@ -295,11 +295,11 @@ jab_retrieve_sequence (jab_t *jab, stream_t *stream, char *sequence_name, int *e
         else sequence_unset_looping (sequence);
 
         /* Parsing tracks */
-        char track[128];
+        char track[156];
         sprintf (track, "%s/track[1]", root);
         int i = 0;
         sample_t *sample;
-        char spath[513];
+        char spath[768];
         jab->progress_step = 0;
         if (_jab_xml_node_exists (jab->xml_des, track) && (i < tracks_num))
         {
@@ -355,7 +355,7 @@ jab_retrieve_sequence (jab_t *jab, stream_t *stream, char *sequence_name, int *e
 
         /* Parsing pattern */
         jab->progress_callback ("Reading XML description", 0.9, jab->progress_data);
-        char beat[128];
+        char beat[156];
         sprintf (beat, "%s/pattern/beat[1]", root);
         i = 0;
         int t, j;
