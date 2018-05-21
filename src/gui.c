@@ -1614,14 +1614,24 @@ gui_init (gui_t * gui)
      */
     gtk_box_reorder_child (GTK_BOX (gui->main_vbox), gui->menubar, 0);
 
-    gui->sample_display = sample_display_new (FALSE);
+    /* The FALSE flag is for edit mode - currently disabled - FIXME 
+     * Edit mode allows for setting a partial or cropped sample to be played.
+     * It will currently show the range - (left and right mouse buttons) but
+     * the range limit play is currently not implemented. Also needs a user
+     * button to toggle the edit mode. */
+    gui->sample_display = sample_display_new (TRUE);
+    
     GdkColor *c = SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (gui->sample_display))->colors + SAMPLE_DISPLAYCOL_MIXERPOS;
     c->red = 0xff << 8;
     c->green = 0xc6 << 8;
     c->blue = 0x00 << 8;
     c->pixel = (gulong) ((c->red & 0xff00)*256 + (c->green & 0xff00) + (c->blue & 0xff00) / 256);
     gdk_color_alloc (gdk_colormap_get_system (), c);
+    
+    /* The horizontal center line in the sample display. */
     sample_display_enable_zero_line (SAMPLE_DISPLAY (gui->sample_display), TRUE);
+    
+    /* Handles that show on the top and bottom of the progress line. Disabled. */
     sample_display_enable_marker_handles (SAMPLE_DISPLAY (gui->sample_display), FALSE);
 
     GtkWidget *sbox = gui_builder_get_widget (gui->builder, "sample_view_box");
