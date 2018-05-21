@@ -427,6 +427,7 @@ sample_display_draw_data (GdkDrawable *win,
         y_ofs = i * (sh + pad);
         if (s->display_zero_line)
         {
+            cairo_set_line_width(win_zeroline_cr, 0.8);
             cairo_move_to(win_zeroline_cr, _x, y_ofs + (sh / 2));
             cairo_line_to(win_zeroline_cr, _x + _width - 1, y_ofs + (sh / 2));
             cairo_stroke(win_zeroline_cr);
@@ -442,6 +443,7 @@ sample_display_draw_data (GdkDrawable *win,
                 f = ((gfloat*) s->data)[OFFSET_RANGE (s->datalen * s->channels, XPOS_TO_OFFSET (_x) * s->channels + i)];
                 f = f > 1 ? 1 : (f < -1 ? - 1 : f);
                 
+                cairo_set_line_width(cr, 0.8);
                 cairo_move_to (cr, _x - 1, y_ofs + (1 - e) * sh / 2);
                 cairo_line_to (cr, _x, y_ofs + (1 - f) * sh / 2 );
                 cairo_stroke(cr);
@@ -457,6 +459,7 @@ sample_display_draw_data (GdkDrawable *win,
             while (_width >= 0)
             {
                 d = ((gint16*) s->data)[OFFSET_RANGE (s->datalen * s->channels, XPOS_TO_OFFSET (_x) * s->channels + i)];
+                cairo_set_line_width(cr, 0.8);
                 cairo_move_to (cr, _x - 1, y_ofs + (((32768 - c) * sh) >> 16));
                 cairo_line_to (cr, _x,     y_ofs + (((32768 - d) * sh) >> 16));
                 cairo_stroke(cr);
@@ -472,6 +475,7 @@ sample_display_draw_data (GdkDrawable *win,
             while (_width >= 0)
             {
                 d = ((gint8*) s->data)[OFFSET_RANGE (s->datalen * s->channels, XPOS_TO_OFFSET (_x) * s->channels + i)];
+                cairo_set_line_width(cr, 0.8);
                 cairo_move_to (cr, _x - 1, y_ofs + (((128 - c) * sh) >> 8));
                 cairo_line_to (cr, _x,     y_ofs + (((128 - d) * sh) >> 8));
                 cairo_stroke(cr);
@@ -551,6 +555,7 @@ sample_display_do_marker_line (GdkDrawable *win,
             x = sample_display_endoffset_to_xpos (s, offset);
         if (x + 3 >= x_min && x - 3 < x_max)
         {
+            cairo_set_line_width(win_cr, 0.8);
             cairo_move_to(win_cr, x, 0);
             cairo_line_to(win_cr, x, s->height);
             cairo_stroke(win_cr);
@@ -603,6 +608,7 @@ sample_display_draw_main (GtkWidget *widget,
         cairo_rectangle (win_bg_cr, area->x, area->y, area->width, area->height);
         cairo_stroke(win_bg_cr);
         
+        cairo_set_line_width(win_fg_cr, 0.8);
         cairo_move_to (win_fg_cr, area->x, s->height / 2);
         cairo_line_to (win_fg_cr, area->x + area->width - 1, s->height / 2);
         cairo_stroke(win_bg_cr);
