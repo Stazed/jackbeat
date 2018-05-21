@@ -39,6 +39,16 @@ dk_make_gc (GdkDrawable *drawable, dk_color_t *color)
     return gc;
 }
 
+GdkColor
+dk_set_colors(dk_color_t *color)
+{
+    GdkColor _color;
+    _color.red = color->red << 8;
+    _color.green = color->green << 8;
+    _color.blue = color->blue << 8;
+    return _color;
+}
+
 void
 dk_draw_line (GdkDrawable *drawable, dk_color_t *color, int x1, int y1, int x2, int y2)
 {

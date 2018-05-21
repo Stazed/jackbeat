@@ -235,11 +235,15 @@ slider_update_pixmap (slider_t *slider, slider_state_t state)
         alloc.width = slider->allocs[state]->width - alloc.x;
         alloc.height = slider->allocs[state]->height;
 
-        dk_color_t bg = {0x78, 0x78, 0x78};
-        GdkGC *bg_gc = dk_make_gc (slider->pixmaps[state], &bg);
-        gdk_draw_rectangle (slider->pixmaps[state], bg_gc, TRUE,
-                            alloc.x, alloc.y, alloc.width, alloc.height);
-        g_object_unref (bg_gc);
+        cairo_t *cr_slider_pixmap = gdk_cairo_create (slider->pixmaps[state]);
+        dk_color_t color = {0x78, 0x78, 0x78};
+        GdkColor _color = dk_set_colors(&color);
+
+        gdk_cairo_set_source_color (cr_slider_pixmap, &_color);
+        cairo_rectangle (cr_slider_pixmap, alloc.x, alloc.y, alloc.width, alloc.height);
+        
+        cairo_fill (cr_slider_pixmap);
+        cairo_destroy (cr_slider_pixmap);
     }
 }
 
