@@ -364,18 +364,13 @@ sample_display_realize (GtkWidget *widget)
 
     gtk_widget_set_style(widget, gtk_style_attach (gtk_widget_get_style(widget), gtk_widget_get_window(widget)));
 
-    s->bg_gc = gdk_gc_new (gtk_widget_get_window(widget));
-    s->fg_gc = gdk_gc_new (gtk_widget_get_window(widget));
-    s->zeroline_gc = gdk_gc_new (gtk_widget_get_window(widget));
-    gdk_gc_set_foreground (s->bg_gc, &SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (widget))->colors[SAMPLE_DISPLAYCOL_BG]);
-    gdk_gc_set_foreground (s->fg_gc, &SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (widget))->colors[SAMPLE_DISPLAYCOL_FG]);
-    gdk_gc_set_foreground (s->zeroline_gc, &SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (widget))->colors[SAMPLE_DISPLAYCOL_ZERO]);
-    s->mixerpos_gc = gdk_gc_new (gtk_widget_get_window(widget));
-    gdk_gc_set_foreground (s->mixerpos_gc, &SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (widget))->colors[SAMPLE_DISPLAYCOL_MIXERPOS]);
-    if (s->edit)
+
+    if (s->edit)    // FIXME when is this used
     {
-        s->loop_gc = gdk_gc_new (gtk_widget_get_window(widget));
-        gdk_gc_set_foreground (s->loop_gc, &SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (widget))->colors[SAMPLE_DISPLAYCOL_LOOP]);
+//        s->loop_cr = gdk_cairo_create (gtk_widget_get_window(widget));
+//        gdk_cairo_set_source_color (s->loop_cr, &SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (widget))->colors[SAMPLE_DISPLAYCOL_LOOP]);
+//        s->loop_gc = gdk_gc_new (gtk_widget_get_window(widget));
+//        gdk_gc_set_foreground (s->loop_gc, &SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (widget))->colors[SAMPLE_DISPLAYCOL_LOOP]);
     }
 
     sample_display_init_display (s, attributes.width, attributes.height);
@@ -401,7 +396,7 @@ sample_display_draw_data (GdkDrawable *win,
     int i;
     gint16 c, d;
     gfloat e, f;
-    GdkGC *gc;
+    cairo_t *cr;
     int y_ofs;
     const int pad = (s->height / 20);
     const int sh = (s->height - (s->channels - 1) * pad) / s->channels;
@@ -411,11 +406,19 @@ sample_display_draw_data (GdkDrawable *win,
 
     g_return_if_fail (x >= 0);
     g_return_if_fail (x + width <= s->width);
+    
+    cairo_t *win_bg_cr = gdk_cairo_create (win);
+    cairo_t *win_fg_cr = gdk_cairo_create (win);
+    cairo_t *win_zeroline_cr  = gdk_cairo_create (win);           
+    gdk_cairo_set_source_color (win_bg_cr, &SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (s))->colors[SAMPLE_DISPLAYCOL_BG]);
+    gdk_cairo_set_source_color (win_fg_cr, &SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (s))->colors[SAMPLE_DISPLAYCOL_FG]);
+    gdk_cairo_set_source_color (win_zeroline_cr, &SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (s))->colors[SAMPLE_DISPLAYCOL_ZERO]);
 
-    gdk_draw_rectangle (win, color ? s->fg_gc : s->bg_gc,
-                        TRUE, x, 0, width, s->height);
+    cairo_rectangle(color ? win_fg_cr : win_bg_cr, x, 0, width, s->height);
+    cairo_fill(color ? win_fg_cr : win_bg_cr);
+    cairo_stroke(color ? win_fg_cr : win_bg_cr);
 
-    gc = color ? s->bg_gc : s->fg_gc;
+    cr = color ? win_bg_cr : win_fg_cr;
 
     for (i = 0; i < s->channels; i++)
     {
@@ -424,7 +427,9 @@ sample_display_draw_data (GdkDrawable *win,
         y_ofs = i * (sh + pad);
         if (s->display_zero_line)
         {
-            gdk_draw_line (win, s->zeroline_gc, _x, y_ofs + (sh / 2), _x + _width - 1, y_ofs + (sh / 2));
+            cairo_move_to(win_zeroline_cr, _x, y_ofs + (sh / 2));
+            cairo_line_to(win_zeroline_cr, _x + _width - 1, y_ofs + (sh / 2));
+            cairo_stroke(win_zeroline_cr);
         }
 
         if (s->datatype == SAMPLE_DISPLAY_DATA_FLOAT)
@@ -436,9 +441,10 @@ sample_display_draw_data (GdkDrawable *win,
             {
                 f = ((gfloat*) s->data)[OFFSET_RANGE (s->datalen * s->channels, XPOS_TO_OFFSET (_x) * s->channels + i)];
                 f = f > 1 ? 1 : (f < -1 ? - 1 : f);
-                gdk_draw_line (win, gc,
-                               _x - 1, y_ofs + (1 - e) * sh / 2,
-                               _x,     y_ofs + (1 - f) * sh / 2);
+                
+                cairo_move_to (cr, _x - 1, y_ofs + (1 - e) * sh / 2);
+                cairo_line_to (cr, _x, y_ofs + (1 - f) * sh / 2 );
+                cairo_stroke(cr);
                 e = f;
                 _x++;
                 _width--;
@@ -451,9 +457,9 @@ sample_display_draw_data (GdkDrawable *win,
             while (_width >= 0)
             {
                 d = ((gint16*) s->data)[OFFSET_RANGE (s->datalen * s->channels, XPOS_TO_OFFSET (_x) * s->channels + i)];
-                gdk_draw_line (win, gc,
-                               _x - 1, y_ofs + (((32768 - c) * sh) >> 16),
-                               _x,     y_ofs + (((32768 - d) * sh) >> 16));
+                cairo_move_to (cr, _x - 1, y_ofs + (((32768 - c) * sh) >> 16));
+                cairo_line_to (cr, _x,     y_ofs + (((32768 - d) * sh) >> 16));
+                cairo_stroke(cr);
                 c = d;
                 _x++;
                 _width--;
@@ -466,15 +472,19 @@ sample_display_draw_data (GdkDrawable *win,
             while (_width >= 0)
             {
                 d = ((gint8*) s->data)[OFFSET_RANGE (s->datalen * s->channels, XPOS_TO_OFFSET (_x) * s->channels + i)];
-                gdk_draw_line (win, gc,
-                               _x - 1, y_ofs + (((128 - c) * sh) >> 8),
-                               _x,     y_ofs + (((128 - d) * sh) >> 8));
+                cairo_move_to (cr, _x - 1, y_ofs + (((128 - c) * sh) >> 8));
+                cairo_line_to (cr, _x,     y_ofs + (((128 - d) * sh) >> 8));
+                cairo_stroke(cr);
                 c = d;
                 _x++;
                 _width--;
             }
         }
     }
+
+    cairo_destroy(win_bg_cr);
+    cairo_destroy(win_fg_cr);
+    cairo_destroy(win_zeroline_cr);
 }
 
 static int
@@ -522,8 +532,15 @@ sample_display_do_marker_line (GdkDrawable *win,
                                int offset,
                                int x_min,
                                int x_max,
-                               GdkGC *gc)
+                               int mixerpos)
 {
+    cairo_t *win_cr = gdk_cairo_create (win);
+    
+    if(mixerpos)
+        gdk_cairo_set_source_color (win_cr, &SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (s))->colors[SAMPLE_DISPLAYCOL_MIXERPOS]);
+    else
+        gdk_cairo_set_source_color (win_cr, &SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (s))->colors[SAMPLE_DISPLAYCOL_LOOP]);
+        
     int x;
 
     if (offset >= s->win_start && offset <= s->win_start + s->win_length)
@@ -534,18 +551,23 @@ sample_display_do_marker_line (GdkDrawable *win,
             x = sample_display_endoffset_to_xpos (s, offset);
         if (x + 3 >= x_min && x - 3 < x_max)
         {
-            gdk_draw_line (win, gc,
-                           x, 0,
-                           x, s->height);
+            cairo_move_to(win_cr, x, 0);
+            cairo_line_to(win_cr, x, s->height);
+            cairo_stroke(win_cr);
+
             if (s->display_marker_handles)
             {
-                gdk_draw_rectangle (win, gc, TRUE,
-                                    x - 3, 0, 7, 10);
-                gdk_draw_rectangle (win, gc, TRUE,
-                                    x - 3, s->height - 10, 7, 10);
+                cairo_rectangle(win_cr, x - 3, 0, 7, 10);
+                cairo_fill(win_cr);
+                cairo_stroke(win_cr);
+                
+                cairo_rectangle(win_cr, x - 3, s->height - 10, 7, 10);
+                cairo_fill(win_cr);
+                cairo_stroke(win_cr);
             }
         }
     }
+    cairo_destroy(win_cr);
 }
 
 static void
@@ -558,7 +580,7 @@ sample_display_draw_main (GtkWidget *widget,
         gtk_widget_queue_draw_area (widget, area->x, area->y, area->width, area->height);
         return;
     }
-
+    
     SampleDisplay *s = SAMPLE_DISPLAY (widget);
     int x, x2;
 
@@ -572,13 +594,21 @@ sample_display_draw_main (GtkWidget *widget,
 
     if (!IS_INITIALIZED (s))
     {
-        gdk_draw_rectangle (gtk_widget_get_window(widget),
-                            s->bg_gc,
-                            TRUE, area->x, area->y, area->width, area->height);
-        gdk_draw_line (gtk_widget_get_window(widget),
-                       s->fg_gc,
-                       area->x, s->height / 2,
-                       area->x + area->width - 1, s->height / 2);
+        cairo_t *win_bg_cr = gdk_cairo_create (gtk_widget_get_window(GTK_WIDGET(widget)));
+        cairo_t *win_fg_cr = gdk_cairo_create (gtk_widget_get_window(GTK_WIDGET(widget)));
+
+        gdk_cairo_set_source_color (win_bg_cr, &SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (s))->colors[SAMPLE_DISPLAYCOL_BG]);
+        gdk_cairo_set_source_color (win_fg_cr, &SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (s))->colors[SAMPLE_DISPLAYCOL_FG]);
+        
+        cairo_rectangle (win_bg_cr, area->x, area->y, area->width, area->height);
+        cairo_stroke(win_bg_cr);
+        
+        cairo_move_to (win_fg_cr, area->x, s->height / 2);
+        cairo_line_to (win_fg_cr, area->x + area->width - 1, s->height / 2);
+        cairo_stroke(win_bg_cr);
+        
+        cairo_destroy(win_bg_cr);
+        cairo_destroy(win_fg_cr);
     }
     else
     {
@@ -608,13 +638,13 @@ sample_display_draw_main (GtkWidget *widget,
 
         if (s->loop_start != -1)
         {
-            sample_display_do_marker_line (gtk_widget_get_window(widget), s, 0, s->loop_start, x_min, x_max, s->loop_gc);
-            sample_display_do_marker_line (gtk_widget_get_window(widget), s, 1, s->loop_end, x_min, x_max, s->loop_gc);
+            sample_display_do_marker_line (gtk_widget_get_window(widget), s, 0, s->loop_start, x_min, x_max, FALSE);
+            sample_display_do_marker_line (gtk_widget_get_window(widget), s, 1, s->loop_end, x_min, x_max, FALSE);
         }
 
         if (s->mixerpos != -1)
         {
-            sample_display_do_marker_line (gtk_widget_get_window(widget), s, 0, s->mixerpos, x_min, x_max, s->mixerpos_gc);
+            sample_display_do_marker_line (gtk_widget_get_window(widget), s, 0, s->mixerpos, x_min, x_max, TRUE);
             s->old_mixerpos = s->mixerpos;
         }
     }

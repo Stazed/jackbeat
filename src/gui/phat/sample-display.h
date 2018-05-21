@@ -52,7 +52,6 @@ struct _SampleDisplay {
     int edit; /* enable loop / selection editing */
 
     int width, height;
-    GdkGC *bg_gc, *fg_gc, *loop_gc, *mixerpos_gc;
     guint idle_handler;
 
     void *data;
@@ -67,8 +66,6 @@ struct _SampleDisplay {
     int mixerpos, old_mixerpos; /* current playing offset of the sample */
 
     gboolean display_zero_line;
-    GdkGC *zeroline_gc;
-
     gboolean display_marker_handles;
 
     /* selection handling */

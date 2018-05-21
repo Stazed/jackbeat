@@ -276,7 +276,7 @@ phat_knob_destroy (GtkObject *object)
         knob->mask = NULL;
     }
 
-    if (knob->mask_gc)
+/*    if (knob->mask_gc)
     {
         gdk_gc_unref (knob->mask_gc);
         knob->mask_gc = NULL;
@@ -285,7 +285,7 @@ phat_knob_destroy (GtkObject *object)
     {
         gdk_gc_unref (knob->red_gc);
         knob->red_gc = NULL;
-    }
+    }*/
 
     if (GTK_OBJECT_CLASS (phat_knob_parent_class)->destroy)
         (*GTK_OBJECT_CLASS (phat_knob_parent_class)->destroy)(object);
