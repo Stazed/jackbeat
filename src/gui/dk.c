@@ -52,10 +52,14 @@ dk_set_colors(dk_color_t *color)
 void
 dk_draw_line (GdkDrawable *drawable, dk_color_t *color, int x1, int y1, int x2, int y2)
 {
-    GdkGC *gc = dk_make_gc (drawable, color);
-    gdk_draw_line (drawable, gc, x1, y1, x2, y2);
-    g_object_unref (G_OBJECT (gc));
-
+    cairo_t *cr = gdk_cairo_create (drawable);
+    GdkColor _color = dk_set_colors(color);
+    gdk_cairo_set_source_color (cr, &_color);
+    
+    cairo_move_to(cr, x1, y1);
+    cairo_line_to(cr, x2, y2);
+    cairo_stroke(cr);
+    cairo_destroy(cr);
 }
 
 void
