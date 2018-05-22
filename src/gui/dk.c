@@ -58,7 +58,13 @@ dk_draw_line (GdkDrawable *drawable, dk_color_t *color, int x1, int y1, int x2, 
     cairo_destroy(cr);
 }
 
-/* FIXME */
+void dk_make_single_gradient (dk_color_t *color, dk_color_t from, dk_color_t to, int single, int steps)
+{
+    color->red = single * (to.red - from.red) / (steps - 1) + from.red;
+    color->green = single * (to.green - from.green) / (steps - 1) + from.green;
+    color->blue = single * (to.blue - from.blue) / (steps - 1) + from.blue;
+}
+
 void
 dk_make_gradient (cairo_t *colors[], GdkDrawable *drawable,
                   dk_color_t *from, dk_color_t *to, int steps)
@@ -67,9 +73,11 @@ dk_make_gradient (cairo_t *colors[], GdkDrawable *drawable,
     dk_color_t color;
     for (i = 0; i < steps; i++)
     {
-        color.red = i * (to->red - from->red) / (steps - 1) + from->red;
+        dk_make_single_gradient( &color, *from, *to, i, steps);
+        
+/*        color.red = i * (to->red - from->red) / (steps - 1) + from->red;
         color.green = i * (to->green - from->green) / (steps - 1) + from->green;
-        color.blue = i * (to->blue - from->blue) / (steps - 1) + from->blue;
+        color.blue = i * (to->blue - from->blue) / (steps - 1) + from->blue;*/
         
         colors[i] = gdk_cairo_create (drawable);
         GdkColor _color = dk_set_colors(&color);

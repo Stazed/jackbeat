@@ -850,12 +850,14 @@ grid_draw_cell (grid_t *grid, int col, int row, int Xnotify, int direct)
             
             if (grid->cells[row][col].level != -1)
             {
-                /* FIXME - there has got to be a better way!!!!*/
-                cairo_t     *values_cr[GRID_GRADIENT_STEPS]; 
-                dk_make_gradient (values_cr, grid->pixmap, &grid->theme->level_min,
-                      &grid->theme->level_max, GRID_GRADIENT_STEPS);
+                dk_color_t color;
+                dk_make_single_gradient (&color, grid->theme->level_min,
+                                         grid->theme->level_max, GRID_GRADIENT_STEPS - 1, GRID_GRADIENT_STEPS);
                 
-                cairo_t *cr = values_cr[GRID_GRADIENT_STEPS - 1];
+                cairo_t *cr = gdk_cairo_create (grid->pixmap);
+                GdkColor _color = dk_set_colors(&color);
+                gdk_cairo_set_source_color (cr, &_color);
+                   
                 int_level = grid->cells[row][col].level * ((float) grid->cell_height);
 
                 cairo_rectangle(cr, grid_col2x (grid, col),
@@ -865,10 +867,7 @@ grid_draw_cell (grid_t *grid, int col, int row, int Xnotify, int direct)
 
                 cairo_fill(cr);
                 cairo_stroke(cr);
-                
-                /* FIXME - same as above */
-                for (int i = 0; i < GRID_GRADIENT_STEPS; i++)
-                    cairo_destroy (values_cr[i]);
+                cairo_destroy(cr);
             }
         }
         else // scale
@@ -881,19 +880,13 @@ grid_draw_cell (grid_t *grid, int col, int row, int Xnotify, int direct)
             {
                 int_level = grid->cells[row][col].level * ((float) GRID_GRADIENT_STEPS - 1.0f);
 
-                /* FIXME - there has got to be a better way!!!!*/
-                cairo_t     *values_cr[GRID_GRADIENT_STEPS];
-                dk_make_gradient (values_cr, grid->pixmap, &grid->theme->level_min,
-                      &grid->theme->level_max, GRID_GRADIENT_STEPS);
+                dk_color_t color;
+                dk_make_single_gradient (&color, grid->theme->level_min,
+                                         grid->theme->level_max, int_level, GRID_GRADIENT_STEPS);
                 
-                cr = values_cr[int_level];
-                
-                /* FIXME - same as above */
-                for (int i = 0; i < GRID_GRADIENT_STEPS; i++)
-                {
-                    if(i != int_level)
-                        cairo_destroy (values_cr[i]);
-                }
+                cr = gdk_cairo_create (grid->pixmap);
+                GdkColor _color = dk_set_colors(&color);
+                gdk_cairo_set_source_color (cr, &_color);
             }
             
             cairo_rectangle(cr, grid_col2x (grid, col),
