@@ -40,9 +40,9 @@ typedef struct dk_hsv_t {
 
 #define DK_COLOR_SET(color, r, g, b) color.red = r; color.green = g; color.blue = b
 
-GdkGC * dk_make_gc(GdkDrawable *drawable, dk_color_t *color);
+cairo_t * dk_make_cr(GdkDrawable *drawable, dk_color_t *color);
 GdkColor dk_set_colors(dk_color_t *color);
-void dk_make_gradient(GdkGC *colors[], GdkDrawable *drawable,
+void dk_make_gradient(cairo_t *colors[], GdkDrawable *drawable,
         dk_color_t *from, dk_color_t *to, int steps);
 void dk_draw_hgradient(GdkDrawable *drawable, GtkAllocation *alloc,
         dk_color_t *from, dk_color_t *to);

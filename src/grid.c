@@ -48,17 +48,6 @@
 #define GRID_IS_VALID_POS(grid, col, row) \
         ((col >= 0) && (col < grid->col_num) && (row >= 0) && (row < grid->row_num))
 
-typedef struct grid_gc_t
-{
-    GdkGC     *values[GRID_GRADIENT_STEPS];
-    GdkGC     *pointer;
-    GdkGC     *on;
-    GdkGC     *off;
-    GdkGC     *background;
-    GdkGC     *mask_border;
-    GdkGC     *mask_bg;
-    GdkGC     *ruler_label;
-} grid_gc_t;
 
 typedef struct grid_theme_t
 {
@@ -133,7 +122,6 @@ struct grid_t
     GtkAdjustment *hadj;
     GtkAdjustment *vadj;
 
-    grid_gc_t *gc;
     grid_theme_t *theme;
 } ;
 
@@ -180,7 +168,6 @@ grid_new ()
     grid->pointed_col = -1;
     grid->area = NULL;
     grid->animation_tag = g_timeout_add (GRID_ANIM_INTERVAL, grid_animation_cb, (gpointer) grid);
-    grid->gc = NULL;
     grid->hadj = grid->vadj = NULL;
 
     event_register (grid, "value-changed");
@@ -201,20 +188,7 @@ grid_destroy (grid_t *grid)
             free (grid->cells[i]);
         free (grid->cells);
     }
-    if (grid->gc)
-    {
-        g_object_unref (grid->gc->on);
-        g_object_unref (grid->gc->off);
-        g_object_unref (grid->gc->background);
-        g_object_unref (grid->gc->pointer);
-        g_object_unref (grid->gc->mask_border);
-        g_object_unref (grid->gc->mask_bg);
-        g_object_unref (grid->gc->ruler_label);
-        for (i = 0; i < GRID_GRADIENT_STEPS; i++)
-            g_object_unref (grid->gc->values[i]);
-        free (grid->gc);
-    }
-
+    
     if (grid->pixmap)
         g_object_unref (grid->pixmap);
 
@@ -535,10 +509,20 @@ grid_draw_mask_icon (grid_t *grid, int col, int row, const char icon[8][8])
     int x = grid_col2x (grid, col) + (grid->cell_width - 8) / 2;
     int y = grid_row2y (grid, row) + (grid->cell_height - 8) / 2;
 
+    cairo_t *mask_border_cr;
+    mask_border_cr = dk_make_cr (grid->pixmap, &grid->theme->mask_border);
+    cairo_set_line_cap(mask_border_cr, CAIRO_LINE_CAP_ROUND); 
+    cairo_set_line_width(mask_border_cr, 3.0);
+    
     for (i = 0; i < 8; i++)
         for (j = 0; j < 8; j++)
             if (icon[j][i])
-                gdk_draw_point (grid->pixmap, grid->gc->mask_border, x + i, y + j);
+            {
+                cairo_move_to (mask_border_cr, x + i, y + j);
+                cairo_close_path (mask_border_cr);
+            }
+    cairo_stroke (mask_border_cr);
+    cairo_destroy(mask_border_cr);
 }
 
 static void
@@ -849,41 +833,77 @@ grid_draw_cell (grid_t *grid, int col, int row, int Xnotify, int direct)
 
     if (grid->pixmap)
     {
-        GdkGC *gc;
         int int_level;
         if (0) // histogram
         {
-            gc = grid->cells[row][col].value ? grid->gc->on : grid->gc->off;
-            gdk_draw_rectangle (grid->pixmap, gc, TRUE,
-                                grid_col2x (grid, col),
+            cairo_t *cr = grid->cells[row][col].value ? dk_make_cr (grid->pixmap, &grid->theme->beat_on) :
+                dk_make_cr (grid->pixmap, &grid->theme->beat_off);
+            
+            cairo_rectangle(cr, grid_col2x (grid, col),
                                 grid_row2y (grid, row),
                                 grid->cell_width,
                                 grid->cell_height);
+            
+            cairo_fill(cr);
+            cairo_stroke(cr);
+            cairo_destroy (cr);
+            
             if (grid->cells[row][col].level != -1)
             {
-                gc = grid->gc->values[GRID_GRADIENT_STEPS - 1];
+                /* FIXME - there has got to be a better way!!!!*/
+                cairo_t     *values_cr[GRID_GRADIENT_STEPS]; 
+                dk_make_gradient (values_cr, grid->pixmap, &grid->theme->level_min,
+                      &grid->theme->level_max, GRID_GRADIENT_STEPS);
+                
+                cairo_t *cr = values_cr[GRID_GRADIENT_STEPS - 1];
                 int_level = grid->cells[row][col].level * ((float) grid->cell_height);
-                gdk_draw_rectangle (grid->pixmap, gc, TRUE,
-                                    grid_col2x (grid, col),
+
+                cairo_rectangle(cr, grid_col2x (grid, col),
                                     grid_row2y (grid, row) + grid->cell_height - int_level,
                                     grid->cell_width,
                                     int_level);
+
+                cairo_fill(cr);
+                cairo_stroke(cr);
+                
+                /* FIXME - same as above */
+                for (int i = 0; i < GRID_GRADIENT_STEPS; i++)
+                    cairo_destroy (values_cr[i]);
             }
         }
         else // scale
         {
+            cairo_t *cr;
             if (grid->cells[row][col].level == -1)
-                gc = grid->cells[row][col].value ? grid->gc->on : grid->gc->off;
+                cr = grid->cells[row][col].value ? dk_make_cr (grid->pixmap, &grid->theme->beat_on) :
+                    dk_make_cr (grid->pixmap, &grid->theme->beat_off);
             else
             {
                 int_level = grid->cells[row][col].level * ((float) GRID_GRADIENT_STEPS - 1.0f);
-                gc = grid->gc->values[int_level];
+
+                /* FIXME - there has got to be a better way!!!!*/
+                cairo_t     *values_cr[GRID_GRADIENT_STEPS];
+                dk_make_gradient (values_cr, grid->pixmap, &grid->theme->level_min,
+                      &grid->theme->level_max, GRID_GRADIENT_STEPS);
+                
+                cr = values_cr[int_level];
+                
+                /* FIXME - same as above */
+                for (int i = 0; i < GRID_GRADIENT_STEPS; i++)
+                {
+                    if(i != int_level)
+                        cairo_destroy (values_cr[i]);
+                }
             }
-            gdk_draw_rectangle (grid->pixmap, gc, TRUE,
-                                grid_col2x (grid, col),
+            
+            cairo_rectangle(cr, grid_col2x (grid, col),
                                 grid_row2y (grid, row),
                                 grid->cell_width,
                                 grid->cell_height);
+            
+            cairo_fill(cr);
+            cairo_stroke(cr);
+            cairo_destroy (cr);  
         }
 
         if (!grid->cells[row][col].mask) grid_draw_mask (grid, col, row);
@@ -908,42 +928,25 @@ grid_set_default_theme (grid_t *grid)
 }
 
 static void
-grid_create_graphic_contexts (grid_t *grid)
-{
-#ifdef PRINT_EXTRA_DEBUG
-    DEBUG ("Creating graphic contexts");
-#endif
-    grid->gc = malloc (sizeof (grid_gc_t));
-
-    dk_make_gradient (grid->gc->values, grid->pixmap, &grid->theme->level_min,
-                      &grid->theme->level_max, GRID_GRADIENT_STEPS);
-
-    grid->gc->on          = dk_make_gc (grid->pixmap, &grid->theme->beat_on);
-    grid->gc->off         = dk_make_gc (grid->pixmap, &grid->theme->beat_off);
-    grid->gc->background  = dk_make_gc (grid->pixmap, &grid->theme->background);
-    grid->gc->pointer     = dk_make_gc (grid->pixmap, &grid->theme->pointer_border);
-    grid->gc->mask_border = dk_make_gc (grid->pixmap, &grid->theme->mask_border);
-    grid->gc->mask_bg     = dk_make_gc (grid->pixmap, &grid->theme->mask_background);
-    grid->gc->ruler_label = dk_make_gc (grid->pixmap, &grid->theme->ruler_label);
-}
-
-static void
 grid_draw_cell_pointer (grid_t *grid, int col, int row, int is_mask)
 {
     if (grid->pixmap)
     {
-        GdkGC *gc = grid->gc->pointer;
         if (is_mask)
         {
             grid_draw_mask_pointer (grid, col, row);
         }
         else
         {
-            gdk_draw_rectangle (grid->pixmap, gc, FALSE,
-                                grid_col2x (grid, col),
+            cairo_t *cr = dk_make_cr (grid->pixmap, &grid->theme->pointer_border);
+            cairo_rectangle(cr, grid_col2x (grid, col),
                                 grid_row2y (grid, row),
                                 grid->cell_width - 1,
                                 grid->cell_height - 1);
+            
+//            cairo_fill(cr);     /* FIXME If we dont do this then remnents of movement appear??? */
+            cairo_stroke(cr);
+            cairo_destroy(cr); 
         }
 
         grid_display (grid,
@@ -951,9 +954,8 @@ grid_draw_cell_pointer (grid_t *grid, int col, int row, int is_mask)
                       grid_row2y (grid, row),
                       grid->cell_width,
                       grid->cell_height,
-                      0, 0);
+                      0, 0);       
     }
-
 }
 
 static void
@@ -993,8 +995,12 @@ grid_draw_ruler (grid_t *grid)
                 PangoLayout *layout = pango_layout_new (context);
                 snprintf (str, 128, "<small><small>%d</small></small>", col / grid->group_col_num + 1);
                 pango_layout_set_markup (layout, str, -1);
-                gdk_draw_layout (grid->pixmap, grid->gc->ruler_label, x + 3, grid->header_label_y, layout);
+                
+                cairo_t *ruler_label_cr = dk_make_cr (grid->pixmap, &grid->theme->ruler_label);
+                cairo_move_to (ruler_label_cr, x + 3, grid->header_label_y);
+                pango_cairo_show_layout (ruler_label_cr, layout);
                 g_object_unref (layout);
+                cairo_destroy(ruler_label_cr);
             }
         }
     }
@@ -1009,8 +1015,15 @@ grid_draw_all (grid_t *grid)
         DEBUG ("row spacing: %d", grid->row_spacing);
         DEBUG ("Drawing background");
 #endif
-        gdk_draw_rectangle (grid->pixmap, grid->gc->background, TRUE, 0, 0,
+        /* Draw grid background */
+        cairo_t *background_cr  = dk_make_cr (grid->pixmap, &grid->theme->background);
+        cairo_rectangle(background_cr, 0, 0,
                             grid->pixmap_width, grid->pixmap_height);
+
+        cairo_fill(background_cr);
+        cairo_stroke(background_cr);
+        cairo_destroy(background_cr);
+        
 #ifdef PRINT_EXTRA_DEBUG
         DEBUG ("Drawing cells");
 #endif
@@ -1098,13 +1111,7 @@ grid_configure_event (GtkWidget *widget, GdkEventConfigure *event, grid_t *grid)
     grid->pixmap = gdk_pixmap_new (gtk_widget_get_window(widget), grid->pixmap_width, grid->pixmap_height, -1);
 
     grid_update_adjustments (grid);
-
-    if (!grid->gc)
-    {
-        grid_set_default_theme (grid);
-        grid_create_graphic_contexts (grid);
-    }
-
+    grid_set_default_theme (grid);
     grid_draw_all (grid);
 
     return TRUE;

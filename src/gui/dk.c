@@ -25,18 +25,14 @@
 #include "util.h"
 #include "gui/dk.h"
 
-GdkGC *
-dk_make_gc (GdkDrawable *drawable, dk_color_t *color)
+cairo_t *
+dk_make_cr (GdkDrawable *drawable, dk_color_t *color)
 {
-    GdkGC *gc = gdk_gc_new (drawable);
-    GdkColor _color;
-    GdkColormap *colormap = gdk_colormap_get_system ();
-    gdk_gc_set_colormap (gc, colormap);
-    _color.red = color->red << 8;
-    _color.green = color->green << 8;
-    _color.blue = color->blue << 8;
-    gdk_gc_set_rgb_fg_color (gc, &_color);
-    return gc;
+    cairo_t *cr = gdk_cairo_create (drawable);
+    GdkColor _color = dk_set_colors(color);
+    gdk_cairo_set_source_color (cr, &_color);
+    
+    return cr;
 }
 
 GdkColor
@@ -62,8 +58,9 @@ dk_draw_line (GdkDrawable *drawable, dk_color_t *color, int x1, int y1, int x2, 
     cairo_destroy(cr);
 }
 
+/* FIXME */
 void
-dk_make_gradient (GdkGC *colors[], GdkDrawable *drawable,
+dk_make_gradient (cairo_t *colors[], GdkDrawable *drawable,
                   dk_color_t *from, dk_color_t *to, int steps)
 {
     int i;
@@ -73,23 +70,26 @@ dk_make_gradient (GdkGC *colors[], GdkDrawable *drawable,
         color.red = i * (to->red - from->red) / (steps - 1) + from->red;
         color.green = i * (to->green - from->green) / (steps - 1) + from->green;
         color.blue = i * (to->blue - from->blue) / (steps - 1) + from->blue;
-        colors[i] = dk_make_gc (drawable, &color);
+        
+        colors[i] = gdk_cairo_create (drawable);
+        GdkColor _color = dk_set_colors(&color);
+        gdk_cairo_set_source_color (colors[i], &_color);
     }
-
 }
 
 void
 dk_draw_hgradient (GdkDrawable *drawable, GtkAllocation *alloc,
                    dk_color_t *from, dk_color_t *to)
 {
-    GdkGC **colors = malloc (alloc->width * sizeof (GdkGC *));
+    cairo_t **colors = malloc (alloc->width * sizeof (cairo_t *));
     dk_make_gradient (colors, drawable, from, to, alloc->width);
     int i;
     for (i = 0; i < alloc->width; i++)
     {
-        gdk_draw_line (drawable, colors[i], alloc->x + i, alloc->y,
-                       alloc->x + i, alloc->y + alloc->height - 1);
-        g_object_unref (G_OBJECT (colors[i]));
+        cairo_move_to(colors[i], alloc->x + i, alloc->y);
+        cairo_line_to(colors[i], alloc->x + i, alloc->y + alloc->height - 1);
+        cairo_stroke(colors[i]);
+        cairo_destroy(colors[i]);
     }
     free (colors);
 }
@@ -98,14 +98,15 @@ void
 dk_draw_vgradient (GdkDrawable *drawable, GtkAllocation *alloc,
                    dk_color_t *from, dk_color_t *to)
 {
-    GdkGC **colors = malloc (alloc->height * sizeof (GdkGC *));
+    cairo_t **colors = malloc (alloc->height * sizeof (cairo_t *));
     dk_make_gradient (colors, drawable, from, to, alloc->height);
     int i;
     for (i = 0; i < alloc->height; i++)
     {
-        gdk_draw_line (drawable, colors[i], alloc->x, alloc->y + i,
-                       alloc->x + alloc->width - 1, alloc->y + i);
-        g_object_unref (G_OBJECT (colors[i]));
+        cairo_move_to(colors[i], alloc->x, alloc->y + i);
+        cairo_line_to(colors[i], alloc->x + alloc->width - 1, alloc->y + i);
+        cairo_stroke(colors[i]);
+        cairo_destroy(colors[i]);
     }
     free (colors);
 }
