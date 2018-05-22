@@ -939,12 +939,11 @@ grid_draw_cell_pointer (grid_t *grid, int col, int row, int is_mask)
         else
         {
             cairo_t *cr = dk_make_cr (grid->pixmap, &grid->theme->pointer_border);
-            cairo_rectangle(cr, grid_col2x (grid, col),
-                                grid_row2y (grid, row),
-                                grid->cell_width - 1,
-                                grid->cell_height - 1);
+            cairo_rectangle(cr, grid_col2x (grid, col)+2,
+                                grid_row2y (grid, row)+2,
+                                grid->cell_width - 3,
+                                grid->cell_height - 3);
             
-//            cairo_fill(cr);     /* FIXME If we dont do this then remnents of movement appear??? */
             cairo_stroke(cr);
             cairo_destroy(cr); 
         }
