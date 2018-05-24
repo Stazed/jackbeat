@@ -303,12 +303,23 @@ gui_sequence_editor_control_update_bg (gui_sequence_editor_t *self, int active_t
             gtk_paint_flat_box (gtk_widget_get_style(layout), GDK_DRAWABLE (self->bg),
                                 GTK_STATE_NORMAL, GTK_SHADOW_NONE, NULL, NULL, NULL,
                                 0, 0, width, self->top_padding);
+
+            cairo_t *cr = gdk_cairo_create (self->bg);
+            gdk_cairo_set_source_pixmap(cr, item, 0, i * track_height + self->top_padding);
+            cairo_rectangle (cr, 0, i * track_height + self->top_padding, width, track_height);
+            cairo_clip (cr);
+            cairo_paint(cr);
+            cairo_destroy(cr);
+
+#if 0            
             gdk_draw_drawable (
-                               self->bg,
+                               self->bg,    /* destination */
                                gtk_widget_get_style(layout)->fg_gc[ gtk_widget_get_state (layout)],
-                               item,
-                               0, 0,
-                               0, i * track_height + self->top_padding, width, track_height);
+                               item,        /* source */
+                               0, 0,        /* source x, source y */
+                               0, i * track_height + self->top_padding,     /* destination x, destination y */
+                               width, track_height);                        /* width & height of source to be copied */        
+#endif
         }
         self->active_track_drawn = active_track;
     }
@@ -542,6 +553,14 @@ gui_sequence_editor_control_expose_event (GtkWidget *widget, GdkEventExpose *eve
 {
     if (self->bg && gtk_layout_get_bin_window(GTK_LAYOUT (widget)))
     {
+        cairo_t *cr = gdk_cairo_create (gtk_layout_get_bin_window(GTK_LAYOUT (widget)));
+        gdk_cairo_set_source_pixmap(cr, self->bg, 0, 0);
+        cairo_rectangle (cr, event->area.x, event->area.y, event->area.width, event->area.height);
+        cairo_clip (cr);
+        cairo_paint (cr);
+        cairo_destroy(cr);
+        
+#if 0    
         gdk_draw_drawable (
                            gtk_layout_get_bin_window(GTK_LAYOUT (widget)),
                            gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state (widget)],
@@ -549,6 +568,7 @@ gui_sequence_editor_control_expose_event (GtkWidget *widget, GdkEventExpose *eve
                            event->area.x, event->area.y,
                            event->area.x, event->area.y,
                            event->area.width, event->area.height);
+#endif
     }
     return FALSE;
 }

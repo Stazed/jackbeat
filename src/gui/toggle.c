@@ -140,13 +140,22 @@ toggle_update_pixmap (toggle_t *toggle)
 {
     if (toggle->pixmap && toggle->gradients[toggle->active])
     {
+        cairo_t *cr = gdk_cairo_create (toggle->pixmap);
+        gdk_cairo_set_source_pixmap(cr, toggle->gradients[toggle->active], 0, 0);
+        cairo_rectangle (cr, 0, 0, toggle->alloc->width, toggle->alloc->height);
+        cairo_clip (cr);
+        cairo_paint(cr);
+        cairo_destroy(cr);
+
+#if 0        
         gdk_draw_drawable (
                            toggle->pixmap,
                            gtk_widget_get_style(toggle->layout)->fg_gc[gtk_widget_get_state (toggle->layout)],
                            toggle->gradients[toggle->active],
                            0, 0,
                            0, 0, toggle->alloc->width, toggle->alloc->height);
-
+#endif
+        
         PangoLayout *layout = toggle_create_pango_layout (toggle, toggle->hover);
         int lwidth, lheight;
         pango_layout_get_pixel_size (layout, &lwidth, &lheight);
@@ -276,13 +285,22 @@ toggle_expose (GtkWidget *layout, GdkEventExpose *event, toggle_t *toggle)
         {
             int srcx = target.x - alloc->x;
             int srcy = target.y - alloc->y;
-
+            
+            cairo_t *cr = gdk_cairo_create (gtk_layout_get_bin_window(GTK_LAYOUT (layout)));
+            gdk_cairo_set_source_pixmap(cr, toggle->pixmap, target.x - srcx, target.y - srcy);
+            cairo_rectangle (cr, target.x, target.y, target.width, target.height);
+            cairo_clip (cr);
+            cairo_paint(cr);
+            cairo_destroy(cr);
+            
+#if 0
             gdk_draw_drawable (
                                gtk_layout_get_bin_window (GTK_LAYOUT (layout)),
                                gtk_widget_get_style(layout)->fg_gc[gtk_widget_get_state (layout)],
                                toggle->pixmap,
                                srcx, srcy,
                                target.x, target.y, target.width, target.height);
+#endif
         }
     }
     return FALSE;

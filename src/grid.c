@@ -37,13 +37,13 @@
 #define GRID_CELL_MASK 0x100
 #define GRID_GRADIENT_STEPS 64
 
-#define DEBUG(M, ...) {}
-/*
+//#define DEBUG(M, ...) {}
+
 #define DEBUG(M, ...) { \
   printf("GRD %s(): ", __func__); \
   printf(M, ## __VA_ARGS__); printf("\n"); \
 }
- */
+
 
 #define GRID_IS_VALID_POS(grid, col, row) \
         ((col >= 0) && (col < grid->col_num) && (row >= 0) && (row < grid->row_num))
@@ -667,13 +667,22 @@ grid_display (grid_t *grid, int x, int y, int width, int height, int direct, int
                 visible.height = grid->header_height;
 
                 if (gdk_rectangle_intersect (&visible, &dest, &header))
-                {
+                {   
+                    cairo_t *cr = gdk_cairo_create (gtk_widget_get_window(grid->area));
+                    gdk_cairo_set_source_pixmap(cr, grid->pixmap, -grid_get_window_xpos (grid), 0);
+                    cairo_rectangle (cr, header.x, header.y, header.width, header.height);
+                    cairo_clip (cr);
+                    cairo_paint(cr);
+                    cairo_destroy(cr);
+
+#if 0
                     gdk_draw_drawable (
                                        gtk_widget_get_window(grid->area),
                                        gtk_widget_get_style(grid->area)->fg_gc[gtk_widget_get_state (grid->area)],
                                        grid->pixmap,
                                        header.x + grid_get_window_xpos (grid),
                                        header.y, header.x, header.y, header.width, header.height);
+#endif
                 }
 
                 visible.x = 0;
@@ -683,12 +692,21 @@ grid_display (grid_t *grid, int x, int y, int width, int height, int direct, int
 
                 if (gdk_rectangle_intersect (&visible, &dest, &pattern))
                 {
+                    cairo_t *cr = gdk_cairo_create (gtk_widget_get_window(grid->area));
+                    gdk_cairo_set_source_pixmap(cr, grid->pixmap, pattern.x - src.x, -grid_get_window_ypos (grid));
+                    cairo_rectangle (cr, pattern.x, pattern.y, pattern.width, pattern.height);
+                    cairo_clip (cr);
+                    cairo_paint(cr);
+                    cairo_destroy(cr);
+                    
+#if 0                   
                     gdk_draw_drawable (
                                        gtk_widget_get_window(grid->area),
                                        gtk_widget_get_style(grid->area)->fg_gc[gtk_widget_get_state (grid->area)],
                                        grid->pixmap,
                                        src.x, pattern.y + grid_get_window_ypos (grid),
                                        pattern.x, pattern.y, pattern.width, pattern.height);
+#endif
                 }
             }
             else

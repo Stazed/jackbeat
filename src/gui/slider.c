@@ -222,12 +222,21 @@ slider_update_pixmap (slider_t *slider, slider_state_t state)
 {
     if (slider->pixmaps[state] && slider->gradients[state])
     {
+        cairo_t *cr = gdk_cairo_create (slider->pixmaps[state]);
+        gdk_cairo_set_source_pixmap(cr, slider->gradients[state], 0, 0);
+        cairo_rectangle (cr, 0, 0, slider->allocs[state]->width, slider->allocs[state]->height);
+        cairo_clip (cr);
+        cairo_paint(cr);
+        cairo_destroy(cr);
+        
+#if 0
         gdk_draw_drawable (
                            slider->pixmaps[state],
                            gtk_widget_get_style(slider->layout)->fg_gc[gtk_widget_get_state (slider->layout)],
                            slider->gradients[state],
                            0, 0,
                            0, 0, slider->allocs[state]->width, slider->allocs[state]->height);
+#endif
 
         GtkAllocation alloc;
         alloc.x = slider_compute_position (slider, state);
@@ -428,12 +437,22 @@ slider_expose (GtkWidget *layout, GdkEventExpose *event, slider_t *slider)
             int srcx = target.x - alloc->x;
             int srcy = target.y - alloc->y;
 
+            cairo_t *cr = gdk_cairo_create (gtk_layout_get_bin_window(GTK_LAYOUT (layout)));
+            gdk_cairo_set_source_pixmap(cr, pixmap, target.x - srcx, target.y - srcy);
+            cairo_rectangle (cr, target.x, target.y, target.width, target.height);
+            cairo_clip (cr);
+            cairo_paint(cr);
+            cairo_destroy(cr);
+
+#if 0
             gdk_draw_drawable (
                                gtk_layout_get_bin_window(GTK_LAYOUT (layout)),
                                gtk_widget_get_style(layout)->fg_gc[gtk_widget_get_state (layout)],
                                pixmap,
                                srcx, srcy,
                                target.x, target.y, target.width, target.height);
+#endif
+            
             gtk_paint_shadow (gtk_widget_get_style(layout),
                               gtk_layout_get_bin_window(GTK_LAYOUT (layout)),
                               GTK_STATE_NORMAL,
