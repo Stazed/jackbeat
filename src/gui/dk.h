@@ -40,18 +40,18 @@ typedef struct dk_hsv_t {
 
 #define DK_COLOR_SET(color, r, g, b) color.red = r; color.green = g; color.blue = b
 
-cairo_t * dk_make_cr(GdkDrawable *drawable, dk_color_t *color);
+cairo_t * dk_make_cr(GdkWindow *drawable, dk_color_t *color);
 GdkColor dk_set_colors(dk_color_t *color);
 void dk_make_single_gradient (dk_color_t *color, dk_color_t from, dk_color_t to, int single, int steps);
-void dk_make_gradient(cairo_t *colors[], GdkDrawable *drawable,
+void dk_make_gradient(cairo_t *colors[], GdkWindow *drawable,
         dk_color_t *from, dk_color_t *to, int steps);
-void dk_draw_hgradient(GdkDrawable *drawable, GtkAllocation *alloc,
+void dk_draw_hgradient(GdkWindow *drawable, GtkAllocation *alloc,
         dk_color_t *from, dk_color_t *to);
-void dk_draw_vgradient(GdkDrawable *drawable, GtkAllocation *alloc,
+void dk_draw_vgradient(GdkWindow *drawable, GtkAllocation *alloc,
         dk_color_t *from, dk_color_t *to);
-void dk_draw_line(GdkDrawable *drawable, dk_color_t *color, int x1, int y1, int x2, int y2);
+void dk_draw_line(GdkWindow *drawable, dk_color_t *color, int x1, int y1, int x2, int y2);
 int dk_em(GtkWidget *widget, float em_size);
-void dk_draw_track_bg(GdkDrawable *drawable, GtkAllocation *alloc, int active,
+void dk_draw_track_bg(GdkWindow *drawable, GtkAllocation *alloc, int active,
         dk_hsv_t *hsv_shift, dk_color_t *hborder);
 void dk_transform_hsv(dk_color_t *color, dk_hsv_t *hsv_shift);
 #endif

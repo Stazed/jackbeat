@@ -387,7 +387,7 @@ sample_display_size_request (GtkWidget *widget,
 }
 
 static void
-sample_display_draw_data (GdkDrawable *win,
+sample_display_draw_data (GdkWindow *win,
                           const SampleDisplay *s,
                           int color,
                           int x,

@@ -26,7 +26,7 @@
 #include "gui/dk.h"
 
 cairo_t *
-dk_make_cr (GdkDrawable *drawable, dk_color_t *color)
+dk_make_cr (GdkWindow *drawable, dk_color_t *color)
 {
     cairo_t *cr = gdk_cairo_create (drawable);
     GdkColor _color = dk_set_colors(color);
@@ -46,7 +46,7 @@ dk_set_colors(dk_color_t *color)
 }
 
 void
-dk_draw_line (GdkDrawable *drawable, dk_color_t *color, int x1, int y1, int x2, int y2)
+dk_draw_line (GdkWindow *drawable, dk_color_t *color, int x1, int y1, int x2, int y2)
 {
     cairo_t *cr = gdk_cairo_create (drawable);
     GdkColor _color = dk_set_colors(color);
@@ -66,7 +66,7 @@ void dk_make_single_gradient (dk_color_t *color, dk_color_t from, dk_color_t to,
 }
 
 void
-dk_make_gradient (cairo_t *colors[], GdkDrawable *drawable,
+dk_make_gradient (cairo_t *colors[], GdkWindow *drawable,
                   dk_color_t *from, dk_color_t *to, int steps)
 {
     int i;
@@ -86,7 +86,7 @@ dk_make_gradient (cairo_t *colors[], GdkDrawable *drawable,
 }
 
 void
-dk_draw_hgradient (GdkDrawable *drawable, GtkAllocation *alloc,
+dk_draw_hgradient (GdkWindow *drawable, GtkAllocation *alloc,
                    dk_color_t *from, dk_color_t *to)
 {
     cairo_t **colors = malloc (alloc->width * sizeof (cairo_t *));
@@ -103,7 +103,7 @@ dk_draw_hgradient (GdkDrawable *drawable, GtkAllocation *alloc,
 }
 
 void
-dk_draw_vgradient (GdkDrawable *drawable, GtkAllocation *alloc,
+dk_draw_vgradient (GdkWindow *drawable, GtkAllocation *alloc,
                    dk_color_t *from, dk_color_t *to)
 {
     cairo_t **colors = malloc (alloc->height * sizeof (cairo_t *));
@@ -130,7 +130,7 @@ dk_em (GtkWidget *widget, float em_size)
 }
 
 void
-dk_draw_track_bg (GdkDrawable *drawable, GtkAllocation *alloc, int active, dk_hsv_t *hsv_shift,
+dk_draw_track_bg (GdkWindow *drawable, GtkAllocation *alloc, int active, dk_hsv_t *hsv_shift,
                   dk_color_t *hborder)
 {
     dk_color_t gradient_bottom, gradient_top, bottom, top, top2, border1, border2, border3;
