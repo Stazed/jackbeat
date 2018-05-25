@@ -159,9 +159,28 @@ toggle_update_pixmap (toggle_t *toggle)
         PangoLayout *layout = toggle_create_pango_layout (toggle, toggle->hover);
         int lwidth, lheight;
         pango_layout_get_pixel_size (layout, &lwidth, &lheight);
+
+#if 0
+        // FIXME for gtk3
+        GtkStyleContext *context;
+        GtkStateFlags flags;
+        GdkRGBA rgba;
+        cr = gdk_cairo_create (toggle->pixmap);
+        context = gtk_widget_get_style_context (toggle->layout));
+        state = gtk_widget_get_state_flags (toggle->layout);
+        gtk_style_context_get_color (context, state, &rgba);
+        gdk_cairo_set_source_rgba (cr, &rgba);
+        cairo_move_to (cr, (toggle->alloc->width - lwidth) / 2,
+                         (toggle->alloc->height - lheight) / 2);
+        pango_cairo_show_layout (cr, layout);
+        cairo_destroy(cr);
+#endif
+        
+#if 1
         gdk_draw_layout (toggle->pixmap, gtk_widget_get_style(toggle->layout)->fg_gc[gtk_widget_get_state (toggle->layout)],
                          (toggle->alloc->width - lwidth) / 2,
                          (toggle->alloc->height - lheight) / 2, layout);
+#endif
         g_object_unref (layout);
     }
 }
@@ -253,6 +272,7 @@ toggle_allocate (toggle_t *toggle, GtkAllocation * alloc)
 
         if (gtk_layout_get_bin_window (GTK_LAYOUT (toggle->layout)))
         {
+            
             toggle->pixmap = gdk_pixmap_new (gtk_layout_get_bin_window (GTK_LAYOUT (toggle->layout)),
                                              alloc->width, alloc->height, -1);
             toggle->gradients[0] = gdk_pixmap_new (gtk_layout_get_bin_window (GTK_LAYOUT (toggle->layout)),
