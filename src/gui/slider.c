@@ -34,8 +34,13 @@ struct slider_t
     slider_state_t    state;
     slider_curve_t    curve;
     GtkAllocation *   allocs[2];
+#ifdef USE_SURFACE
+    cairo_surface_t*  cst_surface[2];
+    cairo_surface_t*  cst_gradients[2];
+#else
     GdkPixmap     *   pixmaps[2];
     GdkPixmap     *   gradients[2];
+#endif
     GtkWidget **      overlaps;
     GdkCursor *       empty_cursor;
     int               start_x_root;
@@ -61,10 +66,17 @@ slider_new (GtkWidget *layout, GtkAdjustment *adj)
     slider->curve = SLIDER_LINEAR;
     slider->allocs[SLIDER_FOLDED] = calloc (1, sizeof (GtkAllocation));
     slider->allocs[SLIDER_UNFOLDED] = calloc (1, sizeof (GtkAllocation));
+#ifdef USE_SURFACE
+    slider->cst_surface[SLIDER_FOLDED] = NULL;
+    slider->cst_surface[SLIDER_UNFOLDED] = NULL;
+    slider->cst_gradients[SLIDER_FOLDED] = NULL;
+    slider->cst_gradients[SLIDER_UNFOLDED] = NULL;
+#else
     slider->pixmaps[SLIDER_FOLDED] = NULL;
     slider->pixmaps[SLIDER_UNFOLDED] = NULL;
     slider->gradients[SLIDER_FOLDED] = NULL;
     slider->gradients[SLIDER_UNFOLDED] = NULL;
+#endif
     slider->overlaps = malloc (sizeof (GtkWidget *));
     slider->overlaps[0] = NULL;
 
@@ -101,7 +113,16 @@ static void
 slider_destroy (GtkObject *object, slider_t *slider)
 {
     gdk_cursor_unref (slider->empty_cursor);
-
+#ifdef USE_SURFACE
+    if (slider->cst_surface[SLIDER_FOLDED])
+        cairo_surface_destroy (slider->cst_surface[SLIDER_FOLDED]);
+    if (slider->cst_surface[SLIDER_UNFOLDED])
+        cairo_surface_destroy (slider->cst_surface[SLIDER_UNFOLDED]);
+    if (slider->cst_gradients[SLIDER_FOLDED])
+        cairo_surface_destroy (slider->cst_gradients[SLIDER_FOLDED]);
+    if (slider->cst_gradients[SLIDER_UNFOLDED])
+        cairo_surface_destroy (slider->cst_gradients[SLIDER_UNFOLDED]);
+#else
     if (slider->pixmaps[SLIDER_FOLDED])
         gdk_pixmap_unref (slider->pixmaps[SLIDER_FOLDED]);
     if (slider->pixmaps[SLIDER_UNFOLDED])
@@ -110,7 +131,7 @@ slider_destroy (GtkObject *object, slider_t *slider)
         gdk_pixmap_unref (slider->gradients[SLIDER_FOLDED]);
     if (slider->gradients[SLIDER_UNFOLDED])
         gdk_pixmap_unref (slider->gradients[SLIDER_UNFOLDED]);
-
+#endif
     free (slider->allocs[SLIDER_FOLDED]);
     free (slider->allocs[SLIDER_UNFOLDED]);
     free (slider->overlaps);
@@ -204,7 +225,11 @@ slider_compute_position (slider_t *slider, slider_state_t state)
 static void
 slider_update_gradient (slider_t *slider, slider_state_t state)
 {
-    if (slider->gradients[state])
+#ifdef USE_SURFACE
+    if (slider->cst_gradients[state])
+#else
+    if (slider->gradients[state])   
+#endif
     {
         dk_color_t from = {0x07, 0x45, 0x7e};
         dk_color_t to = {0xff, 0xff, 0xff};
@@ -213,10 +238,45 @@ slider_update_gradient (slider_t *slider, slider_state_t state)
         alloc.y = 0;
         alloc.width = slider->allocs[state]->width;
         alloc.height = slider->allocs[state]->height;
+#ifdef USE_SURFACE
+        dk_draw_hgradient (slider->cst_gradients[state], &alloc, &from, &to);
+#else
         dk_draw_hgradient (slider->gradients[state], &alloc, &from, &to);
+#endif
     }
 }
 
+#ifdef USE_SURFACE
+static void
+slider_update_pixmap (slider_t *slider, slider_state_t state)
+{
+    if (slider->cst_surface[state] && slider->cst_gradients[state])
+    {
+        cairo_t *cr = cairo_create (slider->cst_surface[state]);
+        cairo_set_source_surface(cr, slider->cst_gradients[state], 0, 0);
+        cairo_rectangle (cr, 0, 0, slider->allocs[state]->width, slider->allocs[state]->height);
+        cairo_clip (cr);
+        cairo_paint(cr);
+        cairo_destroy(cr);
+        
+        GtkAllocation alloc;
+        alloc.x = slider_compute_position (slider, state);
+        alloc.y = 0;
+        alloc.width = slider->allocs[state]->width - alloc.x;
+        alloc.height = slider->allocs[state]->height;
+
+        cr = cairo_create (slider->cst_surface[state]);
+        dk_color_t color = {0x78, 0x78, 0x78};
+        GdkColor _color = dk_set_colors(&color);
+
+        gdk_cairo_set_source_color (cr, &_color);
+        cairo_rectangle (cr, alloc.x, alloc.y, alloc.width, alloc.height);
+        
+        cairo_fill (cr);
+        cairo_destroy (cr);
+    }
+}
+#else
 static void
 slider_update_pixmap (slider_t *slider, slider_state_t state)
 {
@@ -255,6 +315,7 @@ slider_update_pixmap (slider_t *slider, slider_state_t state)
         cairo_destroy (cr_slider_pixmap);
     }
 }
+#endif
 
 static void
 slider_queue_draw (slider_t *slider)
@@ -384,6 +445,34 @@ slider_wheel_scroll_event (GtkWidget *widget, GdkEventScroll *event, slider_t *s
     return handled;
 }
 
+#ifdef USE_SURFACE
+void
+slider_allocate (slider_t *slider, slider_state_t state, GtkAllocation * alloc)
+{
+    if (!slider->cst_surface[state] || (alloc->width != slider->allocs[state]->width)
+        || (alloc->height != slider->allocs[state]->height))
+    {
+        if (slider->cst_surface[state])
+            cairo_surface_destroy (slider->cst_surface[state]);
+
+        if (slider->cst_gradients[state])
+            cairo_surface_destroy (slider->cst_gradients[state]);
+
+        memcpy (slider->allocs[state], alloc, sizeof (GtkAllocation));
+
+        if (gtk_layout_get_bin_window(GTK_LAYOUT (slider->layout)))
+        { 
+            slider->cst_surface[state] = gdk_window_create_similar_surface (gtk_layout_get_bin_window(GTK_LAYOUT (slider->layout)),
+                                             CAIRO_CONTENT_COLOR_ALPHA, alloc->width, alloc->height);
+            slider->cst_gradients[state] = gdk_window_create_similar_surface (gtk_layout_get_bin_window(GTK_LAYOUT (slider->layout)),
+                                             CAIRO_CONTENT_COLOR_ALPHA, alloc->width, alloc->height);
+
+            slider_update_gradient (slider, state);
+            slider_update_pixmap (slider, state);
+        }
+    }
+}
+#else
 void
 slider_allocate (slider_t *slider, slider_state_t state, GtkAllocation * alloc)
 {
@@ -410,6 +499,7 @@ slider_allocate (slider_t *slider, slider_state_t state, GtkAllocation * alloc)
         }
     }
 }
+#endif
 
 void
 slider_get_allocation (slider_t *slider, slider_state_t state, GtkAllocation * alloc)
@@ -423,6 +513,40 @@ slider_get_state (slider_t *slider)
     return slider->state;
 }
 
+#ifdef USE_SURFACE
+static gboolean
+slider_expose (GtkWidget *layout, GdkEventExpose *event, slider_t *slider)
+{
+    GtkAllocation *alloc = slider->allocs[slider->state];
+    cairo_surface_t *surface = slider->cst_surface[slider->state];
+
+    if (surface && gtk_layout_get_bin_window(GTK_LAYOUT (layout)))
+    {
+        GtkAllocation target;
+        if (gdk_rectangle_intersect (&event->area, alloc, &target))
+        {
+            int srcx = target.x - alloc->x;
+            int srcy = target.y - alloc->y;
+
+            cairo_t *cr = gdk_cairo_create (gtk_layout_get_bin_window(GTK_LAYOUT (layout)));
+            cairo_set_source_surface(cr, surface, target.x - srcx, target.y - srcy);
+            cairo_rectangle (cr, target.x, target.y, target.width, target.height);
+            cairo_clip (cr);
+            cairo_paint(cr);
+            cairo_destroy(cr);
+   
+            gtk_paint_shadow (gtk_widget_get_style(layout),
+                              gtk_layout_get_bin_window(GTK_LAYOUT (layout)),
+                              GTK_STATE_NORMAL,
+                              GTK_SHADOW_IN,
+                              &event->area, layout, NULL,
+                              alloc->x, alloc->y,
+                              alloc->width, alloc->height);
+        }
+    }
+    return FALSE;
+}
+#else
 static gboolean
 slider_expose (GtkWidget *layout, GdkEventExpose *event, slider_t *slider)
 {
@@ -464,3 +588,4 @@ slider_expose (GtkWidget *layout, GdkEventExpose *event, slider_t *slider)
     }
     return FALSE;
 }
+#endif

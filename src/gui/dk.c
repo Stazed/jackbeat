@@ -45,10 +45,17 @@ dk_set_colors(dk_color_t *color)
     return _color;
 }
 
+#ifdef USE_SURFACE
+void
+dk_draw_line (cairo_surface_t *surface, dk_color_t *color, int x1, int y1, int x2, int y2)
+{
+    cairo_t *cr = cairo_create (surface);
+#else
 void
 dk_draw_line (GdkWindow *drawable, dk_color_t *color, int x1, int y1, int x2, int y2)
 {
     cairo_t *cr = gdk_cairo_create (drawable);
+#endif
     GdkColor _color = dk_set_colors(color);
     gdk_cairo_set_source_color (cr, &_color);
     
@@ -65,32 +72,48 @@ void dk_make_single_gradient (dk_color_t *color, dk_color_t from, dk_color_t to,
     color->blue = single * (to.blue - from.blue) / (steps - 1) + from.blue;
 }
 
+#ifdef USE_SURFACE
+void
+dk_make_gradient (cairo_t *colors[], cairo_surface_t *surface,
+                  dk_color_t *from, dk_color_t *to, int steps)
+{
+#else
 void
 dk_make_gradient (cairo_t *colors[], GdkWindow *drawable,
                   dk_color_t *from, dk_color_t *to, int steps)
 {
+#endif
     int i;
     dk_color_t color;
     for (i = 0; i < steps; i++)
     {
         dk_make_single_gradient( &color, *from, *to, i, steps);
         
-/*        color.red = i * (to->red - from->red) / (steps - 1) + from->red;
-        color.green = i * (to->green - from->green) / (steps - 1) + from->green;
-        color.blue = i * (to->blue - from->blue) / (steps - 1) + from->blue;*/
-        
+#ifdef USE_SURFACE
+        colors[i] = cairo_create (surface);
+#else
         colors[i] = gdk_cairo_create (drawable);
+#endif
         GdkColor _color = dk_set_colors(&color);
         gdk_cairo_set_source_color (colors[i], &_color);
     }
 }
 
+#ifdef USE_SURFACE
+void
+dk_draw_hgradient (cairo_surface_t *surface, GtkAllocation *alloc,
+                   dk_color_t *from, dk_color_t *to)
+{
+    cairo_t **colors = malloc (alloc->width * sizeof (cairo_t *));
+    dk_make_gradient (colors, surface, from, to, alloc->width);
+#else
 void
 dk_draw_hgradient (GdkWindow *drawable, GtkAllocation *alloc,
                    dk_color_t *from, dk_color_t *to)
 {
     cairo_t **colors = malloc (alloc->width * sizeof (cairo_t *));
     dk_make_gradient (colors, drawable, from, to, alloc->width);
+#endif
     int i;
     for (i = 0; i < alloc->width; i++)
     {
@@ -102,12 +125,21 @@ dk_draw_hgradient (GdkWindow *drawable, GtkAllocation *alloc,
     free (colors);
 }
 
+#ifdef USE_SURFACE
+void
+dk_draw_vgradient (cairo_surface_t *surface, GtkAllocation *alloc,
+                   dk_color_t *from, dk_color_t *to)
+{
+    cairo_t **colors = malloc (alloc->height * sizeof (cairo_t *));
+    dk_make_gradient (colors, surface, from, to, alloc->height);
+#else
 void
 dk_draw_vgradient (GdkWindow *drawable, GtkAllocation *alloc,
                    dk_color_t *from, dk_color_t *to)
 {
     cairo_t **colors = malloc (alloc->height * sizeof (cairo_t *));
     dk_make_gradient (colors, drawable, from, to, alloc->height);
+#endif
     int i;
     for (i = 0; i < alloc->height; i++)
     {
@@ -129,9 +161,16 @@ dk_em (GtkWidget *widget, float em_size)
     return util_round (em_size * (float) em);
 }
 
+#ifdef USE_SURFACE
+void
+dk_draw_track_bg (cairo_surface_t *surface, GtkAllocation *alloc, int active, dk_hsv_t *hsv_shift,
+                  dk_color_t *hborder)
+
+#else
 void
 dk_draw_track_bg (GdkWindow *drawable, GtkAllocation *alloc, int active, dk_hsv_t *hsv_shift,
                   dk_color_t *hborder)
+#endif
 {
     dk_color_t gradient_bottom, gradient_top, bottom, top, top2, border1, border2, border3;
     DK_COLOR_SET (border1, 0xf3, 0xf3, 0xf3);
@@ -164,9 +203,27 @@ dk_draw_track_bg (GdkWindow *drawable, GtkAllocation *alloc, int active, dk_hsv_
     int y = alloc->y;
     int width = alloc->width;
     int height = alloc->height;
+#ifdef USE_SURFACE
+    dk_draw_line (surface, &top, x, y, x + width - 1, y);
+    dk_draw_line (surface, &top2, x, y + 1, x + width - 1, y + 1);
+#else
     dk_draw_line (drawable, &top, x, y, x + width - 1, y);
     dk_draw_line (drawable, &top2, x, y + 1, x + width - 1, y + 1);
+#endif
     GtkAllocation _alloc = {x, y + 2, width, height - 6};
+#ifdef USE_SURFACE
+    dk_draw_vgradient (surface, &_alloc, &gradient_top, &gradient_bottom);
+    dk_draw_line (surface, &bottom, x, y + height - 4, x + width - 1, y + height - 4);
+    dk_draw_line (surface, &border1, x, y + height - 3, x + width - 1, y + height - 3);
+    dk_draw_line (surface, &border2, x, y + height - 2, x + width - 1, y + height - 2);
+    dk_draw_line (surface, &border3, x, y + height - 1, x + width - 1, y + height - 1);
+
+    if (hborder)
+    {
+        dk_draw_line (surface, hborder, x, y + 1, x, y + height - 4);
+        dk_draw_line (surface, hborder, x + width - 1, y + 1, x + width - 1, y + height - 4);
+    }
+#else
     dk_draw_vgradient (drawable, &_alloc, &gradient_top, &gradient_bottom);
     dk_draw_line (drawable, &bottom, x, y + height - 4, x + width - 1, y + height - 4);
     dk_draw_line (drawable, &border1, x, y + height - 3, x + width - 1, y + height - 3);
@@ -178,6 +235,7 @@ dk_draw_track_bg (GdkWindow *drawable, GtkAllocation *alloc, int active, dk_hsv_
         dk_draw_line (drawable, hborder, x, y + 1, x, y + height - 4);
         dk_draw_line (drawable, hborder, x + width - 1, y + 1, x + width - 1, y + height - 4);
     }
+#endif
 }
 
 // ######################################################################

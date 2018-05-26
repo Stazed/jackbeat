@@ -56,9 +56,15 @@ struct gui_sequence_editor_t
     int                   active_track;
     int                   active_track_drawn;
     int                   top_padding;
+#ifdef USE_SURFACE
+    cairo_surface_t*      cst_bg;
+    cairo_surface_t*      cst_bg_inactive;
+    cairo_surface_t*      cst_bg_active;
+#else
     GdkPixmap *           bg;
     GdkPixmap *           bg_inactive;
     GdkPixmap *           bg_active;
+#endif
     gint                  animation_tag;
     int                   updating;
 } ;
@@ -234,6 +240,35 @@ gui_sequence_editor_make_menu (gui_sequence_editor_t *self, int track)
     return menu;
 }
 
+#ifdef USE_SURFACE
+static void
+gui_sequence_editor_control_update_bg_item (GdkWindow *window, cairo_surface_t **surface,
+                                            int active, int width, int height)
+{
+    int update = 0;
+    if (!*surface)
+    {
+        update = 1;
+    }
+    else
+    {
+        int cur_width = cairo_image_surface_get_width(*surface);
+        int cur_height = cairo_image_surface_get_height(*surface);
+        if ((cur_width != width) || (cur_height != height))
+        {
+            cairo_surface_destroy  (*surface);
+            update = 1;
+        }
+    }
+
+    if (update)
+    {
+        *surface = gdk_window_create_similar_surface (window, CAIRO_CONTENT_COLOR_ALPHA, width, height);
+        GtkAllocation alloc = {0, 0, width, height};
+        dk_draw_track_bg (*surface, &alloc, active, NULL, NULL);
+    }
+}
+#else
 static void
 gui_sequence_editor_control_update_bg_item (GdkWindow *window, GdkPixmap **pixmap,
                                             int active, int width, int height)
@@ -261,7 +296,72 @@ gui_sequence_editor_control_update_bg_item (GdkWindow *window, GdkPixmap **pixma
         dk_draw_track_bg (GDK_DRAWABLE (*pixmap), &alloc, active, NULL, NULL);
     }
 }
+#endif
 
+#ifdef USE_SURFACE
+static void
+gui_sequence_editor_control_update_bg (gui_sequence_editor_t *self, int active_track,
+                                       int width, int track_height)
+{
+    int ntracks = sequence_get_tracks_num (self->sequence);
+    int height = track_height * ntracks + self->top_padding;
+    int update = 0;
+
+    cairo_surface_t *surface = self->cst_bg;
+    if (!surface)
+    {
+        update = 1;
+    }
+    else
+    {
+        int cur_width = cairo_image_surface_get_width(surface);
+        int cur_height = cairo_image_surface_get_height(surface);
+        if ((active_track != self->active_track_drawn)
+            || (cur_width != width) || (cur_height != height))
+        {
+            cairo_surface_destroy (surface);
+            update = 1;
+        }
+    }
+    GtkWidget *layout = self->controls_layout;
+    GdkWindow *window = gtk_layout_get_bin_window (GTK_LAYOUT (layout));
+    if (update && window)
+    {
+        gui_sequence_editor_control_update_bg_item (window, &self->cst_bg_inactive, 0, width, track_height);
+        gui_sequence_editor_control_update_bg_item (window, &self->cst_bg_active, 1, width, track_height);
+
+        self->cst_bg = gdk_window_create_similar_surface (window, CAIRO_CONTENT_COLOR_ALPHA, width, height);
+        
+        int i;
+        for (i = 0; i < ntracks; i++)
+        {
+            cairo_surface_t *item = (i == active_track)
+                    ? self->cst_bg_active : self->cst_bg_inactive;
+
+            cairo_t *cr = cairo_create (self->cst_bg);
+            
+            /*  FIXME - this does not seem to do anything:
+                gtk_paint_flat_box has been deprecated since version 3.0
+                and should not be used in newly-written code.
+                Use gtk_render_frame() and gtk_render_background() instead.
+                The below using cr as window will not work for GTK2 but should
+                work for GTK3
+             */
+/*            gtk_paint_flat_box (gtk_widget_get_style(layout), cr,
+                                GTK_STATE_NORMAL, GTK_SHADOW_NONE, NULL, NULL, NULL,
+                                0, 0, width, self->top_padding);*/
+
+            cairo_set_source_surface(cr, item, 0, i * track_height + self->top_padding);
+            cairo_rectangle (cr, 0, i * track_height + self->top_padding, width, track_height);
+            cairo_clip (cr);
+            cairo_paint(cr);
+            cairo_destroy(cr);
+        }
+        self->active_track_drawn = active_track;
+    }
+}
+
+#else
 static void
 gui_sequence_editor_control_update_bg (gui_sequence_editor_t *self, int active_track,
                                        int width, int track_height)
@@ -324,6 +424,7 @@ gui_sequence_editor_control_update_bg (gui_sequence_editor_t *self, int active_t
         self->active_track_drawn = active_track;
     }
 }
+#endif
 
 static void
 gui_sequence_editor_draw_control (gui_sequence_editor_t *self, int track)
@@ -547,6 +648,23 @@ gui_sequence_editor_control_size_allocate_event (GtkWidget *widget, GtkAllocatio
     return TRUE;
 }
 
+#if USE_SURFACE
+static gboolean
+gui_sequence_editor_control_expose_event (GtkWidget *widget, GdkEventExpose *event,
+                                          gui_sequence_editor_t *self)
+{
+    if (self->cst_bg && gtk_layout_get_bin_window(GTK_LAYOUT (widget)))
+    {
+        cairo_t *cr = gdk_cairo_create (gtk_layout_get_bin_window(GTK_LAYOUT (widget)));
+        cairo_set_source_surface(cr, self->cst_bg, 0, 0);
+        cairo_rectangle (cr, event->area.x, event->area.y, event->area.width, event->area.height);
+        cairo_clip (cr);
+        cairo_paint (cr);
+        cairo_destroy(cr);   
+    }
+    return FALSE;
+}
+#else
 static gboolean
 gui_sequence_editor_control_expose_event (GtkWidget *widget, GdkEventExpose *event,
                                           gui_sequence_editor_t *self)
@@ -572,6 +690,7 @@ gui_sequence_editor_control_expose_event (GtkWidget *widget, GdkEventExpose *eve
     }
     return FALSE;
 }
+#endif
 
 static gint
 gui_sequence_editor_control_click_event (GtkWidget *widget, GdkEventButton *event,
@@ -759,9 +878,15 @@ gui_sequence_editor_new (sequence_t *sequence)
     self->top_padding = 0;
     self->active_track = 0;
     self->active_track_drawn = -1;
+#ifdef USE_SURFACE
+    self->cst_bg = NULL;
+    self->cst_bg_inactive = NULL;
+    self->cst_bg_active = NULL;
+#else
     self->bg = NULL;
     self->bg_inactive = NULL;
     self->bg_active = NULL;
+#endif
     self->grid = grid_new ();
     self->updating = 0;
     event_subscribe (self->grid, "value-changed", self, gui_sequence_editor_grid_modified);
