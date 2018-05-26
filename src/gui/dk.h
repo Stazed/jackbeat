@@ -43,6 +43,7 @@ typedef struct dk_hsv_t {
 #define DK_COLOR_SET(color, r, g, b) color.red = r; color.green = g; color.blue = b
 
 #ifdef USE_SURFACE
+cairo_t * dk_make_cr(cairo_surface_t *surface, dk_color_t *color);
 void dk_make_gradient(cairo_t *colors[], cairo_surface_t *surface,
         dk_color_t *from, dk_color_t *to, int steps);
 void dk_draw_hgradient(cairo_surface_t *surface, GtkAllocation *alloc,
@@ -53,7 +54,7 @@ void dk_draw_line(cairo_surface_t *surface, dk_color_t *color, int x1, int y1, i
 void dk_draw_track_bg(cairo_surface_t *surface, GtkAllocation *alloc, int active,
         dk_hsv_t *hsv_shift, dk_color_t *hborder);
 #else
-
+cairo_t * dk_make_cr(GdkWindow *drawable, dk_color_t *color);
 void dk_make_gradient(cairo_t *colors[], GdkWindow *drawable,
         dk_color_t *from, dk_color_t *to, int steps);
 void dk_draw_hgradient(GdkWindow *drawable, GtkAllocation *alloc,
@@ -65,7 +66,6 @@ void dk_draw_track_bg(GdkWindow *drawable, GtkAllocation *alloc, int active,
         dk_hsv_t *hsv_shift, dk_color_t *hborder);
 #endif
 
-cairo_t * dk_make_cr(GdkWindow *drawable, dk_color_t *color);
 GdkColor dk_set_colors(dk_color_t *color);
 void dk_make_single_gradient (dk_color_t *color, dk_color_t from, dk_color_t to, int single, int steps);
 int dk_em(GtkWidget *widget, float em_size);

@@ -25,10 +25,17 @@
 #include "util.h"
 #include "gui/dk.h"
 
+#ifdef USE_SURFACE
+cairo_t *
+dk_make_cr (cairo_surface_t *surface, dk_color_t *color)
+{
+    cairo_t *cr = cairo_create (surface);
+#else
 cairo_t *
 dk_make_cr (GdkWindow *drawable, dk_color_t *color)
 {
     cairo_t *cr = gdk_cairo_create (drawable);
+#endif
     GdkColor _color = dk_set_colors(color);
     gdk_cairo_set_source_color (cr, &_color);
     

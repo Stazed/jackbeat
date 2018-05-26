@@ -347,9 +347,11 @@ gui_sequence_editor_control_update_bg (gui_sequence_editor_t *self, int active_t
                 The below using cr as window will not work for GTK2 but should
                 work for GTK3
              */
-/*            gtk_paint_flat_box (gtk_widget_get_style(layout), cr,
-                                GTK_STATE_NORMAL, GTK_SHADOW_NONE, NULL, NULL, NULL,
-                                0, 0, width, self->top_padding);*/
+#if GTK_CHECK_VERSION(3,0,0)
+            gtk_paint_flat_box (gtk_widget_get_style(layout), cr,
+                                GTK_STATE_NORMAL, GTK_SHADOW_NONE, NULL, NULL,
+                                0, 0, width, self->top_padding);
+#endif
 
             cairo_set_source_surface(cr, item, 0, i * track_height + self->top_padding);
             cairo_rectangle (cr, 0, i * track_height + self->top_padding, width, track_height);

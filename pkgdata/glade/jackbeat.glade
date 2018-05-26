@@ -417,7 +417,7 @@
                               <widget class="GtkSpinButton" id="osc_server_port">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <property name="adjustment">1024 1024 65535 1 10 10</property>
+                                <property name="adjustment">1024 1024 65535 1 10 0</property>
                                 <property name="climb_rate">1</property>
                                 <property name="snap_to_ticks">True</property>
                                 <property name="numeric">True</property>
@@ -484,7 +484,7 @@
                               <widget class="GtkSpinButton" id="osc_dest_port">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <property name="adjustment">1024 1024 65535 1 10 10</property>
+                                <property name="adjustment">1024 1024 65535 1 10 0</property>
                                 <property name="climb_rate">1</property>
                                 <property name="snap_to_ticks">True</property>
                                 <property name="numeric">True</property>
@@ -1053,7 +1053,7 @@
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="tooltip" translatable="yes">Pitch</property>
-                                            <property name="adjustment">0 -78.5 78.5 0.25 1 1</property>
+                                            <property name="adjustment">0 -78.5 78.5 0.25 1 0</property>
                                             <property name="digits">4</property>
                                             <property name="update_policy">GTK_UPDATE_IF_VALID</property>
                                             <signal name="value_changed" handler="gui_pitch_spinner_changed"/>
