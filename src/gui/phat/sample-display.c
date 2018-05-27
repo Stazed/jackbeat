@@ -390,14 +390,6 @@ sample_display_size_request (GtkWidget *widget,
 }
 
 #if GTK_CHECK_VERSION(3,0,0)
-static gboolean
-sample_display_draw (GtkWidget *widget, cairo_t *cr)
-{
-//    sample_display_draw_main (widget, &event->area, FALSE);
-    return FALSE;
-    /* FIXME */
-}
-
 static void
 sample_display_get_preferred_width (GtkWidget *widget,
                                gint      *minimal_width,
@@ -782,6 +774,20 @@ sample_display_draw_update (GtkWidget *widget,
     }
 }
 
+#if GTK_CHECK_VERSION(3,0,0)
+static gboolean
+sample_display_draw (GtkWidget *widget,
+                       cairo_t *cr)
+{
+/*    printf("sample_display_draw width %d, height %d\n",
+            gtk_widget_get_allocated_width (widget),
+            gtk_widget_get_allocated_height (widget));*/
+    GdkRectangle area = { 0, 0, gtk_widget_get_allocated_width (widget),
+    gtk_widget_get_allocated_height (widget) };
+    sample_display_draw_main (widget, &area, FALSE);
+    return FALSE;
+}
+#else
 static gint
 sample_display_expose (GtkWidget *widget,
                        GdkEventExpose *event)
@@ -789,6 +795,7 @@ sample_display_expose (GtkWidget *widget,
     sample_display_draw_main (widget, &event->area, FALSE);
     return FALSE;
 }
+#endif
 
 static gint
 sample_display_idle_draw_function (SampleDisplay *s)
