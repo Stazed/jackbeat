@@ -357,9 +357,12 @@ sample_display_realize (GtkWidget *widget)
             | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK;
 
     attributes.visual = gtk_widget_get_visual (widget);
+#if GTK_CHECK_VERSION(3,0,0)
+    attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL;
+#else
     attributes.colormap = gtk_widget_get_colormap (widget);
-
     attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
+#endif
     gtk_widget_set_window(widget, gdk_window_new (gtk_widget_get_window(gtk_widget_get_parent(widget)), &attributes, attributes_mask));
 
     gtk_widget_set_style(widget, gtk_style_attach (gtk_widget_get_style(widget), gtk_widget_get_window(widget)));
@@ -562,7 +565,7 @@ sample_display_endoffset_to_xpos (SampleDisplay *s,
 }
 
 static void
-sample_display_do_marker_line (GdkDrawable *win,
+sample_display_do_marker_line (GdkWindow *win,
                                SampleDisplay *s,
                                int endoffset,
                                int offset,
