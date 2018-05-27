@@ -1049,13 +1049,13 @@ sample_display_motion_notify (GtkWidget *widget,
 static void
 sample_display_class_init (SampleDisplayClass *class)
 {
-    GtkObjectClass *object_class;
+    GtkWidgetClass *object_class;
     GtkWidgetClass *widget_class;
     int n;
     const int *p;
     GdkColor *c;
 
-    object_class = (GtkObjectClass*) class;
+    object_class = (GtkWidgetClass*) class;
     widget_class = (GtkWidgetClass*) class;
 
     widget_class->realize = sample_display_realize;

@@ -50,8 +50,21 @@ enum
 
 static void phat_knob_class_init         (PhatKnobClass *klass);
 static void phat_knob_init               (PhatKnob *knob);
+#if GTK_CHECK_VERSION(3,0,0)
+static void phat_knob_destroy            (GtkWidget *object);
+#else
 static void phat_knob_destroy            (GtkObject *object);
+#endif
 static void phat_knob_realize            (GtkWidget *widget);
+#if GTK_CHECK_VERSION(3,0,0)
+static void phat_knob_get_preferred_width (GtkWidget *widget,
+                               gint      *minimal_width,
+                               gint      *natural_width);
+
+static void phat_knob_get_preferred_height (GtkWidget *widget,
+                                gint      *minimal_height,
+                                gint      *natural_height);
+#endif
 static void phat_knob_size_request       (GtkWidget *widget,
                                           GtkRequisition *requisition);
 static gint phat_knob_expose             (GtkWidget *widget,
@@ -91,11 +104,18 @@ G_DEFINE_TYPE (PhatKnob, phat_knob, PHAT_TYPE_RANGE);
 static void
 phat_knob_class_init (PhatKnobClass *klass)
 {
+#if GTK_CHECK_VERSION(3,0,0)
+    GtkWidgetClass   *object_class;
+#else
     GtkObjectClass   *object_class;
+#endif
     GtkWidgetClass   *widget_class;
     GObjectClass     *g_object_class;
-
+#if GTK_CHECK_VERSION(3,0,0)
+    object_class =   GTK_WIDGET_CLASS (klass);
+#else
     object_class =   GTK_OBJECT_CLASS (klass);
+#endif
     widget_class =   GTK_WIDGET_CLASS (klass);
     g_object_class = G_OBJECT_CLASS (klass);
 
@@ -105,8 +125,13 @@ phat_knob_class_init (PhatKnobClass *klass)
     object_class->destroy =        phat_knob_destroy;
 
     widget_class->realize =        phat_knob_realize;
+#if GTK_CHECK_VERSION(3,0,0)
+    widget_class->get_preferred_width = phat_knob_get_preferred_width;
+    widget_class->get_preferred_height = phat_knob_get_preferred_height;
+#else
     widget_class->expose_event =   phat_knob_expose;
     widget_class->size_request =   phat_knob_size_request;
+#endif
     widget_class->button_press_event = phat_knob_button_press;
     widget_class->button_release_event = phat_knob_button_release;
     widget_class->motion_notify_event = phat_knob_motion_notify;
@@ -261,7 +286,11 @@ phat_knob_is_log (PhatKnob* knob)
 }
 
 static void
+#if GTK_CHECK_VERSION(3,0,0)
+phat_knob_destroy (GtkWidget *object)
+#else
 phat_knob_destroy (GtkObject *object)
+#endif
 {
 //    PhatKnob *knob;
 
@@ -286,9 +315,13 @@ phat_knob_destroy (GtkObject *object)
         gdk_gc_unref (knob->red_gc);
         knob->red_gc = NULL;
     }*/
-
+#if GTK_CHECK_VERSION(3,0,0)
+    if (GTK_WIDGET_CLASS (phat_knob_parent_class)->destroy)
+        (*GTK_WIDGET_CLASS (phat_knob_parent_class)->destroy)(object);
+#else
     if (GTK_OBJECT_CLASS (phat_knob_parent_class)->destroy)
         (*GTK_OBJECT_CLASS (phat_knob_parent_class)->destroy)(object);
+#endif
 }
 
 GtkAdjustment*
@@ -361,6 +394,32 @@ phat_knob_realize (GtkWidget *widget)
         knob->pixbuf = pixbuf[i];
     }
 }
+
+#if GTK_CHECK_VERSION(3,0,0)
+static void
+phat_knob_get_preferred_width (GtkWidget *widget,
+                               gint      *minimal_width,
+                               gint      *natural_width)
+{
+  GtkRequisition requisition;
+
+  phat_knob_size_request (widget, &requisition);
+
+  *minimal_width = *natural_width = requisition.width;
+}
+
+static void
+phat_knob_get_preferred_height (GtkWidget *widget,
+                                gint      *minimal_height,
+                                gint      *natural_height)
+{
+  GtkRequisition requisition;
+
+  phat_knob_size_request (widget, &requisition);
+
+  *minimal_height = *natural_height = requisition.height;
+}
+#endif
 
 static void
 phat_knob_size_request (GtkWidget *widget, GtkRequisition *requisition)

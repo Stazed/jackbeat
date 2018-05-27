@@ -40,7 +40,11 @@ static int             fan_max_width  = 0;
 
 static void phat_fan_slider_class_init      (PhatFanSliderClass* klass);
 static void phat_fan_slider_init            (PhatFanSlider* slider);
+#if GTK_CHECK_VERSION(3,0,0)
+static void phat_fan_slider_destroy         (GtkWidget* object);
+#else
 static void phat_fan_slider_destroy         (GtkObject* object);
+#endif
 static void phat_fan_slider_realize         (GtkWidget* widget);
 static void phat_fan_slider_unrealize       (GtkWidget *widget);
 static void phat_fan_slider_map             (GtkWidget *widget);
@@ -52,6 +56,15 @@ static void phat_fan_slider_rounded_rectangle (cairo_t *cr, double x0, double y0
                                                double rect_width, double  rect_height, double radius, gboolean selected);
 static void phat_fan_slider_update_hints    (PhatFanSlider* slider);
 
+#if GTK_CHECK_VERSION(3,0,0)
+static void phat_fan_slider_get_preferred_width (GtkWidget *widget,
+                               gint      *minimal_width,
+                               gint      *natural_width);
+
+static void phat_fan_slider_get_preferred_height (GtkWidget *widget,
+                                gint      *minimal_height,
+                                gint      *natural_height);
+#endif
 static void phat_fan_slider_size_request (GtkWidget*widget,
                                           GtkRequisition* requisition);
 
@@ -386,7 +399,11 @@ phat_fan_slider_set_default_value (PhatFanSlider* slider, gdouble value)
 static void
 phat_fan_slider_class_init (PhatFanSliderClass* klass)
 {
+#if GTK_CHECK_VERSION(3,0,0)
+    GtkWidgetClass* object_class = (GtkWidgetClass*) klass;
+#else
     GtkObjectClass* object_class = (GtkObjectClass*) klass;
+#endif
     GtkWidgetClass* widget_class = (GtkWidgetClass*) klass;
     GdkScreen*      screen       = gdk_screen_get_default ( );
 
@@ -401,8 +418,13 @@ phat_fan_slider_class_init (PhatFanSliderClass* klass)
     widget_class->unrealize = phat_fan_slider_unrealize;
     widget_class->map = phat_fan_slider_map;
     widget_class->unmap = phat_fan_slider_unmap;
+#if GTK_CHECK_VERSION(3,0,0)
+    widget_class->get_preferred_width = phat_fan_slider_get_preferred_width;
+    widget_class->get_preferred_height = phat_fan_slider_get_preferred_height;
+#else
     widget_class->expose_event = phat_fan_slider_expose;
     widget_class->size_request = phat_fan_slider_size_request;
+#endif
     widget_class->size_allocate = phat_fan_slider_size_allocate;
     widget_class->button_press_event = phat_fan_slider_button_press;
     widget_class->button_release_event = phat_fan_slider_button_release;
@@ -505,9 +527,17 @@ phat_fan_slider_init (PhatFanSlider* slider)
 }
 
 static void
+#if GTK_CHECK_VERSION(3,0,0)
+phat_fan_slider_destroy (GtkWidget* object)
+#else
 phat_fan_slider_destroy (GtkObject* object)
+#endif
 {
+#if GTK_CHECK_VERSION(3,0,0)
+    GtkWidgetClass* klass;
+#else
     GtkObjectClass* klass;
+#endif
     PhatFanSlider* slider;
 //    GtkWidget* widget;
 
@@ -590,7 +620,11 @@ phat_fan_slider_destroy (GtkObject* object)
                                               phat_fan_slider_adjustment_value_changed,
                                               (gpointer) slider);
         //didn't call ref on this one so just destroy
+#if GTK_CHECK_VERSION(3,0,0)
+        gtk_object_destroy ((GtkWidget*) slider->adjustment_prv);
+#else
         gtk_object_destroy ((GtkObject*) slider->adjustment_prv);
+#endif
         slider->adjustment_prv = NULL;
     }
 
@@ -604,9 +638,6 @@ phat_fan_slider_realize (GtkWidget* widget)
 {
     PhatFanSlider* slider;
     GdkWindowAttr attributes;
-    GdkPixmap* pixmap;
-    GdkColor color = { 0, 0, 0, 0 };
-    gchar data = 0;
     gint attributes_mask;
 
     debug ("realize\n");
@@ -626,13 +657,38 @@ phat_fan_slider_realize (GtkWidget* widget)
     {
         slider->arrow_cursor = gdk_cursor_new (GDK_SB_H_DOUBLE_ARROW);
     }
+    
+#if GTK_CHECK_VERSION(3,0,0)
+    /* FIXME */
+    cairo_surface_t *s;
+    cairo_t *cr;
+    GdkPixbuf *pixbuf;
 
+    s = cairo_image_surface_create (CAIRO_FORMAT_A1, 3, 3);
+    cr = cairo_create (s);
+    cairo_arc (cr, 1.5, 1.5, 1.5, 0, 2 * M_PI);
+    cairo_fill (cr);
+    cairo_destroy (cr);
+
+    pixbuf = gdk_pixbuf_get_from_surface (s,
+                                          0, 0,
+                                          3, 3);
+
+    cairo_surface_destroy (s);
+
+    slider->empty_cursor = gdk_cursor_new_from_pixbuf (gdk_display_get_default(), pixbuf, 0, 0);
+
+    g_object_unref (pixbuf);    
+#else
+    GdkPixmap* pixmap;
+    GdkColor color = { 0, 0, 0, 0 };
+    gchar data = 0;
     pixmap = gdk_bitmap_create_from_data (NULL, &data, 1, 1);
     slider->empty_cursor = gdk_cursor_new_from_pixmap (pixmap, pixmap,
                                                        &color, &color,
                                                        0, 0);
     gdk_pixmap_unref (pixmap);
-
+#endif
     gtk_widget_set_window(widget, gtk_widget_get_parent_window (widget));
     g_object_ref (gtk_widget_get_window(widget));
     gtk_widget_set_style(widget, gtk_style_attach (gtk_widget_get_style(widget), gtk_widget_get_window(widget)));
@@ -758,7 +814,31 @@ phat_fan_slider_unmap (GtkWidget *widget)
 
     GTK_WIDGET_CLASS (parent_class)->unmap (widget);
 }
+#if GTK_CHECK_VERSION(3,0,0)
+static void
+phat_fan_slider_get_preferred_width (GtkWidget *widget,
+                               gint      *minimal_width,
+                               gint      *natural_width)
+{
+  GtkRequisition requisition;
 
+  phat_fan_slider_size_request (widget, &requisition);
+
+  *minimal_width = *natural_width = requisition.width;
+}
+
+static void
+phat_fan_slider_get_preferred_height (GtkWidget *widget,
+                                gint      *minimal_height,
+                                gint      *natural_height)
+{
+  GtkRequisition requisition;
+
+  phat_fan_slider_size_request (widget, &requisition);
+
+  *minimal_height = *natural_height = requisition.height;
+}
+#endif
 static void
 phat_fan_slider_size_request (GtkWidget*      widget,
                               GtkRequisition* requisition)

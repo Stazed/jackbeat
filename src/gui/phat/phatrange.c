@@ -77,7 +77,11 @@ static void phat_range_get_property   (GObject          *object,
                                        guint             prop_id,
                                        GValue           *value,
                                        GParamSpec       *pspec);
+#if GTK_CHECK_VERSION(3,0,0)
+static void phat_range_destroy        (GtkWidget        *object);
+#else
 static void phat_range_destroy        (GtkObject        *object);
+#endif
 static void phat_range_realize        (GtkWidget        *widget);
 static void phat_range_unrealize      (GtkWidget        *widget);
 static void phat_range_map            (GtkWidget        *widget);
@@ -110,11 +114,19 @@ static void
 phat_range_class_init (PhatRangeClass *class)
 {
     GObjectClass   *gobject_class;
+#if GTK_CHECK_VERSION(3,0,0)
+    GtkWidgetClass *object_class;
+#else
     GtkObjectClass *object_class;
+#endif
     GtkWidgetClass *widget_class;
 
     gobject_class = G_OBJECT_CLASS (class);
+#if GTK_CHECK_VERSION(3,0,0)
+    object_class = (GtkWidgetClass*) class;
+#else
     object_class = (GtkObjectClass*) class;
+#endif
     widget_class = (GtkWidgetClass*) class;
 
     gobject_class->set_property = phat_range_set_property;
@@ -426,7 +438,11 @@ phat_range_set_internal_value (PhatRange *range_ptr, gdouble value)
 }
 
 static void
+#if GTK_CHECK_VERSION(3,0,0)
+phat_range_destroy (GtkWidget *object)
+#else
 phat_range_destroy (GtkObject *object)
+#endif
 {
     PhatRange *range = PHAT_RANGE (object);
 
@@ -449,8 +465,11 @@ phat_range_destroy (GtkObject *object)
         g_object_unref (range->value_mapper);
         range->value_mapper = NULL;
     }
-
+#if GTK_CHECK_VERSION(3,0,0)
+    (* GTK_WIDGET_CLASS (phat_range_parent_class)->destroy) (object);
+#else
     (* GTK_OBJECT_CLASS (phat_range_parent_class)->destroy) (object);
+#endif
 }
 
 static void

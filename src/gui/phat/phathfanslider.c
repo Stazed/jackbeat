@@ -7,7 +7,7 @@ static PhatFanSliderClass* parent_class;
 
 static void phat_hfan_slider_class_init (PhatHFanSliderClass* klass);
 static void phat_hfan_slider_init (PhatHFanSlider* slider);
-static void phat_hfan_slider_destroy (GtkObject* object);
+static void phat_hfan_slider_destroy (GtkWidget* object);
 
 GType
 phat_hfan_slider_get_type ( )
@@ -92,7 +92,11 @@ phat_hfan_slider_new_with_range (double value, double lower,
 static void
 phat_hfan_slider_class_init (PhatHFanSliderClass* klass)
 {
+#if GTK_CHECK_VERSION(3,0,0)
+    GtkWidgetClass* object_class = (GtkWidgetClass*) klass;
+#else
     GtkObjectClass* object_class = (GtkObjectClass*) klass;
+#endif
 
 //    parent_class = g_type_class_peek (PHAT_TYPE_FAN_SLIDER);
     parent_class = g_type_class_ref (PHAT_TYPE_FAN_SLIDER);
@@ -107,9 +111,13 @@ phat_hfan_slider_init (PhatHFanSlider* slider)
 }
 
 static void
-phat_hfan_slider_destroy (GtkObject* object)
+phat_hfan_slider_destroy (GtkWidget* object)
 {
+#if GTK_CHECK_VERSION(3,0,0)
+    GtkWidgetClass* klass;
+#else
     GtkObjectClass* klass;
+#endif
 
     g_return_if_fail (object != NULL);
     g_return_if_fail (PHAT_IS_HFAN_SLIDER (object));

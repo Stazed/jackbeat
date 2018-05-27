@@ -51,7 +51,7 @@ static gboolean toggle_expose (GtkWidget *layout, GdkEventExpose *event,
 static gboolean toggle_button_event (GtkWidget *widget, GdkEventButton *event, toggle_t *toggle);
 static gboolean toggle_motion_event (GtkWidget *widget, GdkEventMotion *event, toggle_t *toggle);
 static gboolean toggle_leave_event (GtkWidget *widget, GdkEventCrossing *event, toggle_t *toggle);
-static void     toggle_destroy (GtkObject *object, toggle_t *toggle);
+static void     toggle_destroy (GtkWidget *object, toggle_t *toggle);
 
 toggle_t *
 toggle_new (GtkWidget *layout, const char *text)
@@ -89,7 +89,7 @@ toggle_new (GtkWidget *layout, const char *text)
 }
 
 static void
-toggle_destroy (GtkObject *object, toggle_t *toggle)
+toggle_destroy (GtkWidget *object, toggle_t *toggle)
 {
 #if GTK_CHECK_VERSION(3,0,0)
     if (toggle->cst_gradients[0])
