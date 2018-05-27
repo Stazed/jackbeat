@@ -1431,9 +1431,13 @@ phat_fan_slider_motion_notify (GtkWidget*      widget,
         int destx = event->x_root;
         int width;
 
+#if GTK_CHECK_VERSION(3,0,0)
+        gdk_window_get_geometry (slider->event_window,
+                                 NULL, NULL, &width, NULL);
+#else
         gdk_window_get_geometry (slider->event_window,
                                  NULL, NULL, &width, NULL, NULL);
-
+#endif
         if (gtk_widget_get_visible (slider->fan_window))
         {
             if (event->x_root > slider->xclick_root)
@@ -1486,8 +1490,13 @@ phat_fan_slider_motion_notify (GtkWidget*      widget,
         int desty = event->y_root;
         int height;
 
+#if GTK_CHECK_VERSION(3,0,0)
+        gdk_window_get_geometry (slider->event_window,
+                                 NULL, NULL, NULL, &height);
+#else
         gdk_window_get_geometry (slider->event_window,
                                  NULL, NULL, NULL, &height, NULL);
+#endif
 
         if (gtk_widget_get_visible (slider->fan_window))
         {
@@ -1575,8 +1584,13 @@ phat_fan_slider_enter_notify (GtkWidget* widget,
 
     phat_fan_slider_update_hints (slider);
 
+#if GTK_CHECK_VERSION(3,0,0)
+        gdk_window_get_geometry (slider->event_window,
+                             NULL, NULL, &width, &height);
+#else
     gdk_window_get_geometry (slider->event_window,
                              NULL, NULL, &width, &height, NULL);
+#endif
 
     a = &slider_hint_window0_allocation;
     b = &slider_hint_window1_allocation;
@@ -1877,8 +1891,13 @@ phat_fan_slider_update_fan (PhatFanSlider* slider,
     if (slider->state != STATE_CLICKED)
         return;
 
+#if GTK_CHECK_VERSION(3,0,0)
+    gdk_window_get_geometry (slider->event_window,
+                             NULL, NULL, &w, &h);
+#else
     gdk_window_get_geometry (slider->event_window,
                              NULL, NULL, &w, &h, NULL);
+#endif
     //debug("updating fan, x %d, y %d, w %d, h %d \n", x, y, w, h);
 
 
