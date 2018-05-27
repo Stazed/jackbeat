@@ -555,15 +555,16 @@ slider_expose (GtkWidget *layout, GdkEventExpose *event, slider_t *slider)
             cairo_rectangle (cr, target.x, target.y, target.width, target.height);
             cairo_clip (cr);
             cairo_paint(cr);
-            cairo_destroy(cr);
    
             gtk_paint_shadow (gtk_widget_get_style(layout),
-                              gtk_layout_get_bin_window(GTK_LAYOUT (layout)),
+                              cr,
                               GTK_STATE_NORMAL,
                               GTK_SHADOW_IN,
-                              &event->area, layout, NULL,
+                              layout, NULL,
                               alloc->x, alloc->y,
                               alloc->width, alloc->height);
+            
+            cairo_destroy(cr);
         }
     }
     return FALSE;
