@@ -38,8 +38,8 @@ struct _PhatFanSlider {
     GdkWindow* event_window;
     GtkWidget* hint_window0;
     GtkWidget* hint_window1;
-    GdkRegion* hint_clip0;
-    GdkRegion* hint_clip1;
+    cairo_region_t* hint_clip0;
+    cairo_region_t* hint_clip1;
     GdkRectangle cur_fan;
     gboolean use_default_value;
     gdouble default_value;

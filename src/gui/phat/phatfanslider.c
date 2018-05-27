@@ -558,13 +558,13 @@ phat_fan_slider_destroy (GtkObject* object)
 
     if (slider->hint_clip0 != NULL)
     {
-        gdk_region_destroy (slider->hint_clip0);
+        cairo_region_destroy (slider->hint_clip0);
         slider->hint_clip0 = NULL;
     }
 
     if (slider->hint_clip1 != NULL)
     {
-        gdk_region_destroy (slider->hint_clip1);
+        cairo_region_destroy (slider->hint_clip1);
         slider->hint_clip1 = NULL;
     }
 

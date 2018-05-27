@@ -50,7 +50,7 @@ struct _PhatKnob {
 
     /* Pixmap for knob */
     GdkPixbuf *pixbuf;
-    GdkBitmap *mask;
+//    GdkBitmap *mask;
 //    GdkGC *mask_gc;
 //    GdkGC *red_gc;
 };

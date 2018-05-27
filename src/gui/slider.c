@@ -53,7 +53,7 @@ static gboolean slider_expose (GtkWidget *layout, GdkEventExpose *event,
 static void     slider_value_changed (GtkWidget * adj, slider_t * slider);
 static gboolean slider_button_event (GtkWidget *widget, GdkEventButton *event, slider_t *slider);
 static gboolean slider_motion_event (GtkWidget *widget, GdkEventMotion *event, slider_t *slider);
-static void     slider_destroy (GtkObject *object, slider_t *slider);
+static void     slider_destroy (GtkWidget *object, slider_t *slider);
 static gboolean slider_wheel_scroll_event (GtkWidget *widget, GdkEventScroll *event, slider_t *slider);
 
 slider_t *
@@ -110,7 +110,7 @@ slider_new (GtkWidget *layout, GtkAdjustment *adj)
 }
 
 static void
-slider_destroy (GtkObject *object, slider_t *slider)
+slider_destroy (GtkWidget *object, slider_t *slider)
 {
     gdk_cursor_unref (slider->empty_cursor);
 #if GTK_CHECK_VERSION(3,0,0)

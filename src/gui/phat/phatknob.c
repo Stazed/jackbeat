@@ -263,20 +263,20 @@ phat_knob_is_log (PhatKnob* knob)
 static void
 phat_knob_destroy (GtkObject *object)
 {
-    PhatKnob *knob;
+//    PhatKnob *knob;
 
     g_return_if_fail (object != NULL);
     g_return_if_fail (PHAT_IS_KNOB (object));
 
-    knob = PHAT_KNOB (object);
+//    knob = PHAT_KNOB (object);
 
-    if (knob->mask)
+/*    if (knob->mask)
     {
         gdk_bitmap_unref (knob->mask);
         knob->mask = NULL;
     }
 
-/*    if (knob->mask_gc)
+    if (knob->mask_gc)
     {
         gdk_gc_unref (knob->mask_gc);
         knob->mask_gc = NULL;

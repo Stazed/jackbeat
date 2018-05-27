@@ -922,7 +922,7 @@ gui_sequence_editor_get_widget (gui_sequence_editor_t *self)
 }
 
 static void
-gui_sequence_editor_destroy (GtkObject *object, gui_sequence_editor_t *self)
+gui_sequence_editor_destroy (GtkWidget *object, gui_sequence_editor_t *self)
 {
     //FIXME: destroy menus?
     g_source_remove (self->animation_tag);
