@@ -98,6 +98,28 @@ slider_new (GtkWidget *layout, GtkAdjustment *adj)
     g_signal_connect (G_OBJECT (layout), "scroll-event",
                       G_CALLBACK (slider_wheel_scroll_event), slider);
 
+#if GTK_CHECK_VERSION(3,0,0)
+    /* FIXME */
+    cairo_surface_t *s;
+    cairo_t *cr;
+    GdkPixbuf *pixbuf;
+
+    s = cairo_image_surface_create (CAIRO_FORMAT_A1, 3, 3);
+    cr = cairo_create (s);
+    cairo_arc (cr, 1.5, 1.5, 1.5, 0, 2 * M_PI);
+    cairo_fill (cr);
+    cairo_destroy (cr);
+
+    pixbuf = gdk_pixbuf_get_from_surface (s,
+                                          0, 0,
+                                          3, 3);
+
+    cairo_surface_destroy (s);
+
+    slider->empty_cursor = gdk_cursor_new_from_pixbuf (gdk_display_get_default(), pixbuf, 0, 0);
+
+    g_object_unref (pixbuf);    
+#else
     gchar data = 0;
     GdkColor color = { 0, 0, 0, 0 };
     GdkPixmap *pixmap = gdk_bitmap_create_from_data (NULL, &data, 1, 1);
@@ -105,7 +127,7 @@ slider_new (GtkWidget *layout, GtkAdjustment *adj)
                                                        &color, &color,
                                                        0, 0);
     gdk_pixmap_unref (pixmap);
-
+#endif
     return slider;
 }
 

@@ -36,6 +36,15 @@ G_BEGIN_DECLS
 typedef struct _PhatKnob PhatKnob;
 typedef struct _PhatKnobClass PhatKnobClass;
 
+#if GTK_CHECK_VERSION(3,0,0)
+typedef enum
+{
+  GTK_UPDATE_CONTINUOUS,
+  GTK_UPDATE_DISCONTINUOUS,
+  GTK_UPDATE_DELAYED
+} GtkUpdateType;
+#endif
+
 struct _PhatKnob {
     GtkRange range;
 
