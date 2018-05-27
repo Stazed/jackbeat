@@ -57,7 +57,7 @@ static void phat_fan_slider_rounded_rectangle (cairo_t *cr, double x0, double y0
 static void phat_fan_slider_update_hints    (PhatFanSlider* slider);
 
 #if GTK_CHECK_VERSION(3,0,0)
-static void phat_fan_slider_draw (GtkWidget *widget, cairo_t *cr);
+static gboolean phat_fan_slider_draw (GtkWidget *widget, cairo_t *cr);
 static void phat_fan_slider_get_preferred_width (GtkWidget *widget,
                                gint      *minimal_width,
                                gint      *natural_width);
@@ -65,15 +65,15 @@ static void phat_fan_slider_get_preferred_width (GtkWidget *widget,
 static void phat_fan_slider_get_preferred_height (GtkWidget *widget,
                                 gint      *minimal_height,
                                 gint      *natural_height);
+#else
+static gboolean phat_fan_slider_expose (GtkWidget* widget,
+                                        GdkEventExpose* event);
 #endif
 static void phat_fan_slider_size_request (GtkWidget*widget,
                                           GtkRequisition* requisition);
 
 static void phat_fan_slider_size_allocate (GtkWidget* widget,
                                            GtkAllocation* allocation);
-
-static gboolean phat_fan_slider_expose (GtkWidget* widget,
-                                        GdkEventExpose* event);
 
 static gboolean phat_fan_slider_button_press (GtkWidget* widget,
                                               GdkEventButton* event);
@@ -1029,10 +1029,183 @@ phat_fan_slider_rounded_rectangle (cairo_t *cr, double x0, double  y0,
 }
 
 #if GTK_CHECK_VERSION(3,0,0)
-static void
+static gboolean
 phat_fan_slider_draw (GtkWidget *widget, cairo_t *cr)
 {
     /* FIXME */
+    PhatFanSlider* slider;
+    int x, y;
+    int w, h;
+    int fx, fy;                /* "filled" coordinates */
+    int fw, fh;
+    cairo_pattern_t *pat;
+
+
+    g_return_val_if_fail (widget != NULL, FALSE);
+    g_return_val_if_fail (PHAT_IS_FAN_SLIDER (widget), FALSE);
+//    g_return_val_if_fail (cr != NULL, FALSE);
+
+    //debug ("expose\n");
+//    if (event->count > 0)
+//        return FALSE;
+
+    slider = (PhatFanSlider*) widget;
+
+//    cairo_t *cr = gdk_cairo_create (gtk_widget_get_window(widget));
+
+    phat_fan_slider_calc_layout (slider, &x, &y, &w, &h);
+
+    //debug("expose x %d, y %d \n", x, y);
+
+    if (slider->orientation == GTK_ORIENTATION_VERTICAL)
+    {
+        if (slider->center_val >= 0)
+        {
+            fw = w;
+            fh = ABS (slider->val - slider->center_val) * h;
+            fx = x;
+            fy = y + h - (slider->center_val * h);
+
+            if ((slider->val > slider->center_val && !slider->inverted)
+                || (slider->val < slider->center_val && slider->inverted))
+            {
+                fy -= fh;
+            }
+
+        }
+        else
+        {
+            fw = w;
+            fh = slider->val * h;
+            fx = x;
+            fy = (slider->inverted) ? y : y + h - fh;
+        }
+    }
+    else
+    {
+        if (slider->center_val >= 0)
+        {
+            fw = ABS (slider->val - slider->center_val) * w;
+            fh = h;
+            fx = x + (slider->center_val * w);
+            fy = y;
+
+            if ((slider->val < slider->center_val && !slider->inverted)
+                || (slider->val > slider->center_val && slider->inverted))
+            {
+                fx -= fw;
+            }
+        }
+        else
+        {
+            fw = slider->val * w;
+            fh = h;
+            fx = (slider->inverted) ? x + w - fw : x;
+            fy = y;
+        }
+    }
+
+    if (!gtk_widget_get_sensitive (widget))
+    {
+        phat_fan_slider_rounded_rectangle (cr, x, y, w, h, 20.0, FALSE);
+
+        pat = cairo_pattern_create_linear (x, y,  x + w, y + h);
+        cairo_pattern_add_color_stop_rgb (pat, 1, 0.68, 0.68, 0.64);
+        cairo_pattern_add_color_stop_rgb (pat, 0, 0.9, 0.9, 0.9);
+
+        cairo_set_source (cr, pat);
+        cairo_fill_preserve (cr);
+        cairo_pattern_destroy (pat);
+
+        pat = cairo_pattern_create_linear (x, y, x + w, y + h);
+        cairo_pattern_add_color_stop_rgb (pat, 1, 0.505, 0.458, 0.415);
+        cairo_pattern_add_color_stop_rgb (pat, 0, 0.741, 0.713, 0.686);
+
+        cairo_set_source (cr, pat);
+        cairo_stroke (cr);
+        cairo_pattern_destroy (pat);
+
+        phat_fan_slider_rounded_rectangle (cr, fx, fy, fw, fh, 20.0, TRUE);
+
+        pat = cairo_pattern_create_linear (fx, fy,  fx + fw, fy + fh);
+        cairo_pattern_add_color_stop_rgb (pat, 1, 0.68, 0.68, 0.64);
+        cairo_pattern_add_color_stop_rgb (pat, 0, 0.9, 0.9, 0.9);
+
+        cairo_set_source (cr, pat);
+        cairo_fill_preserve (cr);
+        cairo_pattern_destroy (pat);
+
+        pat = cairo_pattern_create_linear (fx, fy, fx + fw, fy + fh);
+        cairo_pattern_add_color_stop_rgb (pat, 1, 0.505, 0.458, 0.415);
+        cairo_pattern_add_color_stop_rgb (pat, 0, 0.741, 0.713, 0.686);
+
+        cairo_set_source (cr, pat);
+        cairo_stroke (cr);
+        cairo_pattern_destroy (pat);
+
+    }
+    else
+    {
+
+        phat_fan_slider_rounded_rectangle (cr, x, y, w, h, 20.0, FALSE);
+
+        cairo_set_source_rgb (cr, 0.78, 0.78, 0.74);
+        cairo_fill_preserve (cr);
+
+        cairo_set_source_rgb (cr, 0.505, 0.458, 0.415);
+        cairo_stroke (cr);
+
+        phat_fan_slider_rounded_rectangle (cr, fx, fy, fw, fh, 20.0, TRUE);
+
+        cairo_set_source_rgb (cr, 0.490, 0.647, 0.764);
+        cairo_fill_preserve (cr);
+
+        cairo_set_source_rgb (cr, 0.505, 0.458, 0.415);
+        cairo_stroke (cr);
+
+        /* draw 3d effect by applying a light from top left */
+
+        phat_fan_slider_rounded_rectangle (cr, x, y, w, h, 20.0, TRUE);
+
+        pat = cairo_pattern_create_radial (x, y, (w + h) / 6,
+                                           x,  y, (w + h) / 2);
+        cairo_pattern_add_color_stop_rgba (pat, 0, 1, 1, 1, 0.4);
+        cairo_pattern_add_color_stop_rgba (pat, 1, 0, 0, 0, 0.1);
+        cairo_set_source (cr, pat);
+        cairo_fill_preserve (cr);
+        cairo_stroke (cr);
+        cairo_pattern_destroy (pat);
+
+        //widget->style->dark_gc[GTK_STATE_NORMAL],
+        //widget->style->base_gc[GTK_STATE_SELECTED],
+    }
+
+    if (gtk_widget_has_focus (widget))
+    {
+        int focus_width, focus_pad;
+        int pad;
+
+        gtk_widget_style_get (widget,
+                              "focus-line-width", &focus_width,
+                              "focus-padding", &focus_pad,
+                              NULL);
+
+        pad = focus_width + focus_pad;
+
+        x -= pad;
+        y -= pad;
+        w += 2 * pad;
+        h += 2 * pad;
+
+        gtk_paint_focus (gtk_widget_get_style(widget), cr, gtk_widget_get_state (widget),
+                         widget, NULL,
+                         x, y, w, h);
+    }
+
+    if (gtk_widget_get_visible (slider->fan_window))
+        gtk_widget_queue_draw (slider->fan_window);
+
+    return FALSE;
 }
 #else
 static gboolean
