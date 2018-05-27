@@ -314,7 +314,7 @@ phat_fan_slider_set_adjustment (PhatFanSlider* slider,
 
     slider->adjustment = adjustment;
     g_object_ref (adjustment);
-    g_object_ref_sink (GTK_OBJECT (adjustment));
+    g_object_ref_sink (GTK_WIDGET (adjustment));
 
     phat_fan_slider_adjustment_changed (slider->adjustment, slider);
 
@@ -548,7 +548,11 @@ phat_fan_slider_destroy (GtkObject* object)
     g_return_if_fail (object != NULL);
     g_return_if_fail (PHAT_IS_FAN_SLIDER (object));
 
+#if GTK_CHECK_VERSION(3,0,0)
+    klass = GTK_WIDGET_CLASS (parent_class);
+#else
     klass = GTK_OBJECT_CLASS (parent_class);
+#endif
     slider = (PhatFanSlider*) object;
 //    widget = GTK_WIDGET (object);
 
@@ -623,7 +627,7 @@ phat_fan_slider_destroy (GtkObject* object)
                                               (gpointer) slider);
         //didn't call ref on this one so just destroy
 #if GTK_CHECK_VERSION(3,0,0)
-        gtk_object_destroy ((GtkWidget*) slider->adjustment_prv);
+        gtk_widget_destroy ((GtkWidget*) slider->adjustment_prv);
 #else
         gtk_object_destroy ((GtkObject*) slider->adjustment_prv);
 #endif

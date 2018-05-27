@@ -129,8 +129,11 @@ phat_vfan_slider_destroy (GtkObject* object)
 
     g_return_if_fail (object != NULL);
     g_return_if_fail (PHAT_IS_VFAN_SLIDER (object));
-
+#if GTK_CHECK_VERSION(3,0,0)
+    klass = GTK_WIDGET_CLASS (parent_class);
+#else
     klass = GTK_OBJECT_CLASS (parent_class);
+#endif
 
     if (klass->destroy)
         klass->destroy (object);

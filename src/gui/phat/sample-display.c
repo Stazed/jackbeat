@@ -163,7 +163,7 @@ sample_display_set_data (SampleDisplay *s,
         s->win_start = 0;
         s->win_length = len;
         g_signal_emit (s, sample_display_signals[SIG_WINDOW_CHANGED], 0);   // FIXME check detail
-//        gtk_signal_emit (GTK_OBJECT (s), sample_display_signals[SIG_WINDOW_CHANGED], s->win_start, s->win_start + s->win_length);
+//        gtk_signal_emit (GTK_WIDGET (s), sample_display_signals[SIG_WINDOW_CHANGED], s->win_start, s->win_start + s->win_length);
 
         s->sel_start = -1;
         s->old_ss = s->old_se = -1;
@@ -214,8 +214,8 @@ sample_display_set_loop (SampleDisplay *s,
     s->loop_end = end;
 
     gtk_widget_queue_draw (GTK_WIDGET (s));
-    g_signal_emit (GTK_OBJECT (s), sample_display_signals[SIG_LOOP_CHANGED], 0);    // FIXME check detail
-//    gtk_signal_emit (GTK_OBJECT (s), sample_display_signals[SIG_LOOP_CHANGED], start, end);
+    g_signal_emit (GTK_WIDGET (s), sample_display_signals[SIG_LOOP_CHANGED], 0);    // FIXME check detail
+//    gtk_signal_emit (GTK_WIDGET (s), sample_display_signals[SIG_LOOP_CHANGED], start, end);
 }
 
 void
@@ -237,8 +237,8 @@ sample_display_set_selection (SampleDisplay *s,
     s->sel_end = end;
 
     sample_display_idle_draw (s);
-    g_signal_emit (GTK_OBJECT (s), sample_display_signals[SIG_SELECTION_CHANGED], 0);       // FIXME check detail
-//    gtk_signal_emit (GTK_OBJECT (s), sample_display_signals[SIG_SELECTION_CHANGED], start, end);
+    g_signal_emit (GTK_WIDGET (s), sample_display_signals[SIG_SELECTION_CHANGED], 0);       // FIXME check detail
+//    gtk_signal_emit (GTK_WIDGET (s), sample_display_signals[SIG_SELECTION_CHANGED], start, end);
 }
 
 void
@@ -291,8 +291,8 @@ sample_display_set_window (SampleDisplay *s,
 
     s->win_start = start;
     s->win_length = end - start;
-    g_signal_emit (GTK_OBJECT (s), sample_display_signals[SIG_WINDOW_CHANGED], 0);    // FIXME check detail
-//    gtk_signal_emit (GTK_OBJECT (s), sample_display_signals[SIG_WINDOW_CHANGED], start, end);
+    g_signal_emit (GTK_WIDGET (s), sample_display_signals[SIG_WINDOW_CHANGED], 0);    // FIXME check detail
+//    gtk_signal_emit (GTK_WIDGET (s), sample_display_signals[SIG_WINDOW_CHANGED], start, end);
 
     gtk_widget_queue_draw (GTK_WIDGET (s));
 }
@@ -371,9 +371,9 @@ sample_display_realize (GtkWidget *widget)
     if (s->edit)    // FIXME when is this used
     {
 //        s->loop_cr = gdk_cairo_create (gtk_widget_get_window(widget));
-//        gdk_cairo_set_source_color (s->loop_cr, &SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (widget))->colors[SAMPLE_DISPLAYCOL_LOOP]);
+//        gdk_cairo_set_source_color (s->loop_cr, &SAMPLE_DISPLAY_CLASS (GTK_WIDGET_GET_CLASS (widget))->colors[SAMPLE_DISPLAYCOL_LOOP]);
 //        s->loop_gc = gdk_gc_new (gtk_widget_get_window(widget));
-//        gdk_gc_set_foreground (s->loop_gc, &SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (widget))->colors[SAMPLE_DISPLAYCOL_LOOP]);
+//        gdk_gc_set_foreground (s->loop_gc, &SAMPLE_DISPLAY_CLASS (GTK_WIDGET_GET_CLASS (widget))->colors[SAMPLE_DISPLAYCOL_LOOP]);
     }
 
     sample_display_init_display (s, attributes.width, attributes.height);
@@ -390,9 +390,11 @@ sample_display_size_request (GtkWidget *widget,
 }
 
 #if GTK_CHECK_VERSION(3,0,0)
-static void
+static gboolean
 sample_display_draw (GtkWidget *widget, cairo_t *cr)
 {
+//    sample_display_draw_main (widget, &event->area, FALSE);
+    return FALSE;
     /* FIXME */
 }
 
@@ -445,9 +447,9 @@ sample_display_draw_data (GdkWindow *win,
     cairo_t *win_bg_cr = gdk_cairo_create (win);
     cairo_t *win_fg_cr = gdk_cairo_create (win);
     cairo_t *win_zeroline_cr  = gdk_cairo_create (win);           
-    gdk_cairo_set_source_color (win_bg_cr, &SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (s))->colors[SAMPLE_DISPLAYCOL_BG]);
-    gdk_cairo_set_source_color (win_fg_cr, &SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (s))->colors[SAMPLE_DISPLAYCOL_FG]);
-    gdk_cairo_set_source_color (win_zeroline_cr, &SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (s))->colors[SAMPLE_DISPLAYCOL_ZERO]);
+    gdk_cairo_set_source_color (win_bg_cr, &SAMPLE_DISPLAY_CLASS (GTK_WIDGET_GET_CLASS (s))->colors[SAMPLE_DISPLAYCOL_BG]);
+    gdk_cairo_set_source_color (win_fg_cr, &SAMPLE_DISPLAY_CLASS (GTK_WIDGET_GET_CLASS (s))->colors[SAMPLE_DISPLAYCOL_FG]);
+    gdk_cairo_set_source_color (win_zeroline_cr, &SAMPLE_DISPLAY_CLASS (GTK_WIDGET_GET_CLASS (s))->colors[SAMPLE_DISPLAYCOL_ZERO]);
 
     cairo_rectangle(color ? win_fg_cr : win_bg_cr, x, 0, width, s->height);
     cairo_fill(color ? win_fg_cr : win_bg_cr);
@@ -576,9 +578,9 @@ sample_display_do_marker_line (GdkWindow *win,
     cairo_t *win_cr = gdk_cairo_create (win);
     
     if(mixerpos)
-        gdk_cairo_set_source_color (win_cr, &SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (s))->colors[SAMPLE_DISPLAYCOL_MIXERPOS]);
+        gdk_cairo_set_source_color (win_cr, &SAMPLE_DISPLAY_CLASS (GTK_WIDGET_GET_CLASS (s))->colors[SAMPLE_DISPLAYCOL_MIXERPOS]);
     else
-        gdk_cairo_set_source_color (win_cr, &SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (s))->colors[SAMPLE_DISPLAYCOL_LOOP]);
+        gdk_cairo_set_source_color (win_cr, &SAMPLE_DISPLAY_CLASS (GTK_WIDGET_GET_CLASS (s))->colors[SAMPLE_DISPLAYCOL_LOOP]);
         
     int x;
 
@@ -637,8 +639,8 @@ sample_display_draw_main (GtkWidget *widget,
         cairo_t *win_bg_cr = gdk_cairo_create (gtk_widget_get_window(GTK_WIDGET(widget)));
         cairo_t *win_fg_cr = gdk_cairo_create (gtk_widget_get_window(GTK_WIDGET(widget)));
 
-        gdk_cairo_set_source_color (win_bg_cr, &SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (s))->colors[SAMPLE_DISPLAYCOL_BG]);
-        gdk_cairo_set_source_color (win_fg_cr, &SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (s))->colors[SAMPLE_DISPLAYCOL_FG]);
+        gdk_cairo_set_source_color (win_bg_cr, &SAMPLE_DISPLAY_CLASS (GTK_WIDGET_GET_CLASS (s))->colors[SAMPLE_DISPLAYCOL_BG]);
+        gdk_cairo_set_source_color (win_fg_cr, &SAMPLE_DISPLAY_CLASS (GTK_WIDGET_GET_CLASS (s))->colors[SAMPLE_DISPLAYCOL_FG]);
         
         cairo_rectangle (win_bg_cr, area->x, area->y, area->width, area->height);
         cairo_stroke(win_bg_cr);
@@ -914,8 +916,8 @@ sample_display_handle_motion (SampleDisplay *s,
         s->sel_start = ss;
         s->sel_end = se;
         sample_display_idle_draw (s);
-        g_signal_emit (GTK_OBJECT (s), sample_display_signals[SIG_SELECTION_CHANGED], 0);    // FIXME check detail
-//        gtk_signal_emit (GTK_OBJECT (s), sample_display_signals[SIG_SELECTION_CHANGED], ss, se);
+        g_signal_emit (GTK_WIDGET (s), sample_display_signals[SIG_SELECTION_CHANGED], 0);    // FIXME check detail
+//        gtk_signal_emit (GTK_WIDGET (s), sample_display_signals[SIG_SELECTION_CHANGED], ss, se);
     }
 
     if (s->loop_start != ls || s->loop_end != le)
@@ -923,8 +925,8 @@ sample_display_handle_motion (SampleDisplay *s,
         s->loop_start = ls;
         s->loop_end = le;
         sample_display_idle_draw (s);
-        g_signal_emit (GTK_OBJECT (s), sample_display_signals[SIG_LOOP_CHANGED], 0);    // FIXME check detail
-//        gtk_signal_emit (GTK_OBJECT (s), sample_display_signals[SIG_LOOP_CHANGED], ls, le);
+        g_signal_emit (GTK_WIDGET (s), sample_display_signals[SIG_LOOP_CHANGED], 0);    // FIXME check detail
+//        gtk_signal_emit (GTK_WIDGET (s), sample_display_signals[SIG_LOOP_CHANGED], ls, le);
     }
 }
 

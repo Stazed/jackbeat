@@ -866,7 +866,7 @@ gui_close (GtkWidget * widget, GdkEvent  *event, gui_t * gui) // Glade callback
         event_unsubscribe_all (gui);
         gui_prefs_cleanup (gui);
 #ifdef USE_DEPRECIATED
-        gtk_object_destroy (GTK_OBJECT (gui->tooltips));
+        gtk_object_destroy (GTK_WIDGET (gui->tooltips));
 #endif
         gui_builder_destroy (gui->builder);
         ARRAY_REMOVE (gui_t, gui_instances, gui_instances_num, gui);
@@ -1621,7 +1621,7 @@ gui_init (gui_t * gui)
      * button to toggle the edit mode. */
     gui->sample_display = sample_display_new (TRUE);
     
-    GdkColor *c = SAMPLE_DISPLAY_CLASS (GTK_OBJECT_GET_CLASS (gui->sample_display))->colors + SAMPLE_DISPLAYCOL_MIXERPOS;
+    GdkColor *c = SAMPLE_DISPLAY_CLASS (GTK_WIDGET_GET_CLASS (gui->sample_display))->colors + SAMPLE_DISPLAYCOL_MIXERPOS;
     c->red = 0xff << 8;
     c->green = 0xc6 << 8;
     c->blue = 0x00 << 8;
