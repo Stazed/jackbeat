@@ -386,6 +386,38 @@ sample_display_size_request (GtkWidget *widget,
     requisition->height = 32;
 }
 
+#if GTK_CHECK_VERSION(3,0,0)
+static void
+sample_display_draw (GtkWidget *widget, cairo_t *cr)
+{
+    /* FIXME */
+}
+
+static void
+sample_display_get_preferred_width (GtkWidget *widget,
+                               gint      *minimal_width,
+                               gint      *natural_width)
+{
+  GtkRequisition requisition;
+
+  sample_display_size_request (widget, &requisition);
+
+  *minimal_width = *natural_width = requisition.width;
+}
+
+static void
+sample_display_get_preferred_height (GtkWidget *widget,
+                                gint      *minimal_height,
+                                gint      *natural_height)
+{
+  GtkRequisition requisition;
+
+  sample_display_size_request (widget, &requisition);
+
+  *minimal_height = *natural_height = requisition.height;
+}
+#endif
+
 static void
 sample_display_draw_data (GdkWindow *win,
                           const SampleDisplay *s,
@@ -1060,9 +1092,14 @@ sample_display_class_init (SampleDisplayClass *class)
 
     widget_class->realize = sample_display_realize;
     widget_class->size_allocate = sample_display_size_allocate;
+#if GTK_CHECK_VERSION(3,0,0)
+    widget_class->draw = sample_display_draw;
+    widget_class->get_preferred_width = sample_display_get_preferred_width;
+    widget_class->get_preferred_height = sample_display_get_preferred_height;
+#else
     widget_class->expose_event = sample_display_expose;
-    //widget_class->draw = sample_display_draw;
     widget_class->size_request = sample_display_size_request;
+#endif
     widget_class->button_press_event = sample_display_button_press;
     widget_class->button_release_event = sample_display_button_release;
     widget_class->motion_notify_event = sample_display_motion_notify;

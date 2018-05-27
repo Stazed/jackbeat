@@ -57,6 +57,7 @@ static void phat_knob_destroy            (GtkObject *object);
 #endif
 static void phat_knob_realize            (GtkWidget *widget);
 #if GTK_CHECK_VERSION(3,0,0)
+static void phat_knob_draw (GtkWidget *widget, cairo_t *cr);
 static void phat_knob_get_preferred_width (GtkWidget *widget,
                                gint      *minimal_width,
                                gint      *natural_width);
@@ -126,6 +127,7 @@ phat_knob_class_init (PhatKnobClass *klass)
 
     widget_class->realize =        phat_knob_realize;
 #if GTK_CHECK_VERSION(3,0,0)
+    widget_class->draw = phat_knob_draw;
     widget_class->get_preferred_width = phat_knob_get_preferred_width;
     widget_class->get_preferred_height = phat_knob_get_preferred_height;
 #else
@@ -396,6 +398,12 @@ phat_knob_realize (GtkWidget *widget)
 }
 
 #if GTK_CHECK_VERSION(3,0,0)
+static void
+phat_knob_draw (GtkWidget *widget, cairo_t *cr)
+{
+    /* FIXME */
+}
+
 static void
 phat_knob_get_preferred_width (GtkWidget *widget,
                                gint      *minimal_width,

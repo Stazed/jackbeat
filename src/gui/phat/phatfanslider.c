@@ -57,6 +57,7 @@ static void phat_fan_slider_rounded_rectangle (cairo_t *cr, double x0, double y0
 static void phat_fan_slider_update_hints    (PhatFanSlider* slider);
 
 #if GTK_CHECK_VERSION(3,0,0)
+static void phat_fan_slider_draw (GtkWidget *widget, cairo_t *cr);
 static void phat_fan_slider_get_preferred_width (GtkWidget *widget,
                                gint      *minimal_width,
                                gint      *natural_width);
@@ -419,6 +420,7 @@ phat_fan_slider_class_init (PhatFanSliderClass* klass)
     widget_class->map = phat_fan_slider_map;
     widget_class->unmap = phat_fan_slider_unmap;
 #if GTK_CHECK_VERSION(3,0,0)
+    widget_class->draw = phat_fan_slider_draw;
     widget_class->get_preferred_width = phat_fan_slider_get_preferred_width;
     widget_class->get_preferred_height = phat_fan_slider_get_preferred_height;
 #else
@@ -815,6 +817,12 @@ phat_fan_slider_unmap (GtkWidget *widget)
     GTK_WIDGET_CLASS (parent_class)->unmap (widget);
 }
 #if GTK_CHECK_VERSION(3,0,0)
+static void
+phat_fan_slider_draw (GtkWidget *widget, cairo_t *cr)
+{
+    /* FIXME */
+}
+
 static void
 phat_fan_slider_get_preferred_width (GtkWidget *widget,
                                gint      *minimal_width,
