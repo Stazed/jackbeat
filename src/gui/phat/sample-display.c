@@ -1169,6 +1169,8 @@ sample_display_class_init (SampleDisplayClass *class)
     class->loop_changed = NULL;
     class->window_changed = NULL;
 
+#if !GTK_CHECK_VERSION(3,0,0)
+    /* FIXME check this for gtk3 */
     for (n = 0, p = default_colors, c = class->colors; n < SAMPLE_DISPLAYCOL_LAST; n++, c++)
     {
         c->red = *p++ * 65535 / 255;
@@ -1177,6 +1179,7 @@ sample_display_class_init (SampleDisplayClass *class)
         c->pixel = (gulong) ((c->red & 0xff00)*256 + (c->green & 0xff00) + (c->blue & 0xff00) / 256);
         gdk_color_alloc (gdk_colormap_get_system (), c);
     }
+#endif
 }
 
 static void

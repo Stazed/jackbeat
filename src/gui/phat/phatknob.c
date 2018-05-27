@@ -65,11 +65,12 @@ static void phat_knob_get_preferred_width (GtkWidget *widget,
 static void phat_knob_get_preferred_height (GtkWidget *widget,
                                 gint      *minimal_height,
                                 gint      *natural_height);
+#else
+static gint phat_knob_expose             (GtkWidget *widget,
+                                          GdkEventExpose *event);
 #endif
 static void phat_knob_size_request       (GtkWidget *widget,
                                           GtkRequisition *requisition);
-static gint phat_knob_expose             (GtkWidget *widget,
-                                          GdkEventExpose *event);
 static gint phat_knob_button_press       (GtkWidget *widget,
                                           GdkEventButton *event);
 static gint phat_knob_button_release     (GtkWidget *widget,
@@ -399,12 +400,6 @@ phat_knob_realize (GtkWidget *widget)
 
 #if GTK_CHECK_VERSION(3,0,0)
 static void
-phat_knob_draw (GtkWidget *widget, cairo_t *cr)
-{
-    /* FIXME */
-}
-
-static void
 phat_knob_get_preferred_width (GtkWidget *widget,
                                gint      *minimal_width,
                                gint      *natural_width)
@@ -487,7 +482,13 @@ draw_knob (GdkDrawable *drawable, GdkGC *bg_gc, GtkAllocation *alloc, float valu
 
 }
 */ 
-
+#if GTK_CHECK_VERSION(3,0,0)
+static void
+phat_knob_draw (GtkWidget *widget, cairo_t *cr)
+{
+    /* FIXME */
+}
+#else
 static gint
 phat_knob_expose (GtkWidget *widget, GdkEventExpose *event)
 {
@@ -521,6 +522,7 @@ phat_knob_expose (GtkWidget *widget, GdkEventExpose *event)
 
     return FALSE;
 }
+#endif // GTK_CHECK_VERSION(3,0,0)
 
 static gint
 phat_knob_button_press (GtkWidget *widget, GdkEventButton *event)
