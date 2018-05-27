@@ -57,7 +57,7 @@ static void phat_knob_destroy            (GtkObject *object);
 #endif
 static void phat_knob_realize            (GtkWidget *widget);
 #if GTK_CHECK_VERSION(3,0,0)
-static void phat_knob_draw (GtkWidget *widget, cairo_t *cr);
+static gboolean phat_knob_draw (GtkWidget *widget, cairo_t *cr);
 static void phat_knob_get_preferred_width (GtkWidget *widget,
                                gint      *minimal_width,
                                gint      *natural_width);
@@ -483,10 +483,45 @@ draw_knob (GdkDrawable *drawable, GdkGC *bg_gc, GtkAllocation *alloc, float valu
 }
 */ 
 #if GTK_CHECK_VERSION(3,0,0)
-static void
+static gboolean
 phat_knob_draw (GtkWidget *widget, cairo_t *cr)
 {
     /* FIXME */
+    PhatKnob *knob;
+    PhatRange *range;
+    int dx;
+
+    g_return_val_if_fail (widget != NULL, FALSE);
+    g_return_val_if_fail (PHAT_IS_KNOB (widget), FALSE);
+//    g_return_val_if_fail (cr != NULL, FALSE);
+
+//    if (event->count > 0)
+//        return FALSE;
+
+    knob = PHAT_KNOB (widget);
+    range = PHAT_RANGE (widget);
+    
+    GtkAllocation widget_allocation;
+    gtk_widget_get_allocation(GTK_WIDGET(widget), &widget_allocation); 
+
+    dx = (int) (51 * phat_range_get_internal_value (range)) * knob->size;
+    
+//    cr = gdk_cairo_create (widget);
+    gdk_cairo_set_source_pixbuf (cr, knob->pixbuf, widget_allocation.x, widget_allocation.y);
+    cairo_paint (cr);
+    cairo_destroy (cr);
+    
+//    gdk_pixbuf_render_to_drawable_alpha ( knob->pixbuf, gtk_widget_get_window(widget),
+//                                        dx, 0, widget_allocation.x, widget_allocation.y,
+//                                        knob->size, knob->size, GDK_PIXBUF_ALPHA_FULL, 0, 0, 0, 0 );
+    /*
+        draw_knob (widget->window, widget->style->bg_gc[GTK_STATE_NORMAL], 
+                   &widget->allocation, phat_range_get_internal_value(range));
+     */
+    //    gdk_draw_pixbuf(widget->window, knob->mask_gc, knob->pixbuf,
+    //                    dx, 0, 0, 0, knob->size, knob->size,GDK_RGB_DITHER_NONE,0,0);
+
+    return FALSE;
 }
 #else
 static gint
