@@ -818,12 +818,6 @@ phat_fan_slider_unmap (GtkWidget *widget)
 }
 #if GTK_CHECK_VERSION(3,0,0)
 static void
-phat_fan_slider_draw (GtkWidget *widget, cairo_t *cr)
-{
-    /* FIXME */
-}
-
-static void
 phat_fan_slider_get_preferred_width (GtkWidget *widget,
                                gint      *minimal_width,
                                gint      *natural_width)
@@ -921,6 +915,30 @@ phat_fan_slider_size_allocate (GtkWidget*     widget,
 /* Only some X servers support alpha channels. Always have a fallback */
 gboolean supports_alpha = FALSE;
 
+#if GTK_CHECK_VERSION(3,0,0)
+static void
+phat_screen_changed (GtkWidget *widget, GdkScreen *old_screen, gpointer userdata)
+{
+    /* To check if the display supports alpha channels, get the colormap */
+    GdkScreen *screen = gtk_widget_get_screen (widget);
+    GdkVisual *visual = gdk_screen_get_rgba_visual (screen);
+
+    if (visual == NULL)
+    {
+        debug ("Your screen does not support alpha channels!\n");
+        visual = gdk_screen_get_system_visual (screen);
+        supports_alpha = FALSE;
+    }
+    else
+    {
+        debug ("Your screen supports alpha channels!\n");
+        supports_alpha = TRUE;
+    }
+
+    /* Now we have a colormap appropriate for the screen, use it */
+    gtk_widget_set_visual (widget, visual);
+}
+#else
 static void
 phat_screen_changed (GtkWidget *widget, GdkScreen *old_screen, gpointer userdata)
 {
@@ -943,6 +961,7 @@ phat_screen_changed (GtkWidget *widget, GdkScreen *old_screen, gpointer userdata
     /* Now we have a colormap appropriate for the screen, use it */
     gtk_widget_set_colormap (widget, colormap);
 }
+#endif  // GTK_CHECK_VERSION(3,0,0)
 
 static void
 phat_fan_slider_rounded_rectangle (cairo_t *cr, double x0, double  y0,
@@ -1005,6 +1024,13 @@ phat_fan_slider_rounded_rectangle (cairo_t *cr, double x0, double  y0,
     cairo_close_path (cr);
 }
 
+#if GTK_CHECK_VERSION(3,0,0)
+static void
+phat_fan_slider_draw (GtkWidget *widget, cairo_t *cr)
+{
+    /* FIXME */
+}
+#else
 static gboolean
 phat_fan_slider_expose (GtkWidget*      widget,
                         GdkEventExpose* event)
@@ -1183,6 +1209,7 @@ phat_fan_slider_expose (GtkWidget*      widget,
 
     return FALSE;
 }
+#endif // GTK_CHECK_VERSION(3,0,0)
 
 static gboolean
 phat_fan_slider_button_press (GtkWidget*      widget,
