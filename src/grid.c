@@ -1031,11 +1031,11 @@ grid_draw_ruler (grid_t *grid)
     {
         GtkStyle *style = gtk_widget_get_style (grid->area);
 #if GTK_CHECK_VERSION(3,0,0)
-        /* FIXME */
-        gtk_paint_flat_box (style, grid->cst_surface,
+        cairo_t *cr = cairo_create (grid->cst_surface);
+        gtk_paint_flat_box (style, cr,
                             GTK_STATE_NORMAL, GTK_SHADOW_NONE, NULL, NULL,
                             0, 0, grid->pixmap_width, grid->header_height);
-        gtk_paint_hline (style, grid->cst_surface, GTK_STATE_NORMAL, NULL,
+        gtk_paint_hline (style, cr, GTK_STATE_NORMAL, NULL,
                          NULL, 0, grid->pixmap_width, grid->header_height - 1);
 #else
         gtk_paint_flat_box (style, GDK_DRAWABLE (grid->pixmap),
@@ -1053,9 +1053,7 @@ grid_draw_ruler (grid_t *grid)
                 if (col != 0)
                 {
 #if GTK_CHECK_VERSION(3,0,0)
-                    /* FIXME */
-
-                    gtk_paint_vline (style, grid->cst_surface, GTK_STATE_NORMAL,
+                    gtk_paint_vline (style, cr, GTK_STATE_NORMAL,
                                      NULL, NULL, grid->header_height - grid->header_height * 2 / 3,
                                      grid->header_height - 2, x);
 #else
@@ -1067,8 +1065,7 @@ grid_draw_ruler (grid_t *grid)
                 for (subcol = 1; subcol < grid->group_col_num; subcol++)
                 {
 #if GTK_CHECK_VERSION(3,0,0)
-                    /* FIXME */
-                    gtk_paint_vline (style, grid->cst_surface,
+                    gtk_paint_vline (style, cr,
                                      GTK_STATE_NORMAL, NULL, NULL, grid->header_height - grid->header_height * 1 / 3,
                                      grid->header_height - 2, grid_col2x (grid, col + subcol));
 #else
@@ -1093,6 +1090,9 @@ grid_draw_ruler (grid_t *grid)
                 cairo_destroy(ruler_label_cr);
             }
         }
+#if GTK_CHECK_VERSION(3,0,0)
+        cairo_destroy(cr);
+#endif
     }
 }
 
@@ -1138,10 +1138,11 @@ grid_draw_all (grid_t *grid)
         {
             GtkStyle *style = gtk_widget_get_style (grid->area);
 #if GTK_CHECK_VERSION(3,0,0)
-            /* FIXME */
-            gtk_paint_vline (style, grid->cst_surface,
+            cairo_t *cr = cairo_create (grid->cst_surface);
+            gtk_paint_vline (style, cr,
                              GTK_STATE_NORMAL, NULL, "vseparator",
                              0, grid->pixmap_height, 0);
+            cairo_destroy (cr);
 #else
             gtk_paint_vline (style, GDK_DRAWABLE (grid->pixmap),
                              GTK_STATE_NORMAL, NULL, NULL, "vseparator",
