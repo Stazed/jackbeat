@@ -6,11 +6,14 @@
 /* Whether to link against dmalloc */
 #undef DMALLOC
 
+/* Define to 1 if you have GTK 2 */
+#undef GTK2_ENABLED
+
+/* Define to 1 if you have GTK 3 */
+#undef GTK3_ENABLED
+
 /* Define to 1 if you have the <execinfo.h> header file. */
 #undef HAVE_EXECINFO_H
-
-/* Whether GTK is running on Mac OS X Quartz */
-#undef HAVE_GTK_QUARTZ
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H

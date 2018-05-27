@@ -28,8 +28,6 @@
 #include "util.h"
 #include "core/event.h"
 
-//#define USE_SURFACE 1
-
 struct toggle_t
 {
     GtkWidget *       layout;
@@ -38,7 +36,7 @@ struct toggle_t
     int               active;
     int               hover;
     GtkAllocation *   alloc;
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
     cairo_surface_t * cst_surface;
     cairo_surface_t * cst_gradients[2];
 #else
@@ -61,7 +59,7 @@ toggle_new (GtkWidget *layout, const char *text)
     toggle_t *toggle      = calloc (1, sizeof (toggle_t));
     toggle->layout        = layout;
     toggle->alloc         = calloc (1, sizeof (GtkAllocation));
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
     toggle->cst_surface      = NULL;
     toggle->cst_gradients[0] = NULL;
     toggle->cst_gradients[1] = NULL;
@@ -93,7 +91,7 @@ toggle_new (GtkWidget *layout, const char *text)
 static void
 toggle_destroy (GtkObject *object, toggle_t *toggle)
 {
-#if USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
     if (toggle->cst_gradients[0])
         cairo_surface_destroy (toggle->cst_gradients[0]);
     if (toggle->cst_gradients[1])
@@ -118,7 +116,7 @@ toggle_destroy (GtkObject *object, toggle_t *toggle)
 static void
 toggle_update_gradient (toggle_t *toggle, int active)
 {
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
     if (toggle->cst_gradients[active])
     {
 #else
@@ -128,7 +126,7 @@ toggle_update_gradient (toggle_t *toggle, int active)
         GtkAllocation alloc = {0, 0, toggle->alloc->width, toggle->alloc->height};
         dk_color_t border = {0x78, 0x78, 0x78};
 
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
         dk_draw_track_bg (toggle->cst_gradients[active], &alloc, active,
                           &toggle->hsv_shift, &border);
 #else
@@ -170,7 +168,7 @@ toggle_get_width (toggle_t *toggle)
 static void
 toggle_update_pixmap (toggle_t *toggle)
 {
-#if USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
     if (toggle->cst_surface && toggle->cst_gradients[toggle->active])
     {
         cairo_t *cr = cairo_create (toggle->cst_surface);
@@ -199,7 +197,7 @@ toggle_update_pixmap (toggle_t *toggle)
         int lwidth, lheight;
         pango_layout_get_pixel_size (layout, &lwidth, &lheight);
      
-#if USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
         cairo_t *toggle_label_cr = cairo_create (toggle->cst_surface);
         cairo_move_to (toggle_label_cr, (toggle->alloc->width - lwidth) / 2, (toggle->alloc->height - lheight) / 2);
         pango_cairo_show_layout (toggle_label_cr, layout);
@@ -284,14 +282,14 @@ toggle_leave_event (GtkWidget *widget, GdkEventCrossing *event, toggle_t *toggle
 void
 toggle_allocate (toggle_t *toggle, GtkAllocation * alloc)
 {
-#if USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
     if (!toggle->cst_surface || (alloc->width != toggle->alloc->width)
 #else
     if (!toggle->pixmap || (alloc->width != toggle->alloc->width)
 #endif
         || (alloc->height != toggle->alloc->height))
     {
-#if USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
         if (toggle->cst_surface)
             cairo_surface_destroy (toggle->cst_surface);
         if (toggle->cst_gradients[0])
@@ -312,7 +310,7 @@ toggle_allocate (toggle_t *toggle, GtkAllocation * alloc)
 
         if (gtk_layout_get_bin_window (GTK_LAYOUT (toggle->layout)))
         {
-#if USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
             toggle->cst_surface = gdk_window_create_similar_surface (gtk_layout_get_bin_window (GTK_LAYOUT (toggle->layout)),
                                              CAIRO_CONTENT_COLOR_ALPHA, alloc->width, alloc->height);
             toggle->cst_gradients[0] = gdk_window_create_similar_surface (gtk_layout_get_bin_window (GTK_LAYOUT (toggle->layout)),
@@ -345,7 +343,7 @@ toggle_expose (GtkWidget *layout, GdkEventExpose *event, toggle_t *toggle)
 {
     GtkAllocation *alloc = toggle->alloc;
 
-#if USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
     if (toggle->cst_surface && gtk_layout_get_bin_window (GTK_LAYOUT (layout)))
     {
 #else
@@ -359,7 +357,7 @@ toggle_expose (GtkWidget *layout, GdkEventExpose *event, toggle_t *toggle)
             int srcy = target.y - alloc->y;
             
             cairo_t *cr = gdk_cairo_create (gtk_layout_get_bin_window(GTK_LAYOUT (layout)));
-#if USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
             cairo_set_source_surface (cr, toggle->cst_surface, target.x - srcx, target.y - srcy);
 #else
             gdk_cairo_set_source_pixmap(cr, toggle->pixmap, target.x - srcx, target.y - srcy);

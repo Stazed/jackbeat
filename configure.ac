@@ -81,42 +81,56 @@ then
   AC_MSG_WARN([Can't find libpulse, PulseAudio will not be supported])
 fi
 
-PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.24, [have_pkg_gtk=true], true)
+AC_ARG_ENABLE(gtk3, [AC_HELP_STRING([--enable-gtk3], [Compile against GTK 3.x explicitly])], [enable_gtk3=$enableval], [enable_gtk3="no"])
 
-if test x$have_pkg_gtk = xtrue
-then
-  AC_MSG_CHECKING([whether this is gtk-quartz])
-  if test "`pkg-config --variable=target gtk+-2.0`" == "quartz"
-  then
-      AC_MSG_RESULT([yes])
-      quartz=true
-      AC_DEFINE(HAVE_GTK_QUARTZ, 1, [Whether GTK is running on Mac OS X Quartz])
-      PKG_CHECK_MODULES(MACINTEGRATION, ige-mac-integration >= 0.8.2, true,
-                        AC_MSG_ERROR([you need ige-mac-integration >= 0.8.2 - Please see http://developer.imendio.com/projects/gtk-macosx]))
-      MACINTEGRATION_CFLAGS="$MACINTEGRATION_CFLAGS -I/System/Library/Frameworks/Carbon.framework/Headers"
-      MACINTEGRATION_LIBS="$MACINTEGRATION_LIBS -framework Carbon"
-      AC_SUBST(MACINTEGRATION_CFLAGS)
-      AC_SUBST(MACINTEGRATION_LIBS)
-  else    
-      AC_MSG_RESULT([no])
-  fi
+if test "x$enable_gtk3" = xyes; then
+  PKG_CHECK_MODULES([GTK],[gtk+-3.0 >= 3.0], AC_MSG_NOTICE([GTK 3.x selected explicitly]), AC_MSG_ERROR(Jackbeat needs GTK+ >= 3.0 development libraries))
+  GTK_DEFINES="-DGTK3_ENABLED"
+  AC_DEFINE([GTK3_ENABLED],[1],[Define to 1 if you have GTK 3])
 else
-  AC_MSG_CHECKING([for GTK-OSX framework])
-  if test -f /Library/Frameworks/Gtk.framework/Headers/gtk/gtk.h
-  then
-      AC_MSG_RESULT([yes])
-      quartz=true
-      AC_DEFINE(HAVE_GTK_QUARTZ, 1, [Whether GTK is running on Mac OS X Quartz])
-      GTK_CFLAGS="-I/Library/Frameworks/Gtk.framework/Headers -I/Library/Frameworks/GLib.framework/Headers -I/Library/Frameworks/Cairo.framework/Headers -I/System/Library/Frameworks/Carbon.framework/Headers"
-      GTK_LIBS="-framework Gtk -framework GLib -framework Cairo -framework Carbon"
-  else    
-      AC_MSG_RESULT([no])
-      AC_MSG_ERROR([you need gtk+ >= 2.12 - Please see http://www.gtk.org ])
-  fi  
+  PKG_CHECK_MODULES([GTK],[gtk+-2.0 >= 2.24], AC_MSG_NOTICE([selecting GTK 2.x automatically]), AC_MSG_ERROR(Jackbeat needs GTK+ >= 2.24 development libraries))
+  GTK_DEFINES="-DGTK2_ENABLED"
+  AC_DEFINE([GTK2_ENABLED],[1],[Define to 1 if you have GTK 2])
 fi
 
-AC_SUBST(GTK_CFLAGS)
-AC_SUBST(GTK_LIBS)
+AC_SUBST(GTK_DEFINES)
+
+dnl PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.24, [have_pkg_gtk=true], true)
+
+dnl if test x$have_pkg_gtk = xtrue
+dnl then
+dnl   AC_MSG_CHECKING([whether this is gtk-quartz])
+dnl   if test "`pkg-config --variable=target gtk+-2.0`" == "quartz"
+dnl   then
+dnl       AC_MSG_RESULT([yes])
+dnl       quartz=true
+dnl       AC_DEFINE(HAVE_GTK_QUARTZ, 1, [Whether GTK is running on Mac OS X Quartz])
+dnl       PKG_CHECK_MODULES(MACINTEGRATION, ige-mac-integration >= 0.8.2, true,
+dnl                         AC_MSG_ERROR([you need ige-mac-integration >= 0.8.2 - Please see http://developer.imendio.com/projects/gtk-macosx]))
+dnl       MACINTEGRATION_CFLAGS="$MACINTEGRATION_CFLAGS -I/System/Library/Frameworks/Carbon.framework/Headers"
+dnl       MACINTEGRATION_LIBS="$MACINTEGRATION_LIBS -framework Carbon"
+dnl       AC_SUBST(MACINTEGRATION_CFLAGS)
+dnl       AC_SUBST(MACINTEGRATION_LIBS)
+dnl   else    
+dnl       AC_MSG_RESULT([no])
+dnl   fi
+dnl else
+dnl   AC_MSG_CHECKING([for GTK-OSX framework])
+dnl   if test -f /Library/Frameworks/Gtk.framework/Headers/gtk/gtk.h
+dnl   then
+dnl       AC_MSG_RESULT([yes])
+dnl       quartz=true
+dnl       AC_DEFINE(HAVE_GTK_QUARTZ, 1, [Whether GTK is running on Mac OS X Quartz])
+dnl       GTK_CFLAGS="-I/Library/Frameworks/Gtk.framework/Headers -I/Library/Frameworks/GLib.framework/Headers -I/Library/Frameworks/Cairo.framework/Headers -I/System/Library/Frameworks/Carbon.framework/Headers"
+dnl       GTK_LIBS="-framework Gtk -framework GLib -framework Cairo -framework Carbon"
+dnl   else    
+dnl       AC_MSG_RESULT([no])
+dnl       AC_MSG_ERROR([you need gtk+ >= 2.12 - Please see http://www.gtk.org ])
+dnl   fi  
+dnl fi
+
+dnl AC_SUBST(GTK_CFLAGS)
+dnl AC_SUBST(GTK_LIBS)
 
 AC_DEFINE(USE_PHAT, 1, [Whether to use the (modified) Phat Audio Toolkit])
 use_phat=true

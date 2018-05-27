@@ -34,7 +34,7 @@ struct slider_t
     slider_state_t    state;
     slider_curve_t    curve;
     GtkAllocation *   allocs[2];
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
     cairo_surface_t*  cst_surface[2];
     cairo_surface_t*  cst_gradients[2];
 #else
@@ -66,7 +66,7 @@ slider_new (GtkWidget *layout, GtkAdjustment *adj)
     slider->curve = SLIDER_LINEAR;
     slider->allocs[SLIDER_FOLDED] = calloc (1, sizeof (GtkAllocation));
     slider->allocs[SLIDER_UNFOLDED] = calloc (1, sizeof (GtkAllocation));
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
     slider->cst_surface[SLIDER_FOLDED] = NULL;
     slider->cst_surface[SLIDER_UNFOLDED] = NULL;
     slider->cst_gradients[SLIDER_FOLDED] = NULL;
@@ -113,7 +113,7 @@ static void
 slider_destroy (GtkObject *object, slider_t *slider)
 {
     gdk_cursor_unref (slider->empty_cursor);
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
     if (slider->cst_surface[SLIDER_FOLDED])
         cairo_surface_destroy (slider->cst_surface[SLIDER_FOLDED]);
     if (slider->cst_surface[SLIDER_UNFOLDED])
@@ -131,7 +131,7 @@ slider_destroy (GtkObject *object, slider_t *slider)
         gdk_pixmap_unref (slider->gradients[SLIDER_FOLDED]);
     if (slider->gradients[SLIDER_UNFOLDED])
         gdk_pixmap_unref (slider->gradients[SLIDER_UNFOLDED]);
-#endif
+#endif  // GTK_CHECK_VERSION(3,0,0)
     free (slider->allocs[SLIDER_FOLDED]);
     free (slider->allocs[SLIDER_UNFOLDED]);
     free (slider->overlaps);
@@ -225,7 +225,7 @@ slider_compute_position (slider_t *slider, slider_state_t state)
 static void
 slider_update_gradient (slider_t *slider, slider_state_t state)
 {
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
     if (slider->cst_gradients[state])
 #else
     if (slider->gradients[state])   
@@ -238,7 +238,7 @@ slider_update_gradient (slider_t *slider, slider_state_t state)
         alloc.y = 0;
         alloc.width = slider->allocs[state]->width;
         alloc.height = slider->allocs[state]->height;
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
         dk_draw_hgradient (slider->cst_gradients[state], &alloc, &from, &to);
 #else
         dk_draw_hgradient (slider->gradients[state], &alloc, &from, &to);
@@ -246,7 +246,7 @@ slider_update_gradient (slider_t *slider, slider_state_t state)
     }
 }
 
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
 static void
 slider_update_pixmap (slider_t *slider, slider_state_t state)
 {
@@ -315,7 +315,7 @@ slider_update_pixmap (slider_t *slider, slider_state_t state)
         cairo_destroy (cr_slider_pixmap);
     }
 }
-#endif
+#endif  // GTK_CHECK_VERSION(3,0,0)
 
 static void
 slider_queue_draw (slider_t *slider)
@@ -445,7 +445,7 @@ slider_wheel_scroll_event (GtkWidget *widget, GdkEventScroll *event, slider_t *s
     return handled;
 }
 
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
 void
 slider_allocate (slider_t *slider, slider_state_t state, GtkAllocation * alloc)
 {
@@ -499,7 +499,7 @@ slider_allocate (slider_t *slider, slider_state_t state, GtkAllocation * alloc)
         }
     }
 }
-#endif
+#endif  // GTK_CHECK_VERSION(3,0,0)
 
 void
 slider_get_allocation (slider_t *slider, slider_state_t state, GtkAllocation * alloc)
@@ -513,7 +513,7 @@ slider_get_state (slider_t *slider)
     return slider->state;
 }
 
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
 static gboolean
 slider_expose (GtkWidget *layout, GdkEventExpose *event, slider_t *slider)
 {
@@ -588,4 +588,4 @@ slider_expose (GtkWidget *layout, GdkEventExpose *event, slider_t *slider)
     }
     return FALSE;
 }
-#endif
+#endif  // GTK_CHECK_VERSION(3,0,0)

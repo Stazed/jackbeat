@@ -103,7 +103,7 @@ struct grid_t
 
     /* Allocated objects and generated cells */
     GtkWidget *area;
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
     cairo_surface_t *cst_surface;
 #else
     GdkPixmap *pixmap;
@@ -163,7 +163,7 @@ grid_new ()
     grid->row_spacing = 6;
     grid->y_padding = 0;
     grid->cells = NULL;
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
     grid->cst_surface = NULL;
 #else
     grid->pixmap = NULL;
@@ -196,7 +196,7 @@ grid_destroy (grid_t *grid)
             free (grid->cells[i]);
         free (grid->cells);
     }
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
     if (grid->cst_surface)
         cairo_surface_destroy (grid->cst_surface);
 #else
@@ -521,7 +521,7 @@ grid_draw_mask_icon (grid_t *grid, int col, int row, const char icon[8][8])
     int y = grid_row2y (grid, row) + (grid->cell_height - 8) / 2;
 
     cairo_t *mask_border_cr;
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
     mask_border_cr = dk_make_cr (grid->cst_surface, &grid->theme->mask_border);
 #else
     mask_border_cr = dk_make_cr (grid->pixmap, &grid->theme->mask_border);
@@ -640,7 +640,7 @@ grid_display (grid_t *grid, int x, int y, int width, int height, int direct, int
            x, y, width, height, direct, is_dest);
 #endif
     int is_visible = 0;
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
     if (grid->cst_surface && grid->area)
 #else
     if (grid->pixmap && grid->area)
@@ -688,7 +688,7 @@ grid_display (grid_t *grid, int x, int y, int width, int height, int direct, int
                 if (gdk_rectangle_intersect (&visible, &dest, &header))
                 {   
                     cairo_t *cr = gdk_cairo_create (gtk_widget_get_window(grid->area));
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
                     cairo_set_source_surface (cr, grid->cst_surface, -grid_get_window_xpos (grid), 0);
 #else
                     gdk_cairo_set_source_pixmap(cr, grid->pixmap, -grid_get_window_xpos (grid), 0);
@@ -716,7 +716,7 @@ grid_display (grid_t *grid, int x, int y, int width, int height, int direct, int
                 if (gdk_rectangle_intersect (&visible, &dest, &pattern))
                 {
                     cairo_t *cr = gdk_cairo_create (gtk_widget_get_window(grid->area));
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
                     cairo_set_source_surface (cr, grid->cst_surface, pattern.x - src.x, -grid_get_window_ypos (grid));
 #else
                     gdk_cairo_set_source_pixmap(cr, grid->pixmap, pattern.x - src.x, -grid_get_window_ypos (grid));
@@ -876,7 +876,7 @@ grid_draw_cell (grid_t *grid, int col, int row, int Xnotify, int direct)
     if ((col >= grid->col_num) || (row >= grid->row_num))
         DEBUG ("OUT OF BOUNDS: col/col_num: %d/%d ; row/row_num: %d/%d", col, grid->col_num, row, grid->row_num);
 
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
     if (grid->cst_surface)
 #else
     if (grid->pixmap)
@@ -885,7 +885,7 @@ grid_draw_cell (grid_t *grid, int col, int row, int Xnotify, int direct)
         int int_level;
         if (0) // histogram
         {
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
             cairo_t *cr = grid->cells[row][col].value ? dk_make_cr (grid->cst_surface, &grid->theme->beat_on) :
                 dk_make_cr (grid->cst_surface, &grid->theme->beat_off);
 #else
@@ -906,7 +906,7 @@ grid_draw_cell (grid_t *grid, int col, int row, int Xnotify, int direct)
                 dk_color_t color;
                 dk_make_single_gradient (&color, grid->theme->level_min,
                                          grid->theme->level_max, GRID_GRADIENT_STEPS - 1, GRID_GRADIENT_STEPS);
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
                 cairo_t *cr = cairo_create (grid->cst_surface);
 #else
                 cairo_t *cr = gdk_cairo_create (grid->pixmap);
@@ -930,7 +930,7 @@ grid_draw_cell (grid_t *grid, int col, int row, int Xnotify, int direct)
         {
             cairo_t *cr;
             if (grid->cells[row][col].level == -1)
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
                 cr = grid->cells[row][col].value ? dk_make_cr (grid->cst_surface, &grid->theme->beat_on) :
                     dk_make_cr (grid->cst_surface, &grid->theme->beat_off);
 #else
@@ -944,7 +944,7 @@ grid_draw_cell (grid_t *grid, int col, int row, int Xnotify, int direct)
                 dk_color_t color;
                 dk_make_single_gradient (&color, grid->theme->level_min,
                                          grid->theme->level_max, int_level, GRID_GRADIENT_STEPS);
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
                 cr = cairo_create (grid->cst_surface);
 #else
                 cr = gdk_cairo_create (grid->pixmap);
@@ -987,7 +987,7 @@ grid_set_default_theme (grid_t *grid)
 static void
 grid_draw_cell_pointer (grid_t *grid, int col, int row, int is_mask)
 {
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
     if (grid->cst_surface)
 #else
     if (grid->pixmap)
@@ -999,7 +999,7 @@ grid_draw_cell_pointer (grid_t *grid, int col, int row, int is_mask)
         }
         else
         {
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
             cairo_t *cr = dk_make_cr (grid->cst_surface, &grid->theme->pointer_border);
 #else
             cairo_t *cr = dk_make_cr (grid->pixmap, &grid->theme->pointer_border);
@@ -1030,15 +1030,13 @@ grid_draw_ruler (grid_t *grid)
     if (GTK_IS_WIDGET (grid->area))
     {
         GtkStyle *style = gtk_widget_get_style (grid->area);
-#ifdef USE_SURFACE
-        /* FIXME */
 #if GTK_CHECK_VERSION(3,0,0)
+        /* FIXME */
         gtk_paint_flat_box (style, grid->cst_surface,
                             GTK_STATE_NORMAL, GTK_SHADOW_NONE, NULL, NULL,
                             0, 0, grid->pixmap_width, grid->header_height);
         gtk_paint_hline (style, grid->cst_surface, GTK_STATE_NORMAL, NULL,
                          NULL, 0, grid->pixmap_width, grid->header_height - 1);
-#endif  // GTK_CHECK_VERSION(3,0,0)
 #else
         gtk_paint_flat_box (style, GDK_DRAWABLE (grid->pixmap),
                             GTK_STATE_NORMAL, GTK_SHADOW_NONE, NULL, NULL, NULL,
@@ -1054,13 +1052,12 @@ grid_draw_ruler (grid_t *grid)
                 int x = grid_col2x (grid, col);
                 if (col != 0)
                 {
-#ifdef USE_SURFACE
-                    /* FIXME */
 #if GTK_CHECK_VERSION(3,0,0)
+                    /* FIXME */
+
                     gtk_paint_vline (style, grid->cst_surface, GTK_STATE_NORMAL,
                                      NULL, NULL, grid->header_height - grid->header_height * 2 / 3,
                                      grid->header_height - 2, x);
-#endif  // GTK_CHECK_VERSION(3,0,0)
 #else
                     gtk_paint_vline (style, GDK_DRAWABLE (grid->pixmap), GTK_STATE_NORMAL,
                                      NULL, NULL, NULL, grid->header_height - grid->header_height * 2 / 3,
@@ -1069,13 +1066,11 @@ grid_draw_ruler (grid_t *grid)
                 }
                 for (subcol = 1; subcol < grid->group_col_num; subcol++)
                 {
-#ifdef USE_SURFACE
-                    /* FIXME */
 #if GTK_CHECK_VERSION(3,0,0)
+                    /* FIXME */
                     gtk_paint_vline (style, grid->cst_surface,
                                      GTK_STATE_NORMAL, NULL, NULL, grid->header_height - grid->header_height * 1 / 3,
                                      grid->header_height - 2, grid_col2x (grid, col + subcol));
-#endif  // GTK_CHECK_VERSION(3,0,0)
 #else
                     gtk_paint_vline (style, GDK_DRAWABLE (grid->pixmap),
                                      GTK_STATE_NORMAL, NULL, NULL, NULL, grid->header_height - grid->header_height * 1 / 3,
@@ -1087,7 +1082,7 @@ grid_draw_ruler (grid_t *grid)
                 PangoLayout *layout = pango_layout_new (context);
                 snprintf (str, 128, "<small><small>%d</small></small>", col / grid->group_col_num + 1);
                 pango_layout_set_markup (layout, str, -1);
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
                 cairo_t *ruler_label_cr = dk_make_cr (grid->cst_surface, &grid->theme->ruler_label);
 #else
                 cairo_t *ruler_label_cr = dk_make_cr (grid->pixmap, &grid->theme->ruler_label);
@@ -1104,7 +1099,7 @@ grid_draw_ruler (grid_t *grid)
 static void
 grid_draw_all (grid_t *grid)
 {
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
     if (grid->cst_surface)
 #else
     if (grid->pixmap)
@@ -1115,7 +1110,7 @@ grid_draw_all (grid_t *grid)
         DEBUG ("Drawing background");
 #endif
         /* Draw grid background */
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
         cairo_t *background_cr  = dk_make_cr (grid->cst_surface, &grid->theme->background);
 #else
         cairo_t *background_cr  = dk_make_cr (grid->pixmap, &grid->theme->background);
@@ -1142,13 +1137,11 @@ grid_draw_all (grid_t *grid)
         if (GTK_IS_WIDGET (grid->area))
         {
             GtkStyle *style = gtk_widget_get_style (grid->area);
-#ifdef USE_SURFACE
-            /* FIXME */
 #if GTK_CHECK_VERSION(3,0,0)
+            /* FIXME */
             gtk_paint_vline (style, grid->cst_surface,
                              GTK_STATE_NORMAL, NULL, "vseparator",
                              0, grid->pixmap_height, 0);
-#endif  // GTK_CHECK_VERSION(3,0,0)
 #else
             gtk_paint_vline (style, GDK_DRAWABLE (grid->pixmap),
                              GTK_STATE_NORMAL, NULL, NULL, "vseparator",
@@ -1177,7 +1170,7 @@ grid_get_minimum_height (grid_t *grid)
 static gboolean
 grid_configure_event (GtkWidget *widget, GdkEventConfigure *event, grid_t *grid)
 {
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
     if (grid->cst_surface) cairo_surface_destroy (grid->cst_surface);
 #else
     if (grid->pixmap) g_object_unref (grid->pixmap);
@@ -1223,7 +1216,7 @@ grid_configure_event (GtkWidget *widget, GdkEventConfigure *event, grid_t *grid)
     DEBUG ("Creating pixmap of size %d x %d", grid->pixmap_width, grid->pixmap_height);
 #endif
     
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
     grid->cst_surface = gdk_window_create_similar_surface (gtk_widget_get_window(widget), CAIRO_CONTENT_COLOR_ALPHA,
                 grid->pixmap_width, grid->pixmap_height);
 #else
@@ -1320,7 +1313,7 @@ grid_move_pointer (grid_t *grid, int col, int row, int mask)
 static gboolean
 grid_button_press_event (GtkWidget *widget, GdkEventButton *event, grid_t *grid)
 {
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
     if (event->button == 1 && grid->cst_surface != NULL)
 #else
     if (event->button == 1 && grid->pixmap != NULL)
@@ -1367,7 +1360,7 @@ grid_motion_notify_event (GtkWidget *widget, GdkEventMotion *event, grid_t *grid
 {
     int x, y;
     GdkModifierType state;
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
     if (grid->cst_surface == NULL) return TRUE;
 #else
     if (grid->pixmap == NULL) return TRUE;

@@ -26,8 +26,6 @@
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
 
-//#define USE_SURFACE 1
-
 typedef struct dk_color_t {
     unsigned char red;
     unsigned char green;
@@ -42,7 +40,7 @@ typedef struct dk_hsv_t {
 
 #define DK_COLOR_SET(color, r, g, b) color.red = r; color.green = g; color.blue = b
 
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
 cairo_t * dk_make_cr(cairo_surface_t *surface, dk_color_t *color);
 void dk_make_gradient(cairo_t *colors[], cairo_surface_t *surface,
         dk_color_t *from, dk_color_t *to, int steps);

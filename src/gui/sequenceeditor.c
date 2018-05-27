@@ -56,7 +56,7 @@ struct gui_sequence_editor_t
     int                   active_track;
     int                   active_track_drawn;
     int                   top_padding;
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
     cairo_surface_t*      cst_bg;
     cairo_surface_t*      cst_bg_inactive;
     cairo_surface_t*      cst_bg_active;
@@ -240,7 +240,7 @@ gui_sequence_editor_make_menu (gui_sequence_editor_t *self, int track)
     return menu;
 }
 
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
 static void
 gui_sequence_editor_control_update_bg_item (GdkWindow *window, cairo_surface_t **surface,
                                             int active, int width, int height)
@@ -296,9 +296,9 @@ gui_sequence_editor_control_update_bg_item (GdkWindow *window, GdkPixmap **pixma
         dk_draw_track_bg (GDK_DRAWABLE (*pixmap), &alloc, active, NULL, NULL);
     }
 }
-#endif
+#endif  // GTK_CHECK_VERSION(3,0,0)
 
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
 static void
 gui_sequence_editor_control_update_bg (gui_sequence_editor_t *self, int active_track,
                                        int width, int track_height)
@@ -347,11 +347,9 @@ gui_sequence_editor_control_update_bg (gui_sequence_editor_t *self, int active_t
                 The below using cr as window will not work for GTK2 but should
                 work for GTK3
              */
-#if GTK_CHECK_VERSION(3,0,0)
             gtk_paint_flat_box (gtk_widget_get_style(layout), cr,
                                 GTK_STATE_NORMAL, GTK_SHADOW_NONE, NULL, NULL,
                                 0, 0, width, self->top_padding);
-#endif
 
             cairo_set_source_surface(cr, item, 0, i * track_height + self->top_padding);
             cairo_rectangle (cr, 0, i * track_height + self->top_padding, width, track_height);
@@ -426,7 +424,7 @@ gui_sequence_editor_control_update_bg (gui_sequence_editor_t *self, int active_t
         self->active_track_drawn = active_track;
     }
 }
-#endif
+#endif  // GTK_CHECK_VERSION(3,0,0)
 
 static void
 gui_sequence_editor_draw_control (gui_sequence_editor_t *self, int track)
@@ -650,7 +648,7 @@ gui_sequence_editor_control_size_allocate_event (GtkWidget *widget, GtkAllocatio
     return TRUE;
 }
 
-#if USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
 static gboolean
 gui_sequence_editor_control_expose_event (GtkWidget *widget, GdkEventExpose *event,
                                           gui_sequence_editor_t *self)
@@ -880,7 +878,7 @@ gui_sequence_editor_new (sequence_t *sequence)
     self->top_padding = 0;
     self->active_track = 0;
     self->active_track_drawn = -1;
-#ifdef USE_SURFACE
+#if GTK_CHECK_VERSION(3,0,0)
     self->cst_bg = NULL;
     self->cst_bg_inactive = NULL;
     self->cst_bg_active = NULL;
