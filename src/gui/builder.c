@@ -119,10 +119,16 @@ gui_builder_destroy (gui_builder_t *self)
     destroyed, and the default action taken when closing a window is to
     destroy it. The below destroy was causing invalid read per valgrind
     and a: IA__gtk_widget_destroy: assertion 'GTK_IS_WIDGET (widget)' failed.
-    But the sequence does not close if there are multiple sequences. */
+    But the sequence does not close if there are multiple sequences.
+    The check for GTK_IS_WIDGET fixes the runtime assertion, but not
+    the valgrind invalid read */
     int i;
     for (i = 0; i < self->nroots; i++)
-        gtk_widget_destroy (self->roots[i]);
+    {
+        if(GTK_IS_WIDGET (self->roots[i]))
+            gtk_widget_destroy (self->roots[i]);
+    }
+
 
     free (self->roots);
     free (self);
