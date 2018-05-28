@@ -1042,7 +1042,7 @@ grid_draw_ruler (grid_t *grid)
                             GTK_STATE_NORMAL, GTK_SHADOW_NONE, NULL, NULL, NULL,
                             0, 0, grid->pixmap_width, grid->header_height);
         gtk_paint_hline (style, GDK_DRAWABLE (grid->pixmap), GTK_STATE_NORMAL, NULL,
-                         NULL, NULL, 0, grid->pixmap_width, grid->header_height - 1);
+                         grid->area, NULL, 0, grid->pixmap_width, grid->header_height - 1);
 #endif
         int subcol;
         for (col = 0; col < grid->col_num; col += grid->group_col_num)
@@ -1058,7 +1058,7 @@ grid_draw_ruler (grid_t *grid)
                                      grid->header_height - 2, x);
 #else
                     gtk_paint_vline (style, GDK_DRAWABLE (grid->pixmap), GTK_STATE_NORMAL,
-                                     NULL, NULL, NULL, grid->header_height - grid->header_height * 2 / 3,
+                                     NULL, grid->area, NULL, grid->header_height - grid->header_height * 2 / 3,
                                      grid->header_height - 2, x);
 #endif
                 }
@@ -1070,7 +1070,7 @@ grid_draw_ruler (grid_t *grid)
                                      grid->header_height - 2, grid_col2x (grid, col + subcol));
 #else
                     gtk_paint_vline (style, GDK_DRAWABLE (grid->pixmap),
-                                     GTK_STATE_NORMAL, NULL, NULL, NULL, grid->header_height - grid->header_height * 1 / 3,
+                                     GTK_STATE_NORMAL, NULL, grid->area, NULL, grid->header_height - grid->header_height * 1 / 3,
                                      grid->header_height - 2, grid_col2x (grid, col + subcol));
 #endif
                 }
@@ -1145,7 +1145,7 @@ grid_draw_all (grid_t *grid)
             cairo_destroy (cr);
 #else
             gtk_paint_vline (style, GDK_DRAWABLE (grid->pixmap),
-                             GTK_STATE_NORMAL, NULL, NULL, "vseparator",
+                             GTK_STATE_NORMAL, NULL, grid->area, "vseparator",
                              0, grid->pixmap_height, 0);
 #endif
         }
