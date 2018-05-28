@@ -829,14 +829,6 @@ gui_confirm_exit (gui_t *gui, int transient, char *msg)
 {
     int confirm;
     GtkWidget * dialog = gui_builder_get_widget (gui->builder, "close_warning");
-    gtk_dialog_add_action_widget (GTK_DIALOG (dialog),
-                                  gui_builder_get_widget (gui->builder, "close_discard"),
-                                  GTK_RESPONSE_OK);
-    gtk_dialog_add_action_widget (GTK_DIALOG (dialog),
-                                  gui_builder_get_widget (gui->builder, "close_cancel"),
-                                  GTK_RESPONSE_CANCEL);
-    gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_CANCEL);
-    gtk_widget_grab_focus (gui_builder_get_widget (gui->builder, "close_cancel"));
 
     gtk_window_set_transient_for (GTK_WINDOW (dialog), GTK_WINDOW (gui->window));
     if (transient)

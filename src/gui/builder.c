@@ -90,9 +90,7 @@ gui_builder_new (char *filename, void *userdata, ...)
     gtk_builder_add_from_file (builder, filename, &err);
     if (err == NULL)
     {
-#ifdef PRINT_EXTRA_DEBUG
         DEBUG ("Read UI definition from %s", filename);
-#endif
     }
     else
     {
