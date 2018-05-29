@@ -527,7 +527,10 @@ gui_sequence_editor_control_get_sizes (gui_sequence_editor_t *self, int *name_wi
         {
             *name_width = self->last_name_width;
             *height = self->last_control_height;
-            break;
+            /* FIXME ?? - This break seems to cause failure to display mute/solo toggles intermittently.
+             * It also causes: Gdk-CRITICAL **: _gdk_pixmap_new: assertion '(width != 0) && (height != 0)' failed
+             * error. It does not seem to cause any display issues when removed. */
+            //break;
         }
 
         gui_sequence_editor_widget_get_size (ctl->name, height, name_width);
@@ -605,13 +608,13 @@ gui_sequence_editor_control_size_allocate_event (GtkWidget *widget, GtkAllocatio
         alloc.height = height + vpad;
         alloc.x = hpad + name_width + hpad + volume_width + hpad;
         alloc.y = i * (height + vpad) + top_pad;
-        toggle_allocate (ctl->mute, &alloc);
+            toggle_allocate (ctl->mute, &alloc);
 
         alloc.width = toggle_width;
         alloc.height = height + vpad;
         alloc.x = hpad + name_width + hpad + volume_width + hpad + toggle_width + hpad;
         alloc.y = i * (height + vpad) + top_pad;
-        toggle_allocate (ctl->solo, &alloc);
+            toggle_allocate (ctl->solo, &alloc);
 
         alloc.width = volume_width;
         alloc.height = dk_em (widget, 0.9);
