@@ -608,13 +608,13 @@ gui_sequence_editor_control_size_allocate_event (GtkWidget *widget, GtkAllocatio
         alloc.height = height + vpad;
         alloc.x = hpad + name_width + hpad + volume_width + hpad;
         alloc.y = i * (height + vpad) + top_pad;
-            toggle_allocate (ctl->mute, &alloc);
+        toggle_allocate (ctl->mute, &alloc);
 
         alloc.width = toggle_width;
         alloc.height = height + vpad;
         alloc.x = hpad + name_width + hpad + volume_width + hpad + toggle_width + hpad;
         alloc.y = i * (height + vpad) + top_pad;
-            toggle_allocate (ctl->solo, &alloc);
+        toggle_allocate (ctl->solo, &alloc);
 
         alloc.width = volume_width;
         alloc.height = dk_em (widget, 0.9);
