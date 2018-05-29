@@ -437,7 +437,7 @@ gui_file_track_sample_destroy (gpointer data, GClosure *closure)
 void
 guimenutest  (GtkContainer *container, GtkWidget    *widget, gpointer      user_data)
 {
-    gui_t *gui = (gui_t *) user_data;
+//    gui_t *gui = (gui_t *) user_data;
     
 #ifdef PRINT_EXTRA_DEBUG
     DEBUG ("menu add");
