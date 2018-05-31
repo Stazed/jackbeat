@@ -16,7 +16,11 @@ gui_misc_add_menu_item (GtkWidget *menu, char *type, char *label, GCallback call
     }
     else if (!strcmp (type, "#stock"))
     {
+#if GTK_CHECK_VERSION(3,0,0)
+        item = gtk_menu_item_new_with_mnemonic(label);
+#else
         item = gtk_image_menu_item_new_from_stock (label, NULL);
+#endif
         if (callback) g_signal_connect_data (G_OBJECT (item), "activate", callback, data,
                                              destroy_data, 0);
     }
@@ -122,11 +126,19 @@ gui_misc_dropdown_clear (GtkWidget *combo_box)
 void
 gui_misc_normalize_dialog_spacing (GtkWidget *widget)
 {
+#if GTK_CHECK_VERSION(3,0,0)
+    if (GTK_IS_GRID (widget))
+    {
+        gtk_grid_set_column_spacing (GTK_GRID (widget), 8);
+        gtk_grid_set_row_spacing (GTK_GRID (widget), 4);
+    }
+#else
     if (GTK_IS_TABLE (widget))
     {
         gtk_table_set_col_spacings (GTK_TABLE (widget), 8);
         gtk_table_set_row_spacings (GTK_TABLE (widget), 4);
     }
+#endif
     else if (GTK_IS_ALIGNMENT (widget) && GTK_IS_FRAME (gtk_widget_get_parent(widget)))
     {
         gtk_alignment_set_padding (GTK_ALIGNMENT (widget), 4, 0, 16, 0);
