@@ -1118,9 +1118,15 @@ gui_on_looping_changed (event_t *event)
 static double
 gui_compute_pitch (GtkWidget *octave, GtkWidget *semitone, GtkWidget *finetune)
 {
+#if GTK_CHECK_VERSION(3,0,0)
+    double pitch = gtk_spin_button_get_value (GTK_SPIN_BUTTON (octave)) * 12
+            + gtk_spin_button_get_value (GTK_SPIN_BUTTON (semitone))
+            + gtk_spin_button_get_value (GTK_SPIN_BUTTON (finetune)) / 100;
+#else
     double pitch = phat_knob_get_value (PHAT_KNOB (octave)) * 12
             + phat_knob_get_value (PHAT_KNOB (semitone))
             + phat_knob_get_value (PHAT_KNOB (finetune)) / 100;
+#endif
     return pitch;
 }
 
@@ -1172,9 +1178,15 @@ gui_update_pitch_controls (gui_t *gui, int track)
         double semitone_val = util_round (pitch) - octave_val * 12;
         double finetune_val = (pitch - octave_val * 12 - semitone_val) * 100;
 
+#if GTK_CHECK_VERSION(3,0,0)
+        gtk_spin_button_set_value (GTK_SPIN_BUTTON (octave), octave_val);
+        gtk_spin_button_set_value (GTK_SPIN_BUTTON (semitone), semitone_val);
+        gtk_spin_button_set_value (GTK_SPIN_BUTTON (finetune), finetune_val);
+#else
         phat_knob_set_value (PHAT_KNOB (octave), octave_val);
         phat_knob_set_value (PHAT_KNOB (semitone), semitone_val);
         phat_knob_set_value (PHAT_KNOB (finetune), finetune_val);
+#endif
     }
 
     gui->refreshing = old;
@@ -1737,6 +1749,16 @@ gui_new_child (rc_t *rc, arg_t *arg, gui_t *parent, song_t *song,
         }
     }
 
+#if GTK_CHECK_VERSION(3,0,0)
+    gui->builder = gui_builder_new (util_pkgdata_path ("glade/jackbeat_gtk3.ui"),
+                                    (void *) gui,
+                                    "preferences",
+                                    "main_window",
+                                    "export_settings",
+                                    "close_warning",
+                                    "disconnect_warning",
+                                    NULL);
+#else
     // needed on gtk 2.16/mingw32 (go figure), to register PhatKnob with GtkBuilder:
     GtkWidget *junk = phat_knob_new (NULL);
     gtk_widget_destroy (junk);
@@ -1749,6 +1771,7 @@ gui_new_child (rc_t *rc, arg_t *arg, gui_t *parent, song_t *song,
                                     "close_warning",
                                     "disconnect_warning",
                                     NULL);
+#endif
     gui->instance_index = gui_instance_counter++;
 
     if (sequence) gui->sequence = sequence;
