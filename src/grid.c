@@ -131,11 +131,12 @@ struct grid_t
 
 static gboolean grid_configure_event (GtkWidget *widget, GdkEventConfigure *event, grid_t *grid);
 #if GTK_CHECK_VERSION(3,0,0)
+static void     grid_size_request_event (GtkWidget *widget, GtkAllocation  *allocation, grid_t *grid);
 static gboolean grid_draw_event (GtkWidget *widget, cairo_t *cr, grid_t *grid);
 #else
+static void     grid_size_request_event (GtkWidget *widget, GtkRequisition *requisition, grid_t *grid);
 static gboolean grid_expose_event (GtkWidget *widget, GdkEventExpose *event, grid_t *grid);
 #endif
-static void     grid_size_request_event (GtkWidget *widget, GtkRequisition *requisition, grid_t *grid);
 static gboolean grid_button_press_event (GtkWidget *widget, GdkEventButton *event, grid_t *grid);
 static gboolean grid_motion_notify_event (GtkWidget *widget, GdkEventMotion *event, grid_t *grid);
 static gboolean grid_key_action_event (GtkWidget * widget, GdkEventKey *event, grid_t * grid);
@@ -447,7 +448,7 @@ grid_area_create (grid_t *grid)
 #if GTK_CHECK_VERSION(3,0,0)
     g_signal_connect (G_OBJECT (grid->area), "draw",
                       G_CALLBACK (grid_draw_event), grid);
-    g_signal_connect (G_OBJECT (grid->area), "size-request",
+    g_signal_connect (G_OBJECT (grid->area), "size-allocate",
                       G_CALLBACK (grid_size_request_event), grid);
 #else
     g_signal_connect (G_OBJECT (grid->area), "expose-event",
@@ -1280,6 +1281,22 @@ grid_focus_changed_event (GtkWidget *widget, GdkEventFocus *event, grid_t *grid)
     return FALSE;
 }
 
+#if GTK_CHECK_VERSION(3,0,0)
+static void
+grid_size_request_event (GtkWidget *widget, GtkAllocation  *allocation, grid_t *grid)
+{
+    GtkRequisition requisition;
+    gtk_widget_get_preferred_size (widget, &requisition, NULL);
+    
+    requisition.width  = grid->hadj ? 0 : grid_get_minimum_width (grid);
+    requisition.height = grid->vadj ? grid->header_height : grid_get_minimum_height (grid);
+#ifdef PRINT_EXTRA_DEBUG
+    DEBUG ("size request called - width/height: %d/%d", requisition.width, requisition.height);
+#endif
+    
+    gtk_widget_set_size_request (widget, requisition.width, requisition.height);
+}
+#else
 static void
 grid_size_request_event (GtkWidget *widget, GtkRequisition *requisition, grid_t *grid)
 {
@@ -1289,6 +1306,7 @@ grid_size_request_event (GtkWidget *widget, GtkRequisition *requisition, grid_t 
     DEBUG ("size request called - width/height: %d/%d", requisition->width, requisition->height);
 #endif
 }
+#endif
 
 static void
 grid_toggle_cell (grid_t *grid, int col, int row, int mask)

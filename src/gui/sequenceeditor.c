@@ -555,6 +555,38 @@ gui_sequence_editor_control_realize (GtkWidget *widget, gui_sequence_editor_t *s
     gtk_widget_queue_resize (widget);
 }
 
+#if GTK_CHECK_VERSION(3,0,0)
+static void
+gui_sequence_editor_control_size_request_event (GtkWidget *widget, GtkAllocation  *allocation,
+                                                gui_sequence_editor_t *self)
+{
+    GtkRequisition requisition;
+    int hpad = TRACK_HPADDING;
+    int vpad = TRACK_VPADDING;
+    int volume_width = 0;
+    int name_width, toggle_width, height;
+    int top_pad = self->top_padding;
+    
+    gtk_widget_get_preferred_size (widget, &requisition, NULL);
+
+    gui_sequence_editor_control_get_sizes (self, &name_width, &toggle_width, &volume_width, &height);
+
+    int ntracks = sequence_get_tracks_num (self->sequence);
+    requisition.width = hpad + name_width + hpad + (toggle_width + hpad) * 2 + volume_width + hpad;
+    requisition.height = (height + vpad) * ntracks + top_pad;
+    
+#ifdef PRINT_EXTRA_DEBUG
+    DEBUG ("width: %d, height: %d", requisition.width, requisition.height);
+#endif
+    /*
+    if (ntracks > 0)
+      requisition->height -= pad;
+     */
+    
+    gtk_widget_set_size_request (widget, requisition.width, requisition.height);
+}
+
+#else
 static void
 gui_sequence_editor_control_size_request_event (GtkWidget *widget, GtkRequisition *requisition,
                                                 gui_sequence_editor_t *self)
@@ -579,6 +611,7 @@ gui_sequence_editor_control_size_request_event (GtkWidget *widget, GtkRequisitio
       requisition->height -= pad;
      */
 }
+#endif
 
 static gboolean
 gui_sequence_editor_control_size_allocate_event (GtkWidget *widget, GtkAllocation *event,
@@ -736,6 +769,30 @@ gui_sequence_editor_control_click_event (GtkWidget *widget, GdkEventButton *even
     return handled;
 }
 
+#if GTK_CHECK_VERSION(3,0,0)
+static void
+gui_sequence_editor_size_request_event (GtkWidget *widget, GtkAllocation  *allocation, gui_sequence_editor_t *self)
+{
+    GtkRequisition requisition;
+    int pad = LAYOUT_PADDING;
+    int header_height = 0;
+    int hscrollbar_width = 0, hscrollbar_height = 0;
+    int vscrollbar_width = 0, vscrollbar_height = 0;
+    int controls_width = 0;
+    int junk = 0;
+    gtk_widget_get_preferred_size (widget, &requisition, NULL);
+
+    header_height = dk_em (widget, 1);
+    gui_sequence_editor_widget_get_size (self->vscrollbar, &vscrollbar_height, &vscrollbar_width);
+    gui_sequence_editor_widget_get_size (self->hscrollbar, &hscrollbar_height, &hscrollbar_width);
+    gui_sequence_editor_widget_get_size (self->controls_layout, &junk, &controls_width);
+
+    requisition.width = pad + controls_width + pad + hscrollbar_width + pad + vscrollbar_width + pad;
+    requisition.height = pad + header_height + pad + vscrollbar_height + pad + hscrollbar_height + pad;
+    gtk_widget_set_size_request (widget, requisition.width, requisition.height);
+}
+
+#else
 static void
 gui_sequence_editor_size_request_event (GtkWidget *widget, GtkRequisition *requisition, gui_sequence_editor_t *self)
 {
@@ -754,6 +811,7 @@ gui_sequence_editor_size_request_event (GtkWidget *widget, GtkRequisition *requi
     requisition->width = pad + controls_width + pad + hscrollbar_width + pad + vscrollbar_width + pad;
     requisition->height = pad + header_height + pad + vscrollbar_height + pad + hscrollbar_height + pad;
 }
+#endif
 
 static gboolean
 gui_sequence_editor_configure_event (GtkWidget *widget, GtkAllocation *event, gui_sequence_editor_t *self)
@@ -961,7 +1019,7 @@ gui_sequence_editor_create_layout (gui_sequence_editor_t *self)
     gtk_widget_set_name (self->layout, "sequence_editor");
     
 #if GTK_CHECK_VERSION(3,0,0)
-    g_signal_connect (G_OBJECT (self->layout), "size-request",
+    g_signal_connect (G_OBJECT (self->layout), "size-allocate",
                       G_CALLBACK (gui_sequence_editor_size_request_event), self);
 #else
     g_signal_connect (G_OBJECT (self->layout), "size-request",
@@ -1046,7 +1104,7 @@ gui_sequence_editor_update (gui_sequence_editor_t *self)
 #if GTK_CHECK_VERSION(3,0,0)
     g_signal_connect (G_OBJECT (self->controls_layout), "draw",
                       G_CALLBACK (gui_sequence_editor_control_draw_event), self);
-    g_signal_connect (G_OBJECT (self->controls_layout), "size-request",
+    g_signal_connect (G_OBJECT (self->controls_layout), "size-allocate",
                       G_CALLBACK (gui_sequence_editor_control_size_request_event), self);
 #else
     g_signal_connect (G_OBJECT (self->controls_layout), "size-request",
