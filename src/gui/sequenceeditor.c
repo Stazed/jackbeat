@@ -1030,10 +1030,14 @@ gui_sequence_editor_create_layout (gui_sequence_editor_t *self)
     g_signal_connect (G_OBJECT (self->layout), "destroy",
                       G_CALLBACK (gui_sequence_editor_destroy), self);
 
+#if GTK_CHECK_VERSION(3,0,0)
+    self->hscrollbar = gtk_scrollbar_new (GTK_ORIENTATION_HORIZONTAL, NULL);
+    self->vscrollbar = gtk_scrollbar_new (GTK_ORIENTATION_VERTICAL, NULL);
+#else
     self->hscrollbar = gtk_hscrollbar_new (NULL);
-    gtk_layout_put (GTK_LAYOUT (self->layout), self->hscrollbar, 0, 0);
-
     self->vscrollbar = gtk_vscrollbar_new (NULL);
+#endif
+    gtk_layout_put (GTK_LAYOUT (self->layout), self->hscrollbar, 0, 0);
     gtk_layout_put (GTK_LAYOUT (self->layout), self->vscrollbar, 0, 0);
 
     gtk_layout_put (GTK_LAYOUT (self->layout), grid_get_widget (self->grid), 0, 0);
