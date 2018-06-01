@@ -48,8 +48,13 @@ struct slider_t
     int               start_position;
 } ;
 
+#if GTK_CHECK_VERSION(3,0,0)
+static gboolean slider_draw (GtkWidget *layout, cairo_t *cr,
+                               slider_t *slider);
+#else
 static gboolean slider_expose (GtkWidget *layout, GdkEventExpose *event,
                                slider_t *slider);
+#endif
 static void     slider_value_changed (GtkWidget * adj, slider_t * slider);
 static gboolean slider_button_event (GtkWidget *widget, GdkEventButton *event, slider_t *slider);
 static gboolean slider_motion_event (GtkWidget *widget, GdkEventMotion *event, slider_t *slider);
@@ -91,8 +96,13 @@ slider_new (GtkWidget *layout, GtkAdjustment *adj)
                       G_CALLBACK (slider_button_event), slider);
     g_signal_connect (G_OBJECT (layout), "motion-notify-event",
                       G_CALLBACK (slider_motion_event), slider);
+#if GTK_CHECK_VERSION(3,0,0)
+    g_signal_connect (G_OBJECT (layout), "draw",
+                      G_CALLBACK (slider_draw), slider);
+#else
     g_signal_connect (G_OBJECT (layout), "expose-event",
                       G_CALLBACK (slider_expose), slider);
+#endif
     g_signal_connect (G_OBJECT (layout), "destroy",
                       G_CALLBACK (slider_destroy), slider);
     g_signal_connect (G_OBJECT (layout), "scroll-event",
@@ -537,15 +547,20 @@ slider_get_state (slider_t *slider)
 
 #if GTK_CHECK_VERSION(3,0,0)
 static gboolean
-slider_expose (GtkWidget *layout, GdkEventExpose *event, slider_t *slider)
+slider_draw (GtkWidget *layout, cairo_t *cr, slider_t *slider)
 {
     GtkAllocation *alloc = slider->allocs[slider->state];
     cairo_surface_t *surface = slider->cst_surface[slider->state];
+    
+    GdkRectangle rect;
+    gdk_cairo_get_clip_rectangle(cr, &rect);
+    
+//    printf("slider_draw x = %d: y = %d: width = %d: height = %d\n",rect.x, rect.y, rect.width, rect.height );
 
     if (surface && gtk_layout_get_bin_window(GTK_LAYOUT (layout)))
     {
         GtkAllocation target;
-        if (gdk_rectangle_intersect (&event->area, alloc, &target))
+        if (gdk_rectangle_intersect (&rect, alloc, &target))
         {
             int srcx = target.x - alloc->x;
             int srcy = target.y - alloc->y;
@@ -564,7 +579,7 @@ slider_expose (GtkWidget *layout, GdkEventExpose *event, slider_t *slider)
                               alloc->x, alloc->y,
                               alloc->width, alloc->height);
             
-            cairo_destroy(cr);
+//            cairo_destroy(cr);
         }
     }
     return FALSE;
@@ -575,7 +590,7 @@ slider_expose (GtkWidget *layout, GdkEventExpose *event, slider_t *slider)
 {
     GtkAllocation *alloc = slider->allocs[slider->state];
     GdkPixmap *pixmap = slider->pixmaps[slider->state];
-
+    
     if (pixmap && gtk_layout_get_bin_window(GTK_LAYOUT (layout)))
     {
         GtkAllocation target;

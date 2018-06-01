@@ -653,17 +653,21 @@ gui_sequence_editor_control_size_allocate_event (GtkWidget *widget, GtkAllocatio
 
 #if GTK_CHECK_VERSION(3,0,0)
 static gboolean
-gui_sequence_editor_control_expose_event (GtkWidget *widget, GdkEventExpose *event,
+gui_sequence_editor_control_draw_event (GtkWidget *widget, cairo_t *cr,
                                           gui_sequence_editor_t *self)
 {
+    GdkRectangle rect;
+    gdk_cairo_get_clip_rectangle(cr, &rect);
+    
+//    printf("gui_sequence_editor rect x = %d: y = %d, width = %d: height = %d\n",rect.x, rect.y, rect.width, rect.height );
     if (self->cst_bg && gtk_layout_get_bin_window(GTK_LAYOUT (widget)))
     {
         cairo_t *cr = gdk_cairo_create (gtk_layout_get_bin_window(GTK_LAYOUT (widget)));
         cairo_set_source_surface(cr, self->cst_bg, 0, 0);
-        cairo_rectangle (cr, event->area.x, event->area.y, event->area.width, event->area.height);
+        cairo_rectangle (cr, rect.x, rect.y, rect.width, rect.height);
         cairo_clip (cr);
         cairo_paint (cr);
-        cairo_destroy(cr);   
+//        cairo_destroy(cr);   
     }
     return FALSE;
 }
@@ -672,6 +676,7 @@ static gboolean
 gui_sequence_editor_control_expose_event (GtkWidget *widget, GdkEventExpose *event,
                                           gui_sequence_editor_t *self)
 {
+//    printf("gui_sequence_editor x = %d: y = %d, width = %d: height = %d\n",event->area.x, event->area.y, event->area.width, event->area.height );
     if (self->bg && gtk_layout_get_bin_window(GTK_LAYOUT (widget)))
     {
         cairo_t *cr = gdk_cairo_create (gtk_layout_get_bin_window(GTK_LAYOUT (widget)));
@@ -954,8 +959,14 @@ gui_sequence_editor_create_layout (gui_sequence_editor_t *self)
     // The sequence_editor and its children can be styled in an rc file using:
     // widget "*sequence_editor*" style "some-style"
     gtk_widget_set_name (self->layout, "sequence_editor");
+    
+#if GTK_CHECK_VERSION(3,0,0)
     g_signal_connect (G_OBJECT (self->layout), "size-request",
                       G_CALLBACK (gui_sequence_editor_size_request_event), self);
+#else
+    g_signal_connect (G_OBJECT (self->layout), "size-request",
+                      G_CALLBACK (gui_sequence_editor_size_request_event), self);
+#endif
     g_signal_connect (G_OBJECT (self->layout), "size-allocate",
                       G_CALLBACK (gui_sequence_editor_configure_event), self);
     g_signal_connect (G_OBJECT (self->layout), "destroy",
@@ -1030,12 +1041,19 @@ gui_sequence_editor_update (gui_sequence_editor_t *self)
 #endif
 
     self->controls_layout = gtk_layout_new (NULL, NULL);
-    g_signal_connect (G_OBJECT (self->controls_layout), "size-request",
-                      G_CALLBACK (gui_sequence_editor_control_size_request_event), self);
     g_signal_connect (G_OBJECT (self->controls_layout), "size-allocate",
                       G_CALLBACK (gui_sequence_editor_control_size_allocate_event), self);
+#if GTK_CHECK_VERSION(3,0,0)
+    g_signal_connect (G_OBJECT (self->controls_layout), "draw",
+                      G_CALLBACK (gui_sequence_editor_control_draw_event), self);
+    g_signal_connect (G_OBJECT (self->controls_layout), "size-request",
+                      G_CALLBACK (gui_sequence_editor_control_size_request_event), self);
+#else
+    g_signal_connect (G_OBJECT (self->controls_layout), "size-request",
+                      G_CALLBACK (gui_sequence_editor_control_size_request_event), self);
     g_signal_connect (G_OBJECT (self->controls_layout), "expose-event",
                       G_CALLBACK (gui_sequence_editor_control_expose_event), self);
+#endif
     g_signal_connect (G_OBJECT (self->controls_layout), "button-press-event",
                       G_CALLBACK (gui_sequence_editor_control_click_event), self);
     g_signal_connect_after (G_OBJECT (self->controls_layout), "realize",

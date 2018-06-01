@@ -46,8 +46,13 @@ struct toggle_t
     dk_hsv_t          hsv_shift;
 } ;
 
+#if GTK_CHECK_VERSION(3,0,0)
+static gboolean toggle_draw (GtkWidget *layout, cairo_t *cr,
+                               toggle_t *toggle);
+#else
 static gboolean toggle_expose (GtkWidget *layout, GdkEventExpose *event,
                                toggle_t *toggle);
+#endif
 static gboolean toggle_button_event (GtkWidget *widget, GdkEventButton *event, toggle_t *toggle);
 static gboolean toggle_motion_event (GtkWidget *widget, GdkEventMotion *event, toggle_t *toggle);
 static gboolean toggle_leave_event (GtkWidget *widget, GdkEventCrossing *event, toggle_t *toggle);
@@ -78,8 +83,13 @@ toggle_new (GtkWidget *layout, const char *text)
                       G_CALLBACK (toggle_motion_event), toggle);
     g_signal_connect (G_OBJECT (layout), "leave-notify-event",
                       G_CALLBACK (toggle_leave_event), toggle);
+#if GTK_CHECK_VERSION(3,0,0)
+    g_signal_connect (G_OBJECT (layout), "draw",
+                      G_CALLBACK (toggle_draw), toggle);
+#else
     g_signal_connect (G_OBJECT (layout), "expose-event",
                       G_CALLBACK (toggle_expose), toggle);
+#endif
     g_signal_connect (G_OBJECT (layout), "destroy",
                       G_CALLBACK (toggle_destroy), toggle);
 
@@ -338,18 +348,45 @@ toggle_get_allocation (toggle_t *toggle, GtkAllocation * alloc)
     memcpy (alloc, toggle->alloc, sizeof (GtkAllocation));
 }
 
+#if GTK_CHECK_VERSION(3,0,0)
+static gboolean
+toggle_draw (GtkWidget *layout, cairo_t *cr, toggle_t *toggle)
+{
+    GdkRectangle rect;
+    gdk_cairo_get_clip_rectangle(cr, &rect);
+//    printf("toggle_draw x = %d: y = %d: width = %d: height = %d\n",rect.x, rect.y, rect.width, rect.height );
+    GtkAllocation *alloc = toggle->alloc;
+
+    if (toggle->cst_surface && gtk_layout_get_bin_window (GTK_LAYOUT (layout)))
+    {
+        GtkAllocation target;
+        if (gdk_rectangle_intersect (&rect, alloc, &target))
+        {
+            int srcx = target.x - alloc->x;
+            int srcy = target.y - alloc->y;
+            
+            cairo_t *cr = gdk_cairo_create (gtk_layout_get_bin_window(GTK_LAYOUT (layout)));
+            cairo_set_source_surface (cr, toggle->cst_surface, target.x - srcx, target.y - srcy);
+
+            cairo_rectangle (cr, target.x, target.y, target.width, target.height);
+            cairo_clip (cr);
+            cairo_paint(cr);
+            cairo_destroy(cr);
+        }
+    }
+    return FALSE;
+}
+
+
+#else
 static gboolean
 toggle_expose (GtkWidget *layout, GdkEventExpose *event, toggle_t *toggle)
 {
+//    printf("toggle expose x = %d: y = %d, width = %d: height = %d\n",event->area.x, event->area.y, event->area.width, event->area.height );
     GtkAllocation *alloc = toggle->alloc;
 
-#if GTK_CHECK_VERSION(3,0,0)
-    if (toggle->cst_surface && gtk_layout_get_bin_window (GTK_LAYOUT (layout)))
-    {
-#else
     if (toggle->pixmap && gtk_layout_get_bin_window (GTK_LAYOUT (layout)))
     {
-#endif
         GtkAllocation target;
         if (gdk_rectangle_intersect (&event->area, alloc, &target))
         {
@@ -357,11 +394,8 @@ toggle_expose (GtkWidget *layout, GdkEventExpose *event, toggle_t *toggle)
             int srcy = target.y - alloc->y;
             
             cairo_t *cr = gdk_cairo_create (gtk_layout_get_bin_window(GTK_LAYOUT (layout)));
-#if GTK_CHECK_VERSION(3,0,0)
-            cairo_set_source_surface (cr, toggle->cst_surface, target.x - srcx, target.y - srcy);
-#else
             gdk_cairo_set_source_pixmap(cr, toggle->pixmap, target.x - srcx, target.y - srcy);
-#endif
+
             cairo_rectangle (cr, target.x, target.y, target.width, target.height);
             cairo_clip (cr);
             cairo_paint(cr);
@@ -379,6 +413,7 @@ toggle_expose (GtkWidget *layout, GdkEventExpose *event, toggle_t *toggle)
     }
     return FALSE;
 }
+#endif
 
 void
 toggle_set_hsv_shift (toggle_t *toggle, dk_hsv_t *shift)

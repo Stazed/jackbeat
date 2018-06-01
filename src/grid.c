@@ -130,7 +130,11 @@ struct grid_t
 } ;
 
 static gboolean grid_configure_event (GtkWidget *widget, GdkEventConfigure *event, grid_t *grid);
+#if GTK_CHECK_VERSION(3,0,0)
+static gboolean grid_draw_event (GtkWidget *widget, cairo_t *cr, grid_t *grid);
+#else
 static gboolean grid_expose_event (GtkWidget *widget, GdkEventExpose *event, grid_t *grid);
+#endif
 static void     grid_size_request_event (GtkWidget *widget, GtkRequisition *requisition, grid_t *grid);
 static gboolean grid_button_press_event (GtkWidget *widget, GdkEventButton *event, grid_t *grid);
 static gboolean grid_motion_notify_event (GtkWidget *widget, GdkEventMotion *event, grid_t *grid);
@@ -440,12 +444,19 @@ grid_area_create (grid_t *grid)
     grid->area = gtk_drawing_area_new ();
     g_object_weak_ref (G_OBJECT (grid->area), grid_area_finalized_cb, grid);
 
-    g_signal_connect (G_OBJECT (grid->area), "expose-event",
-                      G_CALLBACK (grid_expose_event), grid);
-    g_signal_connect (G_OBJECT (grid->area), "configure-event",
-                      G_CALLBACK (grid_configure_event), grid);
+#if GTK_CHECK_VERSION(3,0,0)
+    g_signal_connect (G_OBJECT (grid->area), "draw",
+                      G_CALLBACK (grid_draw_event), grid);
     g_signal_connect (G_OBJECT (grid->area), "size-request",
                       G_CALLBACK (grid_size_request_event), grid);
+#else
+    g_signal_connect (G_OBJECT (grid->area), "expose-event",
+                      G_CALLBACK (grid_expose_event), grid);
+    g_signal_connect (G_OBJECT (grid->area), "size-request",
+                      G_CALLBACK (grid_size_request_event), grid);
+#endif
+    g_signal_connect (G_OBJECT (grid->area), "configure-event",
+                      G_CALLBACK (grid_configure_event), grid);
     g_signal_connect (G_OBJECT (grid->area), "button-press-event",
                       G_CALLBACK (grid_button_press_event), grid);
     g_signal_connect (G_OBJECT (grid->area), "motion-notify-event",
@@ -1230,13 +1241,27 @@ grid_configure_event (GtkWidget *widget, GdkEventConfigure *event, grid_t *grid)
     return TRUE;
 }
 
+#if GTK_CHECK_VERSION(3,0,0)
+static gboolean
+grid_draw_event (GtkWidget *widget, cairo_t *cr, grid_t *grid)
+{
+    GdkRectangle rect;
+    gdk_cairo_get_clip_rectangle(cr, &rect);
+//    printf("grid_draw_event x = %d: y = %d: width = %d: height = %d\n",rect.x, rect.y, rect.width, rect.height );
+    grid_display (grid, rect.x, rect.y, rect.width, rect.height, 1, 1);
+
+    return FALSE;
+}
+#else
 static gboolean
 grid_expose_event (GtkWidget *widget, GdkEventExpose *event, grid_t *grid)
 {
+//    printf("grid_expose x = %d: y = %d, width = %d: height = %d\n",event->area.x, event->area.y, event->area.width, event->area.height );
     grid_display (grid, event->area.x, event->area.y, event->area.width, event->area.height, 1, 1);
 
     return FALSE;
 }
+#endif
 
 static gboolean
 grid_focus_changed_event (GtkWidget *widget, GdkEventFocus *event, grid_t *grid)
