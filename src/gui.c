@@ -256,9 +256,14 @@ gui_transpose_volumes_dialog (GtkWidget *widget, gpointer data)
 {
     gui_t *gui = data;
     GtkWidget * dialog;
-
+#if GTK_CHECK_VERSION(3,0,0)
+    GtkWidget *hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+    GtkWidget *vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+    
+#else
     GtkWidget *hbox = gtk_hbox_new (FALSE, 0);
     GtkWidget *vbox = gtk_vbox_new (FALSE, 0);
+#endif
     gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 15);
 
     int ntracks = sequence_get_tracks_num (gui->sequence);
@@ -360,10 +365,15 @@ gui_show_progress (gui_t *gui, char *title, char *text)
                       G_CALLBACK (gui_no_delete), NULL);
 
 
+#if GTK_CHECK_VERSION(3,0,0)
+    GtkWidget *vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+    GtkWidget *hbox_top = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+#else
     GtkWidget *vbox = gtk_vbox_new (FALSE, 0);
-    gtk_container_add (GTK_CONTAINER (gui->progress_window), vbox);
-
     GtkWidget *hbox_top = gtk_hbox_new (FALSE, 0);
+#endif
+
+    gtk_container_add (GTK_CONTAINER (gui->progress_window), vbox);
 
     GtkWidget *spacer = gtk_label_new (" ");
     gtk_box_pack_start (GTK_BOX (vbox), spacer, TRUE, TRUE, 0);
@@ -380,8 +390,11 @@ gui_show_progress (gui_t *gui, char *title, char *text)
 
     spacer = gtk_label_new (" ");
     gtk_box_pack_start (GTK_BOX (vbox), spacer, TRUE, TRUE, 0);
-
+#if GTK_CHECK_VERSION(3,0,0)
+    GtkWidget *hbox_bot = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+#else
     GtkWidget *hbox_bot = gtk_hbox_new (FALSE, 0);
+#endif
     gtk_box_pack_start (GTK_BOX (vbox), hbox_bot, TRUE, TRUE, 0);
 
     gui->progress_bar = gtk_progress_bar_new ();
@@ -1939,8 +1952,13 @@ gui_ask_track_name (gui_t *gui, char *current_name, int error, int allow_cancel)
     GtkWidget * dialog;
     char *new_name = NULL;
 
+#if GTK_CHECK_VERSION(3,0,0)
+    GtkWidget *hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+    GtkWidget *vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+#else
     GtkWidget *hbox = gtk_hbox_new (FALSE, 0);
     GtkWidget *vbox = gtk_vbox_new (FALSE, 0);
+#endif
     gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 15);
 
     if (allow_cancel)
