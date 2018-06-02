@@ -455,7 +455,11 @@
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="tooltip_text" translatable="yes">Pitch</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
                                             <property name="adjustment">adjustment6</property>
+                                            <property name="digits">4</property>
+                                            <property name="update_policy">if-valid</property>
                                             <signal name="value-changed" handler="gui_pitch_spinner_changed" swapped="no"/>
                                           </object>
                                           <packing>
@@ -637,8 +641,9 @@
                             </child>
                           </object>
                           <packing>
-                            <property name="expand">False</property>
+                            <property name="expand">True</property>
                             <property name="fill">True</property>
+                            <property name="padding">3</property>
                             <property name="position">2</property>
                           </packing>
                         </child>
@@ -723,6 +728,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
+                <property name="padding">2</property>
                 <property name="position">0</property>
               </packing>
             </child>
@@ -825,6 +831,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
+                <property name="padding">3</property>
                 <property name="pack_type">end</property>
                 <property name="position">1</property>
               </packing>

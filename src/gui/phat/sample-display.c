@@ -779,20 +779,9 @@ static gboolean
 sample_display_draw (GtkWidget *widget,
                        cairo_t *cr)
 {
-    /* FIXME */
-    
-    GdkRectangle area = { 0, 0, gtk_widget_get_allocated_width (widget),
-    gtk_widget_get_allocated_height (widget) };
-    
-//    cairo_save(cr);
-//    gtk_cairo_transform_to_window(cr, widget, gtk_widget_get_parent_window(widget) );
-//    GdkRectangle area;
-//    gdk_cairo_get_clip_rectangle(cr, &area);
-//    cairo_restore(cr);
+    GdkRectangle area;
+    gdk_cairo_get_clip_rectangle(cr, &area);
     sample_display_draw_main (widget, &area, FALSE);
-    
-//    printf("sample_display_draw event->area X = %d: Y = %d: width %d: height = %d\n",
-//            area.x, area.y, area.width, area.height);
     return FALSE;
 }
 #else
