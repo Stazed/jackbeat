@@ -51,8 +51,8 @@
     <property name="page_increment">1</property>
   </object>
   <object class="GtkAdjustment" id="adjustment7">
-    <property name="lower">-6</property>
-    <property name="upper">6</property>
+    <property name="lower">-72</property>
+    <property name="upper">72</property>
     <property name="step_increment">1</property>
     <property name="page_increment">1</property>
   </object>
@@ -63,8 +63,8 @@
     <property name="page_increment">1</property>
   </object>
   <object class="GtkAdjustment" id="adjustment9">
-    <property name="lower">-50</property>
-    <property name="upper">49.990000000000002</property>
+    <property name="lower">-0.5</property>
+    <property name="upper">0.48999999999999999</property>
     <property name="step_increment">0.01</property>
     <property name="page_increment">0.01</property>
   </object>
@@ -478,6 +478,12 @@
                                       <object class="GtkSpinButton" id="pitch_octave">
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
+                                        <property name="max_length">3</property>
+                                        <property name="width_chars">3</property>
+                                        <property name="max_width_chars">3</property>
+                                        <property name="xalign">2.2351741291171123e-10</property>
+                                        <property name="primary_icon_activatable">False</property>
+                                        <property name="secondary_icon_activatable">False</property>
                                         <property name="adjustment">adjustment7</property>
                                       </object>
                                       <packing>
@@ -489,6 +495,9 @@
                                       <object class="GtkSpinButton" id="pitch_semitone">
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
+                                        <property name="max_length">2</property>
+                                        <property name="width_chars">2</property>
+                                        <property name="max_width_chars">2</property>
                                         <property name="adjustment">adjustment8</property>
                                       </object>
                                       <packing>
@@ -500,7 +509,9 @@
                                       <object class="GtkSpinButton" id="pitch_finetune">
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
+                                        <property name="width_chars">7</property>
                                         <property name="adjustment">adjustment9</property>
+                                        <property name="digits">4</property>
                                       </object>
                                       <packing>
                                         <property name="left_attach">2</property>
@@ -609,6 +620,7 @@
                                         <property name="can_focus">False</property>
                                         <property name="label" translatable="yes">test</property>
                                         <property name="stock_id">gtk-open</property>
+                                        <signal name="clicked" handler="gui_load_sample_dialog" swapped="no"/>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -753,6 +765,7 @@
                   <object class="GtkSpinButton" id="bpm">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="width_chars">7</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
                     <property name="adjustment">adjustment10</property>
