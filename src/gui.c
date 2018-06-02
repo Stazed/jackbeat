@@ -1638,15 +1638,15 @@ gui_init (gui_t * gui)
      * button to toggle the edit mode. */
     gui->sample_display = sample_display_new (TRUE);
     
-#if !GTK_CHECK_VERSION(3,0,0)
-    /* FIXME check this for gtk3 */
     GdkColor *c = SAMPLE_DISPLAY_CLASS (GTK_WIDGET_GET_CLASS (gui->sample_display))->colors + SAMPLE_DISPLAYCOL_MIXERPOS;
     c->red = 0xff << 8;
     c->green = 0xc6 << 8;
     c->blue = 0x00 << 8;
     c->pixel = (gulong) ((c->red & 0xff00)*256 + (c->green & 0xff00) + (c->blue & 0xff00) / 256);
+#if !GTK_CHECK_VERSION(3,0,0)
     gdk_color_alloc (gdk_colormap_get_system (), c);
 #endif
+
     /* The horizontal center line in the sample display. */
     sample_display_enable_zero_line (SAMPLE_DISPLAY (gui->sample_display), TRUE);
     

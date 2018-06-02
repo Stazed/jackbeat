@@ -779,12 +779,20 @@ static gboolean
 sample_display_draw (GtkWidget *widget,
                        cairo_t *cr)
 {
-/*    printf("sample_display_draw width %d, height %d\n",
-            gtk_widget_get_allocated_width (widget),
-            gtk_widget_get_allocated_height (widget));*/
+    /* FIXME */
+    
     GdkRectangle area = { 0, 0, gtk_widget_get_allocated_width (widget),
     gtk_widget_get_allocated_height (widget) };
+    
+//    cairo_save(cr);
+//    gtk_cairo_transform_to_window(cr, widget, gtk_widget_get_parent_window(widget) );
+//    GdkRectangle area;
+//    gdk_cairo_get_clip_rectangle(cr, &area);
+//    cairo_restore(cr);
     sample_display_draw_main (widget, &area, FALSE);
+    
+//    printf("sample_display_draw event->area X = %d: Y = %d: width %d: height = %d\n",
+//            area.x, area.y, area.width, area.height);
     return FALSE;
 }
 #else
@@ -1175,18 +1183,17 @@ sample_display_class_init (SampleDisplayClass *class)
     class->selection_changed = NULL;
     class->loop_changed = NULL;
     class->window_changed = NULL;
-
-#if !GTK_CHECK_VERSION(3,0,0)
-    /* FIXME check this for gtk3 */
+    
     for (n = 0, p = default_colors, c = class->colors; n < SAMPLE_DISPLAYCOL_LAST; n++, c++)
     {
         c->red = *p++ * 65535 / 255;
         c->green = *p++ * 65535 / 255;
         c->blue = *p++ * 65535 / 255;
         c->pixel = (gulong) ((c->red & 0xff00)*256 + (c->green & 0xff00) + (c->blue & 0xff00) / 256);
+#if !GTK_CHECK_VERSION(3,0,0)
         gdk_color_alloc (gdk_colormap_get_system (), c);
-    }
 #endif
+    }
 }
 
 static void
