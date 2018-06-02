@@ -768,7 +768,7 @@ grid_update_adjustments (grid_t *grid)
 #ifdef PRINT_EXTRA_DEBUG
         DEBUG ("hadj: type=%s, upper=%d, step=%d, page/size=%d", G_OBJECT_TYPE_NAME (grid->hadj),
                grid->pixmap_width,
-               grid->cell_width, grid->area->allocation.width);
+               grid->cell_width, grid_area_allocation.width);
 #endif
         g_object_set (G_OBJECT (grid->hadj),
                       "lower", (gdouble) 0,

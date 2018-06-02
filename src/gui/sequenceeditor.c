@@ -1095,7 +1095,11 @@ gui_sequence_editor_update (gui_sequence_editor_t *self)
         }
     }
 
+#if GTK_CHECK_VERSION(3,0,0)
+    GtkWidget *vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+#else
     GtkWidget *vbox = gtk_vbox_new (FALSE, 0);
+#endif
 
     /* Drawing track controls */
 #ifdef PRINT_EXTRA_DEBUG
