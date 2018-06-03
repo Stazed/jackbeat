@@ -978,6 +978,7 @@
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox1">
         <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox" id="dialog-action_area1">
@@ -1031,7 +1032,8 @@
           </object>
           <packing>
             <property name="expand">False</property>
-            <property name="fill">False</property>
+            <property name="fill">True</property>
+            <property name="pack_type">end</property>
             <property name="position">0</property>
           </packing>
         </child>
@@ -1043,6 +1045,7 @@
               <object class="GtkBox" id="audio_tab">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkFrame" id="frame">
                     <property name="visible">True</property>
@@ -1106,17 +1109,6 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <child>
-                                  <object class="GtkComboBox" id="audio_output">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
                                   <object class="GtkLabel" id="label18">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
@@ -1124,6 +1116,18 @@
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkComboBox" id="audio_output">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <signal name="changed" handler="gui_prefs_audio_device_changed" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">True</property>
                                     <property name="fill">True</property>
                                     <property name="position">1</property>
                                   </packing>
@@ -1133,6 +1137,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
+                                    <signal name="clicked" handler="gui_prefs_audio_update_devices" swapped="no"/>
                                     <child>
                                       <object class="GtkImage" id="image6">
                                         <property name="visible">True</property>
@@ -1318,13 +1323,15 @@
                               <object class="GtkBox" id="hbox11">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="spacing">6</property>
                                 <property name="homogeneous">True</property>
                                 <child>
-                                  <object class="GtkButton" id="audio_disconnect">
-                                    <property name="label" translatable="yes">Disconnect</property>
+                                  <object class="GtkButton" id="audio_connect">
+                                    <property name="label" translatable="yes">Connect</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
+                                    <signal name="clicked" handler="gui_prefs_audio_connect" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="expand">True</property>
@@ -1333,11 +1340,12 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkButton" id="audio_connect">
-                                    <property name="label" translatable="yes">Connect</property>
+                                  <object class="GtkButton" id="audio_disconnect">
+                                    <property name="label" translatable="yes">Disconnect</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
+                                    <signal name="clicked" handler="gui_prefs_audio_disconnect" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="expand">True</property>
@@ -1436,6 +1444,7 @@
               <object class="GtkBox" id="osc_tab">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkFrame" id="frame1">
                     <property name="visible">True</property>
