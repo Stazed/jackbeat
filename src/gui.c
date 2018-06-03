@@ -1134,7 +1134,7 @@ gui_compute_pitch (GtkWidget *octave, GtkWidget *semitone, GtkWidget *finetune)
 #if GTK_CHECK_VERSION(3,0,0)
     double pitch = gtk_spin_button_get_value (GTK_SPIN_BUTTON (octave)) * 12
             + gtk_spin_button_get_value (GTK_SPIN_BUTTON (semitone))
-            + gtk_spin_button_get_value (GTK_SPIN_BUTTON (finetune)) / 100;
+            + gtk_spin_button_get_value (GTK_SPIN_BUTTON (finetune));
 #else
     double pitch = phat_knob_get_value (PHAT_KNOB (octave)) * 12
             + phat_knob_get_value (PHAT_KNOB (semitone))
@@ -1666,7 +1666,12 @@ gui_init (gui_t * gui)
     GtkWidget *sequence_box = gui_builder_get_widget (gui->builder, "sequence_box");
     gtk_box_pack_start (GTK_BOX (sequence_box), gui_sequence_editor_get_widget (gui->sequence_editor),
                         TRUE, TRUE, 0);
-
+#if GTK_CHECK_VERSION(3,0,0)
+    /* This is necessary since apparently glade 3 only allows to enter two digit precision */
+    GtkWidget *finetune = gui_builder_get_widget (gui->builder, "pitch_finetune");
+    gtk_spin_button_set_range (finetune, -0.5, 0.4999);
+    gtk_spin_button_set_increments (finetune, 0.0001, .001);
+#endif
     gui_update_track_properties (gui);
 
     gtk_widget_show_all (gui->main_vbox);
@@ -1763,6 +1768,9 @@ gui_new_child (rc_t *rc, arg_t *arg, gui_t *parent, song_t *song,
     }
 
 #if GTK_CHECK_VERSION(3,0,0)
+    // needed on gtk 2.16/mingw32 (go figure), to register PhatKnob with GtkBuilder:
+//    GtkWidget *junk = phat_knob_new (NULL);
+//    gtk_widget_destroy (junk);
     gui->builder = gui_builder_new (util_pkgdata_path ("glade/jackbeat_gtk3.ui"),
                                     (void *) gui,
                                     "preferences",
