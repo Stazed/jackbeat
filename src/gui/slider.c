@@ -404,7 +404,11 @@ slider_button_event (GtkWidget *widget, GdkEventButton *event, slider_t *slider)
             gdk_window_set_cursor (gtk_widget_get_window(slider->layout), NULL);
             GdkDisplay *display = gdk_display_get_default ();
             GdkScreen *screen = gdk_display_get_default_screen (display);
+#if GTK_CHECK_VERSION(3,0,0)
+            gdk_device_warp (event->device, screen, slider->start_x_root, slider->start_y_root);
+#else
             gdk_display_warp_pointer (display, screen, slider->start_x_root, slider->start_y_root);
+#endif
             slider_queue_draw (slider);
             handled = TRUE;
         }
@@ -445,6 +449,7 @@ slider_wheel_scroll_event (GtkWidget *widget, GdkEventScroll *event, slider_t *s
         // event coordinates are not reliable on osx here
 #if GTK_CHECK_VERSION(3,0,0)
         gdk_window_get_device_position(gtk_widget_get_window(widget), event->device, &x, &y, NULL );
+        gdouble delta_x, delta_y;
 #else
         gdk_window_get_pointer (gtk_widget_get_window(widget), &x, &y, NULL);
 #endif
@@ -459,20 +464,41 @@ slider_wheel_scroll_event (GtkWidget *widget, GdkEventScroll *event, slider_t *s
                           "lower", &lower,
                           "upper", &upper,
                           NULL);
-
-            if (event->direction == GDK_SCROLL_UP)
-                value += step;
-            else if (event->direction == GDK_SCROLL_DOWN)
-                value -= step;
-
-            if (value < lower)
-                value = lower;
-            else if (value > upper)
-                value = upper;
             
-            /* FIXME for gtk3 we get nothing for either of these!! g_object_get */
-            printf("value %f: slider->adj %f\n", value, gtk_adjustment_get_value (slider->adj));
+            if (event->state)
+            {
+                switch (event->direction)
+                {
+		case GDK_SCROLL_UP:
+                    value += step;
+                    break;
+                    
+                case GDK_SCROLL_DOWN:
+                    value -= step;
+                    break;
+#if GTK_CHECK_VERSION(3,0,0)
+                case GDK_SCROLL_SMOOTH:
+                    gdk_event_get_scroll_deltas ((const GdkEvent *) event,
+                                                 &delta_x, &delta_y);
 
+                    if (delta_y > 0)
+                    {
+                            value += step;
+                            break;
+                    } else if (delta_y < 0)
+                    {
+                            value -= step;
+                            break;				
+                    } else
+                    {
+                            break;
+                    }
+#endif
+                default:
+                    break;
+                }
+            }
+            
             if (value != gtk_adjustment_get_value (slider->adj))
             {
                 gtk_adjustment_set_value (slider->adj, value);
