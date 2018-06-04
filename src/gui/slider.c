@@ -483,15 +483,15 @@ slider_wheel_scroll_event (GtkWidget *widget, GdkEventScroll *event, slider_t *s
 
                     if (delta_y > 0)
                     {
-                            value += step;
-                            break;
+                        value += step;
+                        break;
                     } else if (delta_y < 0)
                     {
-                            value -= step;
-                            break;				
+                        value -= step;
+                        break;				
                     } else
                     {
-                            break;
+                        break;
                     }
 #endif
                 default:

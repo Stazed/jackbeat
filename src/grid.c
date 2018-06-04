@@ -480,7 +480,8 @@ grid_area_create (grid_t *grid)
                            | GDK_BUTTON_PRESS_MASK
                            | GDK_POINTER_MOTION_MASK
                            | GDK_POINTER_MOTION_HINT_MASK
-                           | GDK_FOCUS_CHANGE_MASK);
+                           | GDK_FOCUS_CHANGE_MASK
+                           | GDK_SCROLL_MASK);
 }
 
 static int
@@ -810,7 +811,7 @@ grid_wheel_scroll_event (GtkWidget *widget, GdkEventScroll *event, grid_t *grid)
     gdouble step, value, size, upper;
     int dir;
     GtkAdjustment *adj;
-
+    
     if ((event->direction == GDK_SCROLL_UP) || (event->direction == GDK_SCROLL_DOWN))
     {
         adj = grid->vadj;
