@@ -839,7 +839,11 @@ grid_wheel_scroll_event (GtkWidget *widget, GdkEventScroll *event, grid_t *grid)
 
     int x, y;
     GdkModifierType state;
+#if GTK_CHECK_VERSION(3,0,0)
+        gdk_window_get_device_position(event->window, event->device, &x, &y, &state );
+#else
     gdk_window_get_pointer (event->window, &x, &y, &state);
+#endif
     grid_pointer_moved (grid, x, y, state);
 
     return FALSE;
@@ -1410,7 +1414,11 @@ grid_motion_notify_event (GtkWidget *widget, GdkEventMotion *event, grid_t *grid
     if (grid->pixmap == NULL) return TRUE;
 #endif
     if (event->is_hint)
+#if GTK_CHECK_VERSION(3,0,0)
+        gdk_window_get_device_position(event->window, event->device, &x, &y, &state );
+#else
         gdk_window_get_pointer (event->window, &x, &y, &state);
+#endif
     else
     {
         x = event->x;

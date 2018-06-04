@@ -443,7 +443,11 @@ slider_wheel_scroll_event (GtkWidget *widget, GdkEventScroll *event, slider_t *s
         GtkAllocation *alloc = slider->allocs[SLIDER_FOLDED];
         int x, y;
         // event coordinates are not reliable on osx here
+#if GTK_CHECK_VERSION(3,0,0)
+        gdk_window_get_device_position(gtk_widget_get_window(widget), event->device, &x, &y, NULL );
+#else
         gdk_window_get_pointer (gtk_widget_get_window(widget), &x, &y, NULL);
+#endif
         if ((x >= alloc->x) && (x < alloc->width + alloc->x) &&
             (y >= alloc->y) && (y < alloc->height + alloc->y))
         {
@@ -465,6 +469,9 @@ slider_wheel_scroll_event (GtkWidget *widget, GdkEventScroll *event, slider_t *s
                 value = lower;
             else if (value > upper)
                 value = upper;
+            
+            /* FIXME for gtk3 we get nothing for either of these!! g_object_get */
+            printf("value %f: slider->adj %f\n", value, gtk_adjustment_get_value (slider->adj));
 
             if (value != gtk_adjustment_get_value (slider->adj))
             {

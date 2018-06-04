@@ -663,7 +663,11 @@ phat_knob_motion_notify (GtkWidget *widget, GdkEventMotion *event)
 
 
     if (event->is_hint || (event->window != gtk_widget_get_window(widget)))
+#if GTK_CHECK_VERSION(3,0,0)
+        gdk_window_get_device_position(gtk_widget_get_window(widget), event->device, &x, &y, &mods );
+#else
         gdk_window_get_pointer (gtk_widget_get_window(widget), &x, &y, &mods);
+#endif
 
     switch (knob->state)
     {

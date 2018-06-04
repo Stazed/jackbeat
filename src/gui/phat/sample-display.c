@@ -980,7 +980,11 @@ sample_display_button_press (GtkWidget      *widget,
     else
     {
         s->button = event->button;
+#if GTK_CHECK_VERSION(3,0,0)
+        gdk_window_get_device_position(event->window, event->device, &x, &y, &state );
+#else
         gdk_window_get_pointer (event->window, &x, &y, &state);
+#endif
         if (!(state & GDK_SHIFT_MASK))
         {
             if (s->button == 1)
@@ -990,7 +994,11 @@ sample_display_button_press (GtkWidget      *widget,
             else if (s->button == 2)
             {
                 s->selecting = SELECTING_PAN_WINDOW;
+#if GTK_CHECK_VERSION(3,0,0)
+                gdk_window_get_device_position(event->window, event->device, &s->selecting_x0, NULL, NULL);
+#else
                 gdk_window_get_pointer (event->window, &s->selecting_x0, NULL, NULL);
+#endif
                 s->selecting_wins0 = s->win_start;
             }
             else if (s->button == 3)
@@ -1062,7 +1070,11 @@ sample_display_motion_notify (GtkWidget *widget,
 
     if (event->is_hint)
     {
+#if GTK_CHECK_VERSION(3,0,0)
+        gdk_window_get_device_position(event->window, event->device, &x, &y, &state );
+#else
         gdk_window_get_pointer (event->window, &x, &y, &state);
+#endif
     }
     else
     {
