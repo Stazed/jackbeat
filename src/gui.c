@@ -280,7 +280,7 @@ gui_transpose_volumes_dialog (GtkWidget *widget, gpointer data)
                                           s,
                                           GTK_WINDOW (gui->window),
                                           GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_MODAL,
-                                          GTK_STOCK_CLOSE, GTK_RESPONSE_ACCEPT, NULL);
+                                          "_Close", GTK_RESPONSE_ACCEPT, NULL);
 
     sprintf (s, "[%s] Transpose all volumes by (%%) :",  name);
     free (name);
@@ -380,8 +380,7 @@ gui_show_progress (gui_t *gui, char *title, char *text)
 
     gtk_box_pack_start (GTK_BOX (vbox), hbox_top, TRUE, TRUE, 0);
 
-    GtkWidget *icon = gtk_image_new_from_stock (GTK_STOCK_DIALOG_INFO,
-                                                GTK_ICON_SIZE_DIALOG);
+    GtkWidget *icon = gtk_image_new_from_icon_name ("dialog-information", GTK_ICON_SIZE_DIALOG);
     gtk_box_pack_start (GTK_BOX (hbox_top), icon, FALSE, FALSE, 15);
 
     GtkWidget *label = gtk_label_new (text);
