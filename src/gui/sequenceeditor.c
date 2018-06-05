@@ -486,6 +486,11 @@ gui_sequence_editor_widget_get_size (GtkWidget *widget, int *height, int *width)
     GtkRequisition req_min, req_nat;
     gtk_widget_get_preferred_size(widget, &req_min, &req_nat);
     
+#ifdef PRINT_EXTRA_DEBUG
+    DEBUG ("req_min  = width: %d, height: %d", req_min.width, req_min.height);
+    DEBUG ("req_nat  = width: %d, height: %d", req_nat.width, req_nat.height);
+#endif
+    
     if (req_nat.width > *width)
         *width = req_nat.width;
     if (req_nat.height > *height)
@@ -513,14 +518,26 @@ gui_sequence_editor_allocate_child (gui_sequence_editor_t *self, GtkWidget *chil
     allocation.y = y;
     allocation.width = width;
     allocation.height = height;
+    int allocate = TRUE;
     
     GtkAllocation child_allocation;
-    gtk_widget_get_allocation(GTK_WIDGET(child), &child_allocation); 
+    gtk_widget_get_allocation(GTK_WIDGET(child), &child_allocation);
 
     if ((x != child_allocation.x) || (y != child_allocation.y))
+    {
         gtk_layout_move (GTK_LAYOUT (gtk_widget_get_parent(child)), child, x, y);
-
-    gtk_widget_size_allocate (child, &allocation);
+    }
+#if GTK_CHECK_VERSION(3,0,0)
+    /* FIXME ugly hack for triggering draw on window resize problem */
+    else if (child == self->controls_viewport)
+    {
+        gtk_layout_move (GTK_LAYOUT (gtk_widget_get_parent(child)), child, x, y);
+        allocate = FALSE;
+    }
+#endif
+    
+    if(allocate)
+        gtk_widget_size_allocate (child, &allocation);
 }
 
 static void
@@ -575,30 +592,32 @@ static void
 gui_sequence_editor_control_size_request_event (GtkWidget *widget, GtkAllocation  *allocation,
                                                 gui_sequence_editor_t *self)
 {
-    GtkRequisition requisition;
+    /* FIXME this is probably where the resize problems occur on scroll drawing */
+    GtkRequisition req_min, req_nat;
     int hpad = TRACK_HPADDING;
     int vpad = TRACK_VPADDING;
     int volume_width = 0;
     int name_width, toggle_width, height;
     int top_pad = self->top_padding;
     
-    gtk_widget_get_preferred_size (widget, &requisition, NULL);
-
+    gtk_widget_get_preferred_size (widget, &req_min, &req_nat);
+    
     gui_sequence_editor_control_get_sizes (self, &name_width, &toggle_width, &volume_width, &height);
 
     int ntracks = sequence_get_tracks_num (self->sequence);
-    requisition.width = hpad + name_width + hpad + (toggle_width + hpad) * 2 + volume_width + hpad;
-    requisition.height = (height + vpad) * ntracks + top_pad;
+    req_min.width = hpad + name_width + hpad + (toggle_width + hpad) * 2 + volume_width + hpad;
+    req_min.height = (height + vpad) * ntracks + top_pad;
     
 #ifdef PRINT_EXTRA_DEBUG
-    DEBUG ("width: %d, height: %d", requisition.width, requisition.height);
+    DEBUG ("req_min  = width: %d, height: %d", req_min.width, req_min.height);
+    DEBUG ("req_nat  = width: %d, height: %d", req_nat.width, req_nat.height);
 #endif
     /*
     if (ntracks > 0)
       requisition->height -= pad;
      */
     
-    gtk_widget_set_size_request (widget, requisition.width, requisition.height);
+    gtk_widget_set_size_request (widget, req_min.width, req_min.height);
 }
 
 #else
@@ -707,7 +726,9 @@ gui_sequence_editor_control_draw_event (GtkWidget *widget, cairo_t *cr,
     GdkRectangle rect;
     gdk_cairo_get_clip_rectangle(cr, &rect);
     
-//    printf("gui_sequence_editor rect x = %d: y = %d, width = %d: height = %d\n",rect.x, rect.y, rect.width, rect.height );
+#ifdef PRINT_EXTRA_DEBUG
+    DEBUG("rect x = %d: y = %d, width = %d: height = %d\n",rect.x, rect.y, rect.width, rect.height );
+#endif
     if (self->cst_bg && gtk_layout_get_bin_window(GTK_LAYOUT (widget)))
     {
         //cairo_t *cr = gdk_cairo_create (gtk_layout_get_bin_window(GTK_LAYOUT (widget)));
@@ -726,7 +747,9 @@ static gboolean
 gui_sequence_editor_control_expose_event (GtkWidget *widget, GdkEventExpose *event,
                                           gui_sequence_editor_t *self)
 {
-//    printf("gui_sequence_editor x = %d: y = %d, width = %d: height = %d\n",event->area.x, event->area.y, event->area.width, event->area.height );
+#ifdef PRINT_EXTRA_DEBUG
+    DEBUG("x = %d: y = %d, width = %d: height = %d\n",event->area.x, event->area.y, event->area.width, event->area.height );
+#endif
     if (self->bg && gtk_layout_get_bin_window(GTK_LAYOUT (widget)))
     {
         cairo_t *cr = gdk_cairo_create (gtk_layout_get_bin_window(GTK_LAYOUT (widget)));
