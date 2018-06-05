@@ -478,6 +478,20 @@ gui_sequence_editor_draw_control (gui_sequence_editor_t *self, int track)
     slider_add_overlap (ctl->volume, ctl->name);
 }
 
+#if GTK_CHECK_VERSION(3,0,0)
+static void
+gui_sequence_editor_widget_get_size (GtkWidget *widget, int *height, int *width)
+{
+    /* FIXME this probably not right */
+    GtkRequisition req_min, req_nat;
+    gtk_widget_get_preferred_size(widget, &req_min, &req_nat);
+    
+    if (req_nat.width > *width)
+        *width = req_nat.width;
+    if (req_nat.height > *height)
+        *height = req_nat.height;
+}
+#else
 static void
 gui_sequence_editor_widget_get_size (GtkWidget *widget, int *height, int *width)
 {
@@ -488,6 +502,7 @@ gui_sequence_editor_widget_get_size (GtkWidget *widget, int *height, int *width)
     if (req.height > *height)
         *height = req.height;
 }
+#endif
 
 static void
 gui_sequence_editor_allocate_child (gui_sequence_editor_t *self, GtkWidget *child,
@@ -680,7 +695,7 @@ gui_sequence_editor_control_size_allocate_event (GtkWidget *widget, GtkAllocatio
         active_track = ntracks - 1;
 
     gui_sequence_editor_set_active_track (self, active_track, 0);
-
+    
     return TRUE;
 }
 
@@ -695,12 +710,14 @@ gui_sequence_editor_control_draw_event (GtkWidget *widget, cairo_t *cr,
 //    printf("gui_sequence_editor rect x = %d: y = %d, width = %d: height = %d\n",rect.x, rect.y, rect.width, rect.height );
     if (self->cst_bg && gtk_layout_get_bin_window(GTK_LAYOUT (widget)))
     {
-        cairo_t *cr = gdk_cairo_create (gtk_layout_get_bin_window(GTK_LAYOUT (widget)));
+        //cairo_t *cr = gdk_cairo_create (gtk_layout_get_bin_window(GTK_LAYOUT (widget)));
+        cairo_save(cr);
         cairo_set_source_surface(cr, self->cst_bg, 0, 0);
         cairo_rectangle (cr, rect.x, rect.y, rect.width, rect.height);
         cairo_clip (cr);
         cairo_paint (cr);
-//        cairo_destroy(cr);   
+        cairo_restore(cr);
+        //        cairo_destroy(cr); 
     }
     return FALSE;
 }
@@ -857,7 +874,7 @@ gui_sequence_editor_configure_event (GtkWidget *widget, GtkAllocation *event, gu
     size_delta->width = grid_get_minimum_width (self->grid) - grid_width + 5;
     size_delta->height = grid_get_minimum_height (self->grid) - grid_height + 5;
     event_fire (self, "size-delta-request", size_delta, free);
-
+   
     return TRUE;
 }
 
