@@ -24,6 +24,7 @@
 #define __PHAT_KNOB_H__
 
 #include <gdk/gdk.h>
+#include "gui/phat/phatrange.h"
 
 G_BEGIN_DECLS
 
@@ -46,7 +47,7 @@ typedef enum
 #endif
 
 struct _PhatKnob {
-    GtkRange range;
+    PhatRange range;
 
     gboolean is_log;
 
@@ -65,7 +66,7 @@ struct _PhatKnob {
 };
 
 struct _PhatKnobClass {
-    GtkRangeClass parent_class;
+    PhatRangeClass parent_class;
 };
 
 GType phat_knob_get_type();
