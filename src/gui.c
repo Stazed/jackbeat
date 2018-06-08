@@ -1142,20 +1142,32 @@ gui_compute_pitch (GtkWidget *octave, GtkWidget *semitone, GtkWidget *finetune)
     return pitch;
 }
 
+#if GTK_CHECK_VERSION(3,0,0)
+void
+gui_pitch_changed (GtkRange *range, gui_t *gui)
+{
+    if (!gui->refreshing)
+    {
+        double pitch = gui_compute_pitch (gui->pitch_octave, gui->pitch_semitone, gui->pitch_finetune);
+        int track = gui_sequence_editor_get_active_track (gui->sequence_editor);
+        
+#ifdef PRINT_EXTRA_DEBUG
+        DEBUG ("knobs computed pitch: %lf", pitch);
+#endif
+        sequence_set_pitch (gui->sequence, track, pitch);
+    }
+}
+#else
 G_MODULE_EXPORT void
 gui_pitch_changed (GtkRange *range, gui_t *gui)
 {
     if (!gui->refreshing)
     {
-#if GTK_CHECK_VERSION(3,0,0)
-        double pitch = gui_compute_pitch (gui->pitch_octave, gui->pitch_semitone, gui->pitch_finetune);
-#else
         GtkWidget *octave = gui_builder_get_widget (gui->builder, "pitch_octave");
         GtkWidget *semitone = gui_builder_get_widget (gui->builder, "pitch_semitone");
         GtkWidget *finetune = gui_builder_get_widget (gui->builder, "pitch_finetune");
 
         double pitch = gui_compute_pitch (octave, semitone, finetune);
-#endif
         int track = gui_sequence_editor_get_active_track (gui->sequence_editor);
 #ifdef PRINT_EXTRA_DEBUG
         DEBUG ("knobs computed pitch: %lf", pitch);
@@ -1163,6 +1175,7 @@ gui_pitch_changed (GtkRange *range, gui_t *gui)
         sequence_set_pitch (gui->sequence, track, pitch);
     }
 }
+#endif  // GTK_CHECK_VERSION(3,0,0)
 
 G_MODULE_EXPORT void
 gui_pitch_spinner_changed (GtkSpinButton *spinner, gui_t *gui)
@@ -1644,6 +1657,13 @@ gui_init (gui_t * gui)
     gui->pitch_octave = phat_knob_new_with_range (0, -6, 6, 1);
     gui->pitch_semitone = phat_knob_new_with_range (0, -6, 6, 1);
     gui->pitch_finetune = phat_knob_new_with_range (0, -50, 49.99, .001);
+    
+    g_signal_connect (G_OBJECT (gui->pitch_octave), "value_changed",
+                        G_CALLBACK (gui_pitch_changed), (gpointer) gui);
+    g_signal_connect (G_OBJECT (gui->pitch_semitone), "value_changed",
+                        G_CALLBACK (gui_pitch_changed), (gpointer) gui);
+    g_signal_connect (G_OBJECT (gui->pitch_finetune), "value_changed",
+                        G_CALLBACK (gui_pitch_changed), (gpointer) gui);
     
     gtk_grid_attach (table3, gui->pitch_octave, 0, 1, 1, 1);
     gtk_grid_attach (table3, gui->pitch_semitone, 1, 1, 1, 1);
