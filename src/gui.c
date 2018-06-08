@@ -1131,9 +1131,9 @@ static double
 gui_compute_pitch (GtkWidget *octave, GtkWidget *semitone, GtkWidget *finetune)
 {
 #if GTK_CHECK_VERSION(3,0,0)
-    double pitch = gtk_spin_button_get_value (GTK_SPIN_BUTTON (octave)) * 12
-            + gtk_spin_button_get_value (GTK_SPIN_BUTTON (semitone))
-            + gtk_spin_button_get_value (GTK_SPIN_BUTTON (finetune));
+    double pitch = phat_knob_get_value (PHAT_KNOB (octave)) * 12
+            + phat_knob_get_value (PHAT_KNOB (semitone))
+            + phat_knob_get_value (PHAT_KNOB (finetune)) / 100;
 #else
     double pitch = phat_knob_get_value (PHAT_KNOB (octave)) * 12
             + phat_knob_get_value (PHAT_KNOB (semitone))
@@ -1147,11 +1147,15 @@ gui_pitch_changed (GtkRange *range, gui_t *gui)
 {
     if (!gui->refreshing)
     {
+#if GTK_CHECK_VERSION(3,0,0)
+        double pitch = gui_compute_pitch (gui->pitch_octave, gui->pitch_semitone, gui->pitch_finetune);
+#else
         GtkWidget *octave = gui_builder_get_widget (gui->builder, "pitch_octave");
         GtkWidget *semitone = gui_builder_get_widget (gui->builder, "pitch_semitone");
         GtkWidget *finetune = gui_builder_get_widget (gui->builder, "pitch_finetune");
 
         double pitch = gui_compute_pitch (octave, semitone, finetune);
+#endif
         int track = gui_sequence_editor_get_active_track (gui->sequence_editor);
 #ifdef PRINT_EXTRA_DEBUG
         DEBUG ("knobs computed pitch: %lf", pitch);
@@ -1173,15 +1177,20 @@ gui_pitch_spinner_changed (GtkSpinButton *spinner, gui_t *gui)
 static void
 gui_update_pitch_controls (gui_t *gui, int track)
 {
+    int old         = gui->refreshing;
+    gui->refreshing = 1;
+    
     GtkWidget *pitch_spinner = gui_builder_get_widget (gui->builder, "pitch_spinner");
+    
+#if GTK_CHECK_VERSION(3,0,0)
+    double current_pitch = gui_compute_pitch (gui->pitch_octave, gui->pitch_semitone, gui->pitch_finetune);
+#else
     GtkWidget *octave = gui_builder_get_widget (gui->builder, "pitch_octave");
     GtkWidget *semitone = gui_builder_get_widget (gui->builder, "pitch_semitone");
     GtkWidget *finetune = gui_builder_get_widget (gui->builder, "pitch_finetune");
 
-    int old         = gui->refreshing;
-    gui->refreshing = 1;
-
     double current_pitch = gui_compute_pitch (octave, semitone, finetune);
+#endif
     double pitch = sequence_get_pitch (gui->sequence, track);
     gtk_spin_button_set_value  (GTK_SPIN_BUTTON (pitch_spinner), pitch);
     if (pitch != current_pitch)
@@ -1191,9 +1200,9 @@ gui_update_pitch_controls (gui_t *gui, int track)
         double finetune_val = (pitch - octave_val * 12 - semitone_val) * 100;
 
 #if GTK_CHECK_VERSION(3,0,0)
-        gtk_spin_button_set_value (GTK_SPIN_BUTTON (octave), octave_val);
-        gtk_spin_button_set_value (GTK_SPIN_BUTTON (semitone), semitone_val);
-        gtk_spin_button_set_value (GTK_SPIN_BUTTON (finetune), finetune_val);
+        phat_knob_set_value (PHAT_KNOB (gui->pitch_octave), octave_val);
+        phat_knob_set_value (PHAT_KNOB (gui->pitch_semitone), semitone_val);
+        phat_knob_set_value (PHAT_KNOB (gui->pitch_finetune), finetune_val);
 #else
         phat_knob_set_value (PHAT_KNOB (octave), octave_val);
         phat_knob_set_value (PHAT_KNOB (semitone), semitone_val);
@@ -1589,7 +1598,7 @@ gui_init (gui_t * gui)
 #ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Initializing GUI");
 #endif
-
+    
     gui->window = gui_builder_get_widget (gui->builder, "main_window");
     gui_update_window_title (gui);
     gui->main_vbox = gui_builder_get_widget (gui->builder, "main_vbox");
@@ -1629,6 +1638,17 @@ gui_init (gui_t * gui)
                         G_CALLBACK (gui_playback_toggle_pressed), (gpointer) gui);
      */
     gtk_box_reorder_child (GTK_BOX (gui->main_vbox), gui->menubar, 0);
+    
+#if GTK_CHECK_VERSION(3,0,0)
+    GtkWidget *table3 = gui_builder_get_widget (gui->builder, "table3");
+    gui->pitch_octave = phat_knob_new_with_range (0, -6, 6, 1);
+    gui->pitch_semitone = phat_knob_new_with_range (0, -6, 6, 1);
+    gui->pitch_finetune = phat_knob_new_with_range (0, -50, 49.99, .001);
+    
+    gtk_grid_attach (table3, gui->pitch_octave, 0, 1, 1, 1);
+    gtk_grid_attach (table3, gui->pitch_semitone, 1, 1, 1, 1);
+    gtk_grid_attach (table3, gui->pitch_finetune, 2, 1, 1, 1);
+#endif
 
     /* The FALSE flag is for edit mode - currently disabled - FIXME 
      * Edit mode allows for setting a partial or cropped sample to be played.
@@ -1667,9 +1687,9 @@ gui_init (gui_t * gui)
                         TRUE, TRUE, 0);
 #if GTK_CHECK_VERSION(3,0,0)
     /* This is necessary since apparently glade 3 only allows to enter two digit precision */
-    GtkWidget *finetune = gui_builder_get_widget (gui->builder, "pitch_finetune");
+/*    GtkWidget *finetune = gui_builder_get_widget (gui->builder, "pitch_finetune");
     gtk_spin_button_set_range (finetune, -0.5, 0.4999);
-    gtk_spin_button_set_increments (finetune, 0.0001, .001);
+    gtk_spin_button_set_increments (finetune, 0.0001, .001);*/
 #endif
     gui_update_track_properties (gui);
 

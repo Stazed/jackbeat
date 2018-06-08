@@ -110,6 +110,11 @@ struct gui_t {
     GtkWidget * rewind;
     GtkWidget * progress_window;
     GtkWidget * progress_bar;
+#if GTK_CHECK_VERSION(3,0,0)
+    GtkWidget * pitch_octave;
+    GtkWidget * pitch_semitone;
+    GtkWidget * pitch_finetune;
+#endif
 #ifdef USE_DEPRECIATED
     GtkTooltips * tooltips;
 #endif

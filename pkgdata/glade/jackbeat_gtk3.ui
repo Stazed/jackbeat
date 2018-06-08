@@ -50,24 +50,6 @@
     <property name="step_increment">0.25</property>
     <property name="page_increment">1</property>
   </object>
-  <object class="GtkAdjustment" id="adjustment7">
-    <property name="lower">-6</property>
-    <property name="upper">6</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">1</property>
-  </object>
-  <object class="GtkAdjustment" id="adjustment8">
-    <property name="lower">-6</property>
-    <property name="upper">6</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">1</property>
-  </object>
-  <object class="GtkAdjustment" id="adjustment9">
-    <property name="lower">-0.5</property>
-    <property name="upper">0.48999999999999999</property>
-    <property name="step_increment">0.01</property>
-    <property name="page_increment">0.01</property>
-  </object>
   <object class="GtkWindow" id="main_window">
     <property name="can_focus">False</property>
     <property name="default_width">780</property>
@@ -402,6 +384,7 @@
                                       <object class="GtkLabel" id="label33">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
+                                        <property name="halign">start</property>
                                         <property name="label" translatable="yes">&lt;span size="smaller"&gt;Fine-tune&lt;/span&gt;</property>
                                         <property name="use_markup">True</property>
                                       </object>
@@ -414,8 +397,10 @@
                                       <object class="GtkLabel" id="label30">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
+                                        <property name="halign">start</property>
                                         <property name="label" translatable="yes">&lt;span size="smaller"&gt;Semitone&lt;/span&gt;</property>
                                         <property name="use_markup">True</property>
+                                        <property name="justify">center</property>
                                       </object>
                                       <packing>
                                         <property name="left_attach">1</property>
@@ -426,6 +411,7 @@
                                       <object class="GtkLabel" id="label22">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
+                                        <property name="halign">start</property>
                                         <property name="label" translatable="yes">&lt;span size="smaller"&gt;Octave&lt;/span&gt;</property>
                                         <property name="use_markup">True</property>
                                       </object>
@@ -438,6 +424,18 @@
                                       <object class="GtkBox" id="hbox10">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
+                                        <child>
+                                          <object class="GtkLabel" id="label34">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="label" translatable="yes">Pitch :</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">True</property>
+                                            <property name="position">0</property>
+                                          </packing>
+                                        </child>
                                         <child>
                                           <object class="GtkSpinButton" id="pitch_spinner">
                                             <property name="visible">True</property>
@@ -452,83 +450,32 @@
                                             <signal name="value-changed" handler="gui_pitch_spinner_changed" swapped="no"/>
                                           </object>
                                           <packing>
-                                            <property name="expand">True</property>
-                                            <property name="fill">True</property>
+                                            <property name="expand">False</property>
+                                            <property name="fill">False</property>
                                             <property name="padding">3</property>
-                                            <property name="position">1</property>
+                                            <property name="position">2</property>
                                           </packing>
                                         </child>
                                       </object>
                                       <packing>
-                                        <property name="left_attach">1</property>
-                                        <property name="top_attach">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkSpinButton" id="pitch_octave">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="max_length">3</property>
-                                        <property name="width_chars">3</property>
-                                        <property name="max_width_chars">3</property>
-                                        <property name="xalign">2.2351741291171123e-10</property>
-                                        <property name="primary_icon_activatable">False</property>
-                                        <property name="secondary_icon_activatable">False</property>
-                                        <property name="adjustment">adjustment7</property>
-                                        <signal name="value-changed" handler="gui_pitch_changed" swapped="no"/>
-                                      </object>
-                                      <packing>
-                                        <property name="left_attach">0</property>
-                                        <property name="top_attach">1</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkSpinButton" id="pitch_semitone">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="max_length">2</property>
-                                        <property name="width_chars">2</property>
-                                        <property name="max_width_chars">2</property>
-                                        <property name="adjustment">adjustment8</property>
-                                        <signal name="value-changed" handler="gui_pitch_changed" swapped="no"/>
-                                      </object>
-                                      <packing>
-                                        <property name="left_attach">1</property>
-                                        <property name="top_attach">1</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkSpinButton" id="pitch_finetune">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="width_chars">7</property>
-                                        <property name="adjustment">adjustment9</property>
-                                        <property name="digits">4</property>
-                                        <signal name="value-changed" handler="gui_pitch_changed" swapped="no"/>
-                                      </object>
-                                      <packing>
-                                        <property name="left_attach">2</property>
-                                        <property name="top_attach">1</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel" id="label42">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="label" translatable="yes">Pitch :</property>
-                                      </object>
-                                      <packing>
                                         <property name="left_attach">0</property>
                                         <property name="top_attach">0</property>
+                                        <property name="width">3</property>
                                       </packing>
+                                    </child>
+                                    <child>
+                                      <placeholder/>
+                                    </child>
+                                    <child>
+                                      <placeholder/>
                                     </child>
                                     <child>
                                       <placeholder/>
                                     </child>
                                   </object>
                                   <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
                                     <property name="position">0</property>
                                   </packing>
                                 </child>
@@ -1747,6 +1694,24 @@
       <action-widget response="-10">prefs_apply_button</action-widget>
       <action-widget response="-5">okbutton1</action-widget>
     </action-widgets>
+  </object>
+  <object class="GtkAdjustment" id="adjustment7">
+    <property name="lower">-6</property>
+    <property name="upper">6</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">1</property>
+  </object>
+  <object class="GtkAdjustment" id="adjustment8">
+    <property name="lower">-6</property>
+    <property name="upper">6</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">1</property>
+  </object>
+  <object class="GtkAdjustment" id="adjustment9">
+    <property name="lower">-0.5</property>
+    <property name="upper">0.48999999999999999</property>
+    <property name="step_increment">0.01</property>
+    <property name="page_increment">0.01</property>
   </object>
   <object class="GtkMessageDialog" id="disconnect_warning">
     <property name="can_focus">False</property>
