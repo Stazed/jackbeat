@@ -1653,7 +1653,7 @@ gui_init (gui_t * gui)
     gtk_box_reorder_child (GTK_BOX (gui->main_vbox), gui->menubar, 0);
     
 #if GTK_CHECK_VERSION(3,0,0)
-    GtkWidget *table3 = gui_builder_get_widget (gui->builder, "table3");
+    GtkGrid *table3 = (GtkGrid*)gui_builder_get_widget (gui->builder, "table3");
     gui->pitch_octave = phat_knob_new_with_range (0, -6, 6, 1);
     gui->pitch_semitone = phat_knob_new_with_range (0, -6, 6, 1);
     gui->pitch_finetune = phat_knob_new_with_range (0, -50, 49.99, .001);
