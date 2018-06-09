@@ -295,29 +295,9 @@ phat_knob_destroy (GtkWidget *object)
 phat_knob_destroy (GtkObject *object)
 #endif
 {
-//    PhatKnob *knob;
-
     g_return_if_fail (object != NULL);
     g_return_if_fail (PHAT_IS_KNOB (object));
 
-//    knob = PHAT_KNOB (object);
-
-/*    if (knob->mask)
-    {
-        gdk_bitmap_unref (knob->mask);
-        knob->mask = NULL;
-    }
-
-    if (knob->mask_gc)
-    {
-        gdk_gc_unref (knob->mask_gc);
-        knob->mask_gc = NULL;
-    }
-    if (knob->red_gc)
-    {
-        gdk_gc_unref (knob->red_gc);
-        knob->red_gc = NULL;
-    }*/
 #if GTK_CHECK_VERSION(3,0,0)
     if (GTK_WIDGET_CLASS (phat_knob_parent_class)->destroy)
         (*GTK_WIDGET_CLASS (phat_knob_parent_class)->destroy)(object);
@@ -486,17 +466,12 @@ draw_knob (GdkDrawable *drawable, GdkGC *bg_gc, GtkAllocation *alloc, float valu
 static gboolean
 phat_knob_draw (GtkWidget *widget, cairo_t *cr)
 {
-    /* FIXME */
     PhatKnob *knob;
     PhatRange *range;
     int dx;
 
     g_return_val_if_fail (widget != NULL, FALSE);
     g_return_val_if_fail (PHAT_IS_KNOB (widget), FALSE);
-//    g_return_val_if_fail (cr != NULL, FALSE);
-
-//    if (event->count > 0)
-//        return FALSE;
 
     knob = PHAT_KNOB (widget);
     range = PHAT_RANGE (widget);
@@ -510,7 +485,6 @@ phat_knob_draw (GtkWidget *widget, cairo_t *cr)
     gdk_cairo_set_source_pixbuf (cr, knob->pixbuf, -dx, 0);
     cairo_rectangle(cr, 0, 0, knob->size, knob->size);
     cairo_clip(cr);
-//    cairo_fill(cr);
     cairo_paint (cr);
     cairo_restore(cr);
 
@@ -545,8 +519,6 @@ phat_knob_expose (GtkWidget *widget, GdkEventExpose *event)
         draw_knob (widget->window, widget->style->bg_gc[GTK_STATE_NORMAL], 
                    &widget->allocation, phat_range_get_internal_value(range));
      */
-    //    gdk_draw_pixbuf(widget->window, knob->mask_gc, knob->pixbuf,
-    //                    dx, 0, 0, 0, knob->size, knob->size,GDK_RGB_DITHER_NONE,0,0);
 
     return FALSE;
 }
@@ -781,8 +753,6 @@ phat_knob_set_property (GObject      *object,
                         const GValue *value,
                         GParamSpec   *pspec)
 {
-    //PhatKnob *knob = PHAT_KNOB (object);
-
     switch (prop_id)
     {
         default:
@@ -797,8 +767,6 @@ phat_knob_get_property (GObject    *object,
                         GValue     *value,
                         GParamSpec *pspec)
 {
-    //PhatKnob *knob = PHAT_KNOB (object);
-
     switch (prop_id)
     {
         default:

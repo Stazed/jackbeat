@@ -115,10 +115,7 @@ struct gui_t {
     GtkWidget * pitch_semitone;
     GtkWidget * pitch_finetune;
 #endif
-#ifdef USE_DEPRECIATED
-    GtkTooltips * tooltips;
-#endif
-    
+
     /* File menu */
     GtkWidget * fileMenu;
     GtkWidget * fileFileMenu;

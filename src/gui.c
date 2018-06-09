@@ -66,73 +66,6 @@ enum
     GUI_SHIFT_UP_BIG
 } ;
 
-#ifdef USE_DEPRECIATED
-static GtkItemFactoryEntry gui_menu_items[] = {
-    /* File menu */
-    {"/_File", NULL, NULL, 0, "<Branch>"},
-    {"/File/New", "<control>N", gui_new_instance, 1, "<StockItem>",
-        GTK_STOCK_NEW},
-    {"/File/Open", "<control>O", gui_file_load_sequence, 1, "<StockItem>",
-        GTK_STOCK_OPEN},
-    {"/File/Save", "<control>S", gui_file_save_sequence, 1, "<StockItem>",
-        GTK_STOCK_SAVE},
-    {"/File/Save as", "<control><shift>S", gui_file_save_as_sequence, 1, "<StockItem>",
-        GTK_STOCK_SAVE_AS},
-    {"/File/Export waveform", "<control>E", gui_file_export_sequence, 1, "<StockItem>",
-        GTK_STOCK_CONVERT},
-    {"/File/Close", "<control>W", gui_close_from_menu, 1, "<StockItem>",
-        GTK_STOCK_CLOSE},
-#ifndef HAVE_GTK_QUARTZ
-    {"/File/quit_separator", NULL, NULL, 0, "<Separator>"},
-#endif  
-    {"/File/Quit", "<control>Q", gui_exit, 1, "<StockItem>",
-        GTK_STOCK_QUIT},
-
-    /* Edit menu */
-    {"/_Edit", NULL, NULL, 0, "<Branch>"},
-    {"/Edit/Add track", "<control><shift>N", gui_add_track, 1, "<StockItem>", GTK_STOCK_ADD},
-    {"/Edit/Load sample", "<control>L", gui_load_sample, 1, "<StockItem>", GTK_STOCK_OPEN},
-    {"/Edit/Rename track", "F2", gui_rename_track, 1, "<Item>"},
-    {"/Edit/Mute\\/Unmute track", "M", gui_mute_track, 1, "<Item>"},
-    {"/Edit/Toggle track solo", "S", gui_solo_track, 1, "<Item>"},
-    {"/Edit/Track volume", NULL, NULL, 0, "<Branch>"},
-    /* Warning: the track volume accelerators are also handled in
-       gui_hijack_key_press() */
-    {"/Edit/Track volume/Increase by 0.2dB", "P", gui_shift_track_volume, GUI_SHIFT_UP, "<Item>"},
-    {"/Edit/Track volume/Decrease by 0.2dB", "L", gui_shift_track_volume, GUI_SHIFT_DOWN, "<Item>"},
-    {"/Edit/Track volume/track_vol_sep1", NULL, NULL, 0, "<Separator>"},
-    {"/Edit/Track volume/Increase by 3dB", "<shift>P", gui_shift_track_volume, GUI_SHIFT_UP_BIG, "<Item>"},
-    {"/Edit/Track volume/Decrease by 3dB", "<shift>L", gui_shift_track_volume, GUI_SHIFT_DOWN_BIG, "<Item>"},
-    {"/Edit/Track volume/track_vol_sep2", NULL, NULL, 0, "<Separator>"},
-    {"/Edit/Track volume/Reset to 0dB", "O", gui_shift_track_volume, GUI_SHIFT_RESET, "<Item>"},
-    {"/Edit/Remove track", "<control>Delete", gui_remove_track, 1, "<StockItem>", GTK_STOCK_REMOVE},
-    {"/Edit/edit_separator", NULL, NULL, 0, "<Separator>"},
-    {"/Edit/Clear pattern", "<control><shift>K", gui_clear_sequence, 1, "<StockItem>", GTK_STOCK_DELETE},
-    {"/Edit/Double", "<control><shift>D", gui_duplicate_sequence, 1, "<Item>"},
-    {"/Edit/Transpose volumes", "<control><shift>T", gui_transpose_volumes_dialog, 1, "<Item>"},
-    {"/Edit/Clear solo", "X", gui_clear_solo, 1, "<Item>"},
-#ifdef HAVE_GTK_QUARTZ
-    {"/Edit/Preferences", NULL, gui_mac_prefs_run, 1, "<StockItem>", GTK_STOCK_PREFERENCES},
-#else
-    {"/Edit/prefs_separator", NULL, NULL, 0, "<Separator>"},
-    {"/Edit/Preferences", NULL, gui_prefs_run, 1, "<StockItem>", GTK_STOCK_PREFERENCES},
-#endif  
-
-    /* Playback menu */
-    {"/_Playback", NULL, NULL, 0, "<Branch>"},
-    {"/Playback/Play\\/Pause", "space", gui_menu_play_clicked, 1, "<StockItem>", GTK_STOCK_MEDIA_PLAY},
-    {"/Playback/Rewind", "Z", gui_menu_rewind_clicked, 1, "<StockItem>", GTK_STOCK_MEDIA_REWIND},
-
-    /* Help menu */
-    {"/_Help", NULL, NULL, 0, "<Branch>"},
-    {"/_Help/_About Jackbeat", NULL, gui_about_dialog, 1, "<StockItem>", GTK_STOCK_ABOUT},
-};
-
-
-static gint gui_menu_nitems =
-        sizeof (gui_menu_items) / sizeof (gui_menu_items[0]);
-#endif // USE_DEPRECIATED
-
 void gui_toggle_sequence_properties (GtkWidget *widget, gui_t *gui);
 void gui_toggle_track_properties (GtkWidget *widget, gui_t *gui);
 static void gui_update_track_properties (gui_t *gui);
@@ -670,37 +603,6 @@ gui_menubar (gui_t * gui)
     return gui->menubar;
 }
 
-#ifdef USE_DEPRECIATED
-static GtkWidget *
-gui_make_menubar (gui_t * gui, GtkItemFactoryEntry * items, gint nitems)
-{
-    GtkItemFactory *item_factory;
-    GtkAccelGroup *accel_group;
-
-    accel_group = gtk_accel_group_new ();
-    item_factory = gtk_item_factory_new (GTK_TYPE_MENU_BAR, "<main>",
-                                         accel_group);
-    gtk_item_factory_create_items (item_factory, nitems, items, (gpointer) gui);
-    gtk_window_add_accel_group (GTK_WINDOW (gui->window), accel_group);
-
-    gui->menubar_quit_item  = gtk_item_factory_get_widget (item_factory,
-                                                           "/File/Quit");
-
-#ifdef HAVE_GTK_QUARTZ
-    static int first_run = 1;
-    if (first_run)
-    {
-        GtkWidget *item = gtk_item_factory_get_widget (item_factory, "/Edit/Preferences");
-        IgeMacMenuGroup *group = ige_mac_menu_add_app_menu_group ();
-        ige_mac_menu_add_app_menu_item (group, GTK_MENU_ITEM (item), NULL);
-    }
-    first_run = 0;
-#endif
-
-    return gtk_item_factory_get_widget (item_factory, "<main>");
-}
-#endif // USE_DEPRECIATED
-
 static void
 gui_set_handler_active (gui_t *gui, GtkWidget *widget, gpointer handler, int state)
 {
@@ -869,9 +771,6 @@ gui_close (GtkWidget * widget, GdkEvent  *event, gui_t * gui) // Glade callback
         sequence_destroy (gui->sequence);
         event_unsubscribe_all (gui);
         gui_prefs_cleanup (gui);
-#ifdef USE_DEPRECIATED
-        gtk_object_destroy (GTK_WIDGET (gui->tooltips));
-#endif
         gui_builder_destroy (gui->builder);
         ARRAY_REMOVE (gui_t, gui_instances, gui_instances_num, gui);
         if (gui_instances_num == 0)
@@ -1128,15 +1027,10 @@ gui_on_looping_changed (event_t *event)
 static double
 gui_compute_pitch (GtkWidget *octave, GtkWidget *semitone, GtkWidget *finetune)
 {
-#if GTK_CHECK_VERSION(3,0,0)
     double pitch = phat_knob_get_value (PHAT_KNOB (octave)) * 12
             + phat_knob_get_value (PHAT_KNOB (semitone))
             + phat_knob_get_value (PHAT_KNOB (finetune)) / 100;
-#else
-    double pitch = phat_knob_get_value (PHAT_KNOB (octave)) * 12
-            + phat_knob_get_value (PHAT_KNOB (semitone))
-            + phat_knob_get_value (PHAT_KNOB (finetune)) / 100;
-#endif
+
     return pitch;
 }
 
@@ -1618,11 +1512,6 @@ gui_init (gui_t * gui)
     gtk_window_add_accel_group(GTK_WINDOW(gui->window), gui->accel_group);
     
     gui->menubar = gui_menubar(gui);
-    
-#ifdef USE_DEPRECIATED
-    gui->menubar = gui_make_menubar (gui, gui_menu_items,
-                                     gui_menu_nitems);
-#endif
 
     gtk_box_pack_start (GTK_BOX (gui->main_vbox), gui->menubar, FALSE, TRUE, 0);
 
@@ -1897,10 +1786,6 @@ gui_new_child (rc_t *rc, arg_t *arg, gui_t *parent, song_t *song,
         gui->filename_is_set = 0;
     }
 
-#ifdef USE_DEPRECIATED
-    gui->tooltips = gtk_tooltips_new ();
-#endif
-    
     gui_init (gui);
 #ifdef PRINT_EXTRA_DEBUG
     DEBUG ("Starting GUI");
