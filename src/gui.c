@@ -1543,7 +1543,7 @@ gui_init (gui_t * gui)
     GtkGrid *table3 = (GtkGrid*)gui_builder_get_widget (gui->builder, "table3");
     gui->pitch_octave = phat_knob_new_with_range (0, -6, 6, 1);
     gui->pitch_semitone = phat_knob_new_with_range (0, -6, 6, 1);
-    gui->pitch_finetune = phat_knob_new_with_range (0, -50, 49.99, .001);
+    gui->pitch_finetune = phat_knob_new_with_range (0, -50, 49.99, .01);
     
     g_signal_connect (G_OBJECT (gui->pitch_octave), "value_changed",
                         G_CALLBACK (gui_pitch_changed), (gpointer) gui);
@@ -1592,12 +1592,7 @@ gui_init (gui_t * gui)
     GtkWidget *sequence_box = gui_builder_get_widget (gui->builder, "sequence_box");
     gtk_box_pack_start (GTK_BOX (sequence_box), gui_sequence_editor_get_widget (gui->sequence_editor),
                         TRUE, TRUE, 0);
-#if GTK_CHECK_VERSION(3,0,0)
-    /* This is necessary since apparently glade 3 only allows to enter two digit precision */
-/*    GtkWidget *finetune = gui_builder_get_widget (gui->builder, "pitch_finetune");
-    gtk_spin_button_set_range (finetune, -0.5, 0.4999);
-    gtk_spin_button_set_increments (finetune, 0.0001, .001);*/
-#endif
+
     gui_update_track_properties (gui);
 
     gtk_widget_show_all (gui->main_vbox);
