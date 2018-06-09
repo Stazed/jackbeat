@@ -457,13 +457,13 @@ gui_menubar (gui_t * gui)
     
     /* File menu */
     gui->fileFileMenu = gtk_menu_item_new_with_mnemonic("_File");
-    gui->newFileMi = gtk_image_menu_item_new_from_stock(GTK_STOCK_NEW, gui->accel_group);
-    gui->openFileMi = gtk_image_menu_item_new_from_stock(GTK_STOCK_OPEN, gui->accel_group);
-    gui->saveFileMi = gtk_image_menu_item_new_from_stock(GTK_STOCK_SAVE, gui->accel_group);
-    gui->saveAsFileMi = gtk_image_menu_item_new_from_stock(GTK_STOCK_SAVE_AS, gui->accel_group);
+    gui->newFileMi = gtk_menu_item_new_with_mnemonic("_New");
+    gui->openFileMi = gtk_menu_item_new_with_mnemonic("_Open");
+    gui->saveFileMi = gtk_menu_item_new_with_mnemonic("_Save");
+    gui->saveAsFileMi = gtk_menu_item_new_with_mnemonic("Save _As");
     gui->exportFileMi = gtk_menu_item_new_with_label("Export waveform");
-    gui->closeFileMi = gtk_image_menu_item_new_from_stock(GTK_STOCK_CLOSE, gui->accel_group);
-    gui->quitFileMi = gtk_image_menu_item_new_from_stock(GTK_STOCK_QUIT, gui->accel_group);
+    gui->closeFileMi = gtk_menu_item_new_with_mnemonic("_Close");
+    gui->quitFileMi = gtk_menu_item_new_with_mnemonic("_Quit");
     
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(gui->fileFileMenu), gui->fileMenu);
     
@@ -528,7 +528,7 @@ gui_menubar (gui_t * gui)
     gui->transposeEditMi = gtk_menu_item_new_with_label("Transpose volumes");
     gui->clearSoloEditMi = gtk_menu_item_new_with_label("Clear solo");
     gui->separatorPrefsEditMi = gtk_separator_menu_item_new(); 
-    gui->preferencsEditMi = gtk_image_menu_item_new_from_stock(GTK_STOCK_PREFERENCES, NULL);
+    gui->preferencsEditMi = gtk_menu_item_new_with_mnemonic("_Preferences");
     
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(gui->editEditMenu), gui->editMenu);
     
@@ -639,8 +639,8 @@ gui_menubar (gui_t * gui)
     /* Playback menu */
     gui->playbackMenu = gtk_menu_new();
     gui->playbackPlaybackMenu = gtk_menu_item_new_with_mnemonic("_Playback");
-    gui->playPausePlaybackMi = gtk_image_menu_item_new_from_stock(GTK_STOCK_MEDIA_PLAY, NULL);
-    gui->rewindPlaybackMi = gtk_image_menu_item_new_from_stock(GTK_STOCK_MEDIA_REWIND, NULL);
+    gui->playPausePlaybackMi = gtk_menu_item_new_with_mnemonic("_Play");
+    gui->rewindPlaybackMi = gtk_menu_item_new_with_mnemonic("R_ewind");
     
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(gui->playbackPlaybackMenu), gui->playbackMenu);
     
@@ -659,7 +659,7 @@ gui_menubar (gui_t * gui)
     /* Help menu */
     gui->helpMenu = gtk_menu_new();
     gui->helpHelpMenu  = gtk_menu_item_new_with_mnemonic("_Help");
-    gui->aboutHelpMi  = gtk_image_menu_item_new_from_stock(GTK_STOCK_ABOUT, NULL);
+    gui->aboutHelpMi  = gtk_menu_item_new_with_mnemonic("_About");
     
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(gui->helpHelpMenu), gui->helpMenu);
     gtk_menu_shell_append(GTK_MENU_SHELL(gui->helpMenu), gui->aboutHelpMi);
@@ -1027,8 +1027,6 @@ gui_show_disconnect_warning (gui_t *gui, int transient)
         GtkWidget * disconnect_prefs = gui_builder_get_widget (gui->builder, "disconnect_prefs");
         GtkWidget * disconnect_ok = gui_builder_get_widget (gui->builder, "disconnect_ok");
 
-        gtk_dialog_add_action_widget (GTK_DIALOG (dialog), disconnect_prefs, GTK_RESPONSE_OK);
-        gtk_dialog_add_action_widget (GTK_DIALOG (dialog), disconnect_ok, GTK_RESPONSE_CANCEL);
         gtk_widget_set_sensitive (disconnect_prefs, gui_prefs_is_running (gui) ? FALSE : TRUE);
         gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_CANCEL);
         gtk_widget_grab_focus (disconnect_ok);
@@ -2014,8 +2012,8 @@ gui_ask_track_name (gui_t *gui, char *current_name, int error, int allow_cancel)
                                               "Rename track",
                                               GTK_WINDOW (gui->window),
                                               GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_MODAL,
-                                              GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
-                                              GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
+                                              "_OK", GTK_RESPONSE_ACCEPT,
+                                              "_Cancel", GTK_RESPONSE_REJECT,
                                               NULL);
     }
     else
@@ -2023,7 +2021,7 @@ gui_ask_track_name (gui_t *gui, char *current_name, int error, int allow_cancel)
                                               "Rename track",
                                               GTK_WINDOW (gui->window),
                                               GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_MODAL,
-                                              GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
+                                              "_OK", GTK_RESPONSE_ACCEPT,
                                               NULL);
     g_signal_connect (G_OBJECT (dialog), "delete_event",
                       G_CALLBACK (gui_no_delete), NULL);

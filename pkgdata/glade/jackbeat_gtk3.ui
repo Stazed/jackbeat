@@ -1719,12 +1719,13 @@
       <object class="GtkBox" id="messagedialog-vbox12">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox" id="messagedialog-action_area12">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
+            <property name="layout_style">center</property>
             <child>
               <object class="GtkButton" id="disconnect_prefs">
                 <property name="label">gtk-preferences</property>
@@ -1745,7 +1746,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
-                <property name="receives_default">True</property>
+                <property name="receives_default">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
@@ -1756,20 +1757,16 @@
             </child>
           </object>
           <packing>
-            <property name="expand">False</property>
+            <property name="expand">True</property>
             <property name="fill">True</property>
-            <property name="pack_type">end</property>
             <property name="position">0</property>
           </packing>
-        </child>
-        <child>
-          <placeholder/>
         </child>
       </object>
     </child>
     <action-widgets>
-      <action-widget response="0">disconnect_prefs</action-widget>
-      <action-widget response="0">disconnect_ok</action-widget>
+      <action-widget response="-5">disconnect_prefs</action-widget>
+      <action-widget response="-6">disconnect_ok</action-widget>
     </action-widgets>
   </object>
   <object class="GtkDialog" id="export_settings">

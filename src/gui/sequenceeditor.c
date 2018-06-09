@@ -231,7 +231,7 @@ gui_sequence_editor_make_menu (gui_sequence_editor_t *self, int track)
 
     gui_misc_add_menu_item (menu, "#separator", NULL, NULL, NULL, NULL);
 
-    item = gui_misc_add_menu_item (menu, "#stock", GTK_STOCK_REMOVE, G_CALLBACK
+    item = gui_misc_add_menu_item (menu, "#stock", "_Remove", G_CALLBACK
                                    (gui_sequence_editor_remove_track), (gpointer) ctl, NULL);
 
     if (tracks_num == 1)

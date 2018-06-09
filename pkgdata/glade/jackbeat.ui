@@ -1830,8 +1830,8 @@
       </object>
     </child>
     <action-widgets>
-      <action-widget response="0">disconnect_prefs</action-widget>
-      <action-widget response="0">disconnect_ok</action-widget>
+      <action-widget response="-5">disconnect_prefs</action-widget>
+      <action-widget response="-6">disconnect_ok</action-widget>
     </action-widgets>
   </object>
   <object class="GtkDialog" id="export_settings">

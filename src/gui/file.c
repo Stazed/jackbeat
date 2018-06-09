@@ -649,8 +649,8 @@ gui_file_dialog_open (const char *title, GtkWidget *parent, const char *dir,
     GtkWidget *dialog;
     dialog = gtk_file_chooser_dialog_new (title, GTK_WINDOW (parent),
                                           GTK_FILE_CHOOSER_ACTION_OPEN,
-                                          GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                                          GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                                          "_Cancel", GTK_RESPONSE_CANCEL,
+                                          "_Open", GTK_RESPONSE_ACCEPT,
                                           NULL
                                           );
     if (filter_name)
@@ -735,8 +735,8 @@ gui_file_dialog_save (const char *title, GtkWidget *parent, const char *filename
     GtkWidget *dialog;
     dialog = gtk_file_chooser_dialog_new (title, GTK_WINDOW (parent),
                                           GTK_FILE_CHOOSER_ACTION_SAVE,
-                                          GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                                          GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+                                          "_Cancel", GTK_RESPONSE_CANCEL,
+                                          "_Save", GTK_RESPONSE_ACCEPT,
                                           NULL
                                           );
     if (filename)
