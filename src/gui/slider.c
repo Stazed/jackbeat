@@ -598,7 +598,7 @@ slider_draw (GtkWidget *layout, cairo_t *cr, slider_t *slider)
             int srcx = target.x - alloc->x;
             int srcy = target.y - alloc->y;
 
-            cairo_t *cr = gdk_cairo_create (gtk_layout_get_bin_window(GTK_LAYOUT (layout)));
+            cairo_save(cr);
             cairo_set_source_surface(cr, surface, target.x - srcx, target.y - srcy);
             cairo_rectangle (cr, target.x, target.y, target.width, target.height);
             cairo_clip (cr);
@@ -611,8 +611,7 @@ slider_draw (GtkWidget *layout, cairo_t *cr, slider_t *slider)
                               layout, NULL,
                               alloc->x, alloc->y,
                               alloc->width, alloc->height);
-            
-//            cairo_destroy(cr);
+            cairo_restore(cr);
         }
     }
     return FALSE;
@@ -623,6 +622,8 @@ slider_expose (GtkWidget *layout, GdkEventExpose *event, slider_t *slider)
 {
     GtkAllocation *alloc = slider->allocs[slider->state];
     GdkPixmap *pixmap = slider->pixmaps[slider->state];
+    
+//    printf("slider_expose x = %d: y = %d: width = %d: height = %d\n",event->area.x, event->area.y, event->area.width, event->area.height );
     
     if (pixmap && gtk_layout_get_bin_window(GTK_LAYOUT (layout)))
     {

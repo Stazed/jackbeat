@@ -518,7 +518,6 @@ gui_sequence_editor_allocate_child (gui_sequence_editor_t *self, GtkWidget *chil
     allocation.y = y;
     allocation.width = width;
     allocation.height = height;
-    int allocate = TRUE;
     
     GtkAllocation child_allocation;
     gtk_widget_get_allocation(GTK_WIDGET(child), &child_allocation);
@@ -527,17 +526,8 @@ gui_sequence_editor_allocate_child (gui_sequence_editor_t *self, GtkWidget *chil
     {
         gtk_layout_move (GTK_LAYOUT (gtk_widget_get_parent(child)), child, x, y);
     }
-#if GTK_CHECK_VERSION(3,0,0)
-    /* FIXME ugly hack for triggering draw on window resize problem */
-    else if (child == self->controls_viewport)
-    {
-        gtk_layout_move (GTK_LAYOUT (gtk_widget_get_parent(child)), child, x, y);
-        allocate = FALSE;
-    }
-#endif
     
-    if(allocate)
-        gtk_widget_size_allocate (child, &allocation);
+    gtk_widget_size_allocate (child, &allocation);
 }
 
 static void
@@ -603,7 +593,7 @@ gui_sequence_editor_control_size_request_event (GtkWidget *widget, GtkAllocation
     gtk_widget_get_preferred_size (widget, &req_min, &req_nat);
     
     gui_sequence_editor_control_get_sizes (self, &name_width, &toggle_width, &volume_width, &height);
-
+    
     int ntracks = sequence_get_tracks_num (self->sequence);
     req_min.width = hpad + name_width + hpad + (toggle_width + hpad) * 2 + volume_width + hpad;
     req_min.height = (height + vpad) * ntracks + top_pad;
@@ -665,7 +655,7 @@ gui_sequence_editor_control_size_allocate_event (GtkWidget *widget, GtkAllocatio
     gui_sequence_editor_control_get_sizes (self, &name_width, &toggle_width, &volume_width, &height);
 
     int ntracks = sequence_get_tracks_num (self->sequence);
-
+    
     for (i = 0; i < ntracks; i++)
     {
         ctl = self->controls + i;
@@ -871,7 +861,7 @@ gui_sequence_editor_configure_event (GtkWidget *widget, GtkAllocation *event, gu
     int grid_width = event->width - pad - controls_width - pad - pad - vscrollbar_width - pad;
     int grid_height = event->height - pad - pad - hscrollbar_height - pad;
     int controls_height = grid_height - header_height - pad;
-
+    
     grid_set_header_height_no_redraw (self->grid, pad + header_height + pad);
 
     gui_sequence_editor_allocate_child (self, self->controls_viewport,

@@ -365,13 +365,13 @@ toggle_draw (GtkWidget *layout, cairo_t *cr, toggle_t *toggle)
             int srcx = target.x - alloc->x;
             int srcy = target.y - alloc->y;
             
-            cairo_t *cr = gdk_cairo_create (gtk_layout_get_bin_window(GTK_LAYOUT (layout)));
+            cairo_save(cr);
             cairo_set_source_surface (cr, toggle->cst_surface, target.x - srcx, target.y - srcy);
 
             cairo_rectangle (cr, target.x, target.y, target.width, target.height);
             cairo_clip (cr);
             cairo_paint(cr);
-            cairo_destroy(cr);
+            cairo_restore(cr);
         }
     }
     return FALSE;
