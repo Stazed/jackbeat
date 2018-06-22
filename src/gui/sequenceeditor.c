@@ -482,7 +482,7 @@ gui_sequence_editor_draw_control (gui_sequence_editor_t *self, int track)
 static void
 gui_sequence_editor_widget_get_size (GtkWidget *widget, int *height, int *width)
 {
-    /* FIXME this probably not right */
+    /* FIXME this returns zero for name on last track */
     GtkRequisition req_min, req_nat;
     gtk_widget_get_preferred_size(widget, &req_min, &req_nat);
     
@@ -495,6 +495,8 @@ gui_sequence_editor_widget_get_size (GtkWidget *widget, int *height, int *width)
         *width = req_nat.width;
     if (req_nat.height > *height)
         *height = req_nat.height;
+    
+    gtk_widget_set_size_request(widget, *width, *height);
 }
 #else
 static void
